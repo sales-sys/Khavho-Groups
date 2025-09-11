@@ -1,4 +1,5 @@
-/* Corrected Content Security Policy for Netlify Deployment
+/*
+Corrected Content Security Policy for Netlify Deployment
 This file tells Netlify which external resources are safe to load.
 */
 Content-Security-Policy:
