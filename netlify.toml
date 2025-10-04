@@ -1,0 +1,34 @@
+# Netlify Build Configuration
+# This file tells Netlify how to build and deploy your site securely
+
+[build]
+  publish = "."
+  command = "node replace-env-vars.js"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+# Build plugins for environment variable replacement
+[[plugins]]
+  package = "@netlify/plugin-functions"
+
+# Redirect rules for single page application
+[[redirects]]
+  from = "/admin"
+  to = "/admin-panel.html"
+  status = 200
+
+[[redirects]]
+  from = "/admin/*"
+  to = "/admin-panel.html"
+  status = 200
+
+# Security headers
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Content-Security-Policy = "default-src 'self' https: 'unsafe-inline' 'unsafe-eval'; img-src 'self' https: data:; font-src 'self' https: data:;"
