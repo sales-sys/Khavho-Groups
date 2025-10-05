@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Products Debug</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 1200px; margin: 0 auto; }
+        .debug-section { border: 1px solid #ddd; margin: 10px 0; padding: 15px; border-radius: 5px; }
+        .success { background: #d4edda; border-color: #c3e6cb; }
+        .error { background: #f8d7da; border-color: #f5c6cb; }
+        .info { background: #d1ecf1; border-color: #bee5eb; }
+        .warning { background: #fff3cd; border-color: #ffeaa7; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; }
+        .products-test { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 15px; }
+        .product-card { border: 1px solid #ddd; padding: 10px; border-radius: 5px; }
+        button { background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Firebase Products Debug Tool</h1>
+    
+    <div id="debugResults">
+        <div class="debug-section info">
+            <h3>⏳ Running diagnostics...</h3>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
+    <!-- Your Scripts -->
+    <script src="firebase-config.js"></script>
+    <script src="shared-products-firebase.js"></script>
+
+    <script>
+        let debugResults = [];
+        let testProducts = [];
+
+        function addDebugResult(type, title, content) {
+            debugResults.push({ type, title, content });
+            updateDebugDisplay();
+        }
+
+        function updateDebugDisplay() {
+            const container = document.getElementById('debugResults');
+            container.innerHTML = debugResults.map(result => `
+                <div class="debug-section ${result.type}">
+                    <h3>${result.title}</h3>
+                    <div>${result.content}</div>
+                </div>
+            `).join('');
+        }
+
+        async function runDiagnostics() {
+            addDebugResult('info', '🚀 Starting Firebase Diagnostics', 'Checking Firebase initialization...');
+
+            // Test 1: Firebase SDK
+            if (window.firebase) {
+                addDebugResult('success', '✅ Firebase SDK Loaded', 'Firebase JavaScript SDK is available');
+            } else {
+                addDebugResult('error', '❌ Firebase SDK Missing', 'Firebase SDK failed to load');
+                return;
+            }
+
+            // Test 2: Firebase App
+            try {
+                const app = firebase.app();
+                addDebugResult('success', '✅ Firebase App Initialized', `Project ID: ${app.options.projectId}`);
+            } catch (error) {
+                addDebugResult('error', '❌ Firebase App Error', error.message);
+                return;
+            }
+
+            // Test 3: Firestore Database
+            if (window.db) {
+                addDebugResult('success', '✅ Firestore Database Available', 'Database connection established');
+            } else {
+                addDebugResult('error', '❌ Firestore Database Missing', 'Database not initialized');
+                return;
+            }
+
+            // Test 4: Products Collection Access
+            try {
+                addDebugResult('info', '🔍 Testing Products Collection Access', 'Attempting to read products...');
+                
+                const snapshot = await window.db.collection('products').get();
+                
+                if (snapshot.empty) {
+                    addDebugResult('warning', '⚠️ No Products Found', 'Products collection exists but is empty. Add products in admin panel.');
+                } else {
+                    const products = [];
+                    snapshot.forEach(doc => {
+                        products.push({ id: doc.id, ...doc.data() });
+                    });
+                    
+                    testProducts = products;
+                    addDebugResult('success', '✅ Products Found', `
+                        Found ${products.length} products in database:<br>
+                        <pre>${JSON.stringify(products.map(p => ({ 
+                            id: p.id, 
+                            name: p.name, 
+                            category: p.category,
+                            available: p.available 
+                        })), null, 2)}</pre>
+                        <button onclick="displayTestProducts()">Show Products</button>
+                    `);
+                }
+            } catch (error) {
+                addDebugResult('error', '❌ Products Collection Error', `
+                    Error accessing products: ${error.message}<br>
+                    <strong>Possible causes:</strong><br>
+                    • Firebase rules deny read access<br>
+                    • Collection name mismatch<br>
+                    • Network connectivity issues
+                `);
+            }
+
+            // Test 5: Real-time Listener
+            try {
+                addDebugResult('info', '🔍 Testing Real-time Listener', 'Setting up products listener...');
+                
+                const unsubscribe = window.db.collection('products').onSnapshot(
+                    (snapshot) => {
+                        addDebugResult('success', '✅ Real-time Listener Working', `
+                            Received snapshot with ${snapshot.size} documents<br>
+                            Listener is working correctly!
+                        `);
+                        unsubscribe(); // Clean up
+                    },
+                    (error) => {
+                        addDebugResult('error', '❌ Real-time Listener Failed', error.message);
+                    }
+                );
+            } catch (error) {
+                addDebugResult('error', '❌ Real-time Listener Setup Failed', error.message);
+            }
+
+            // Test 6: getSharedProducts Function
+            setTimeout(() => {
+                if (typeof window.getSharedProducts === 'function') {
+                    const sharedProducts = window.getSharedProducts();
+                    addDebugResult('success', '✅ getSharedProducts Available', `
+                        Function exists and returns ${sharedProducts.length} products
+                    `);
+                } else {
+                    addDebugResult('error', '❌ getSharedProducts Missing', 'Function not available');
+                }
+
+                // Test 7: DOM Element
+                const productsGrid = document.getElementById('productsGrid');
+                if (productsGrid) {
+                    addDebugResult('success', '✅ Products Grid Found', 'DOM element exists (this is in debug page, check main page)');
+                } else {
+                    addDebugResult('info', 'ℹ️ Products Grid Not Found', 'Normal for debug page - check main index.html');
+                }
+
+                addDebugResult('info', '🏁 Diagnostics Complete', `
+                    <strong>Next Steps:</strong><br>
+                    1. If products were found, check main website<br>
+                    2. If no products, add some in admin panel<br>
+                    3. If errors, follow the suggestions above<br>
+                    <br>
+                    <a href="index.html" target="_blank">🔗 Open Main Website</a> |
+                    <a href="admin.html" target="_blank">🔗 Open Admin Panel</a>
+                `);
+            }, 2000);
+        }
+
+        function displayTestProducts() {
+            if (testProducts.length === 0) return;
+
+            const container = document.createElement('div');
+            container.className = 'products-test';
+            container.innerHTML = testProducts.map(product => `
+                <div class="product-card">
+                    <h4>${product.name}</h4>
+                    <p><strong>Category:</strong> ${product.category}</p>
+                    <p><strong>Available:</strong> ${product.available ? 'Yes' : 'No'}</p>
+                    <p><strong>Price:</strong> ${product.price || 'Not set'}</p>
+                    <small>ID: ${product.id}</small>
+                </div>
+            `).join('');
+
+            const lastDebugSection = document.querySelector('.debug-section:last-child');
+            lastDebugSection.appendChild(container);
+        }
+
+        // Start diagnostics when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(runDiagnostics, 1000);
+        });
+    </script>
+</body>
+</html>
