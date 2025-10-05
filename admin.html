@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khavho Groups Admin Panel</title>
+    <link rel="stylesheet" href="admin.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
+    <!-- Firebase Configuration -->
+    <script src="firebase-config.js"></script>
+</head>
+<body>
+    <!-- Authentication UI -->
+    <div id="auth-ui">
+        <div class="auth-container">
+            <h1>Khavho Groups Admin Panel</h1>
+            <div class="login-form">
+                <h2>Admin Login</h2>
+                <input type="email" id="email" placeholder="Admin Email" required>
+                <input type="password" id="password" placeholder="Password" required>
+                <button id="login-button">Login</button>
+                <div id="auth-error" class="error-message"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="admin-dashboard" style="display:none;">
+        <header class="admin-header">
+            <h1>Welcome, Admin!</h1>
+            <button id="logout-button">Logout</button>
+        </header>
+
+        <div class="admin-content">
+            <!-- Users Management Section -->
+            <section class="admin-section">
+                <h2>Users Management</h2>
+                <div id="users-list-container" class="table-container">
+                    <table id="users-table">
+                        <thead>
+                            <tr>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Orders Management Section -->
+            <section class="admin-section">
+                <h2>Orders Management</h2>
+                <div id="orders-list-container" class="table-container">
+                    <table id="orders-table">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Contacts Management Section -->
+            <section class="admin-section">
+                <h2>Contacts Management</h2>
+                <div id="contacts-list-container" class="table-container">
+                    <table id="contacts-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Subject</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Settings Management Section -->
+            <section class="admin-section">
+                <h2>Settings Management</h2>
+                <div id="settings-list-container">
+                    <ul id="settings-list"></ul>
+                </div>
+            </section>
+
+            <!-- NEW: Products Management Section -->
+            <section class="admin-section">
+                <h2>Product Management</h2>
+                
+                <!-- Add New Product Form -->
+                <div class="add-product-section">
+                    <h3>Add New Product</h3>
+                    <form id="add-product-form">
+                        <div class="form-group">
+                            <input type="text" id="product-name" placeholder="Product Name" required>
+                        </div>
+                        <div class="form-group">
+                            <textarea id="product-description" placeholder="Product Description" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <input type="number" id="product-price" placeholder="Price (R)" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <select id="product-category" required>
+                                <option value="">Select Category</option>
+                                <option value="construction">Construction</option>
+                                <option value="investment">Investment</option>
+                                <option value="financial">Financial</option>
+                                <option value="consulting">Consulting</option>
+                                <option value="general">General</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <input type="url" id="product-image-url" placeholder="Image URL (e.g., https://example.com/image.jpg)" required>
+                        </div>
+                        <div class="form-group checkbox-group">
+                            <label>
+                                <input type="checkbox" id="product-available" checked>
+                                Available for Purchase
+                            </label>
+                        </div>
+                        <button type="submit" class="btn-primary">Add Product</button>
+                    </form>
+                </div>
+
+                <!-- Current Products Display -->
+                <div id="products-list-container" class="table-container">
+                    <h3>Existing Products</h3>
+                    <table id="products-table">
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Name</th>
+                                <th>Price</th>
+                                <th>Category</th>
+                                <th>Available</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Product Edit Modal -->
+    <div id="edit-product-modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Product</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="edit-product-form">
+                    <input type="hidden" id="edit-product-id">
+                    <div class="form-group">
+                        <label for="edit-product-name">Product Name:</label>
+                        <input type="text" id="edit-product-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-product-description">Description:</label>
+                        <textarea id="edit-product-description" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-product-price">Price (R):</label>
+                        <input type="number" id="edit-product-price" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-product-category">Category:</label>
+                        <select id="edit-product-category" required>
+                            <option value="">Select Category</option>
+                            <option value="construction">Construction</option>
+                            <option value="investment">Investment</option>
+                            <option value="financial">Financial</option>
+                            <option value="consulting">Consulting</option>
+                            <option value="general">General</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-product-image-url">Image URL:</label>
+                        <input type="url" id="edit-product-image-url" required>
+                    </div>
+                    <div class="form-group checkbox-group">
+                        <label>
+                            <input type="checkbox" id="edit-product-available">
+                            Available for Purchase
+                        </label>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" id="save-edit-button" class="btn-primary">Save Changes</button>
+                        <button type="button" id="cancel-edit-button" class="btn-secondary">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    <div id="message-container"></div>
+
+    <script src="admin.js"></script>
+</body>
+</html>
