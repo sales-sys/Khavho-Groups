@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Test</title>
+</head>
+<body>
+    <h1>Firebase Integration Test</h1>
+    <div id="status">Testing...</div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
+    <!-- Firebase Configuration -->
+    <script src="firebase-config.js"></script>
+    
+    <!-- Firebase Products System -->
+    <script src="shared-products-firebase.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const status = document.getElementById('status');
+            
+            setTimeout(() => {
+                let messages = [];
+                
+                // Check Firebase initialization
+                if (window.firebase) {
+                    messages.push('✅ Firebase initialized');
+                } else {
+                    messages.push('❌ Firebase not initialized');
+                }
+                
+                // Check database
+                if (window.db) {
+                    messages.push('✅ Firestore database available');
+                } else {
+                    messages.push('❌ Firestore database not available');
+                }
+                
+                // Check auth
+                if (window.auth) {
+                    messages.push('✅ Firebase Auth available');
+                } else {
+                    messages.push('❌ Firebase Auth not available');
+                }
+                
+                // Check getSharedProducts function
+                if (typeof window.getSharedProducts === 'function') {
+                    messages.push('✅ getSharedProducts function available');
+                    const products = window.getSharedProducts();
+                    messages.push(`📊 Products count: ${products.length}`);
+                } else {
+                    messages.push('❌ getSharedProducts function not available');
+                }
+                
+                status.innerHTML = messages.join('<br>');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
