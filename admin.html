@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khavho Groups Admin Panel</title>
+    <link rel="stylesheet" href="admin.css">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
+    <!-- Firebase Configuration -->
+    <script src="firebase-config.js"></script>
+</head>
+<body>
+    <!-- Authentication UI -->
+    <div id="auth-ui">
+        <div class="auth-container">
+            <div class="auth-header">
+                <img src="images/logo.png" alt="Khavho Groups" class="auth-logo" onerror="this.style.display='none'">
+                <h1>Khavho Groups</h1>
+                <h2>Admin Panel</h2>
+            </div>
+            <div class="login-form">
+                <div class="form-header">
+                    <i data-lucide="shield-check"></i>
+                    <h3>Secure Login</h3>
+                </div>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="email">Admin Email</label>
+                        <div class="input-wrapper">
+                            <i data-lucide="mail"></i>
+                            <input type="email" id="email" placeholder="Enter your admin email" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="input-wrapper">
+                            <i data-lucide="lock"></i>
+                            <input type="password" id="password" placeholder="Enter your password" required>
+                        </div>
+                    </div>
+                    <button type="submit" id="login-button" class="login-btn">
+                        <i data-lucide="log-in"></i>
+                        <span>Login to Dashboard</span>
+                    </button>
+                </form>
+                <div id="auth-error" class="error-message"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="admin-dashboard" style="display:none;">
+        <!-- Sidebar Navigation -->
+        <nav class="admin-sidebar">
+            <div class="sidebar-header">
+                <img src="images/logo.png" alt="Khavho Groups" class="sidebar-logo" onerror="this.style.display='none'">
+                <h3>Admin Panel</h3>
+            </div>
+            
+            <ul class="sidebar-menu">
+                <li class="menu-item active" data-page="dashboard">
+                    <a href="#" onclick="showAdminPage('dashboard')">
+                        <i data-lucide="layout-dashboard"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="menu-item" data-page="messages">
+                    <a href="#" onclick="showAdminPage('messages')">
+                        <i data-lucide="mail"></i>
+                        <span>Messages</span>
+                        <span class="badge" id="messages-count">0</span>
+                    </a>
+                </li>
+                <li class="menu-item" data-page="orders">
+                    <a href="#" onclick="showAdminPage('orders')">
+                        <i data-lucide="shopping-cart"></i>
+                        <span>Orders</span>
+                        <span class="badge" id="orders-count">0</span>
+                    </a>
+                </li>
+                <li class="menu-item" data-page="users">
+                    <a href="#" onclick="showAdminPage('users')">
+                        <i data-lucide="users"></i>
+                        <span>Users</span>
+                    </a>
+                </li>
+                <li class="menu-item" data-page="products">
+                    <a href="#" onclick="showAdminPage('products')">
+                        <i data-lucide="package"></i>
+                        <span>Products</span>
+                    </a>
+                </li>
+                <li class="menu-item" data-page="analytics">
+                    <a href="#" onclick="showAdminPage('analytics')">
+                        <i data-lucide="bar-chart-3"></i>
+                        <span>Analytics</span>
+                    </a>
+                </li>
+                <li class="menu-item" data-page="settings">
+                    <a href="#" onclick="showAdminPage('settings')">
+                        <i data-lucide="settings"></i>
+                        <span>Settings</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="sidebar-footer">
+                <div class="admin-info">
+                    <div class="admin-avatar">
+                        <i data-lucide="user"></i>
+                    </div>
+                    <div class="admin-details">
+                        <span class="admin-name" id="admin-name">Admin User</span>
+                        <span class="admin-email" id="admin-email">admin@khavho.com</span>
+                    </div>
+                </div>
+                <button id="logout-button" class="logout-btn">
+                    <i data-lucide="log-out"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="admin-main">
+            <!-- Top Header -->
+            <header class="admin-header">
+                <div class="header-left">
+                    <button class="mobile-menu-toggle" onclick="toggleSidebar()">
+                        <i data-lucide="menu"></i>
+                    </button>
+                    <h1 id="page-title">Dashboard</h1>
+                </div>
+                <div class="header-right">
+                    <div class="header-stats">
+                        <div class="stat-item">
+                            <i data-lucide="clock"></i>
+                            <span id="current-time"></span>
+                        </div>
+                        <div class="stat-item">
+                            <i data-lucide="calendar"></i>
+                            <span id="current-date"></span>
+                        </div>
+                    </div>
+                    <div class="notification-bell">
+                        <i data-lucide="bell"></i>
+                        <span class="notification-count" id="notification-count">3</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Content -->
+            <div class="admin-content">
+                <!-- Dashboard Page -->
+                <div id="dashboard-page" class="admin-page active">
+            <!-- Users Management Section -->
+            <section class="admin-section">
+                <h2>Users Management</h2>
+                <div id="users-list-container" class="table-container">
+                    <table id="users-table">
+                        <thead>
+                            <tr>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Orders Management Section -->
+            <section class="admin-section">
+                <h2>Orders Management</h2>
+                <div id="orders-list-container" class="table-container">
+                    <table id="orders-table">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Contacts Management Section -->
+            <section class="admin-section">
+                <h2>Contacts Management</h2>
+                <div id="contacts-list-container" class="table-container">
+                    <table id="contacts-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Subject</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Settings Management Section -->
+            <section class="admin-section">
+                <h2>Settings Management</h2>
+                <div id="settings-list-container">
+                    <ul id="settings-list"></ul>
+                </div>
+            </section>
+
+            <!-- NEW: Products Management Section -->
+            <section class="admin-section">
+                <h2>Product Management</h2>
+                
+                <!-- Add New Product Form -->
+                <div class="add-product-section">
+                    <h3>Add New Product</h3>
+                    <form id="add-product-form">
+                        <div class="form-group">
+                            <input type="text" id="product-name" placeholder="Product Name" required>
+                        </div>
+                        <div class="form-group">
+                            <textarea id="product-description" placeholder="Product Description" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <input type="number" id="product-price" placeholder="Price (R)" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <select id="product-category" required>
+                                <option value="">Select Category</option>
+                                <option value="construction">Construction</option>
+                                <option value="investment">Investment</option>
+                                <option value="financial">Financial</option>
+                                <option value="consulting">Consulting</option>
+                                <option value="general">General</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <input type="url" id="product-image-url" placeholder="Image URL (e.g., https://example.com/image.jpg)" required>
+                        </div>
+                        <div class="form-group checkbox-group">
+                            <label>
+                                <input type="checkbox" id="product-available" checked>
+                                Available for Purchase
+                            </label>
+                        </div>
+                        <button type="submit" class="btn-primary">Add Product</button>
+                    </form>
+                </div>
+
+                <!-- Current Products Display -->
+                <div id="products-list-container" class="table-container">
+                    <h3>Existing Products</h3>
+                    <table id="products-table">
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Name</th>
+                                <th>Price</th>
+                                <th>Category</th>
+                                <th>Available</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Product Edit Modal -->
+    <div id="edit-product-modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Product</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="edit-product-form">
+                    <input type="hidden" id="edit-product-id">
+                    <div class="form-group">
+                        <label for="edit-product-name">Product Name:</label>
+                        <input type="text" id="edit-product-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-product-description">Description:</label>
+                        <textarea id="edit-product-description" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-product-price">Price (R):</label>
+                        <input type="number" id="edit-product-price" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-product-category">Category:</label>
+                        <select id="edit-product-category" required>
+                            <option value="">Select Category</option>
+                            <option value="construction">Construction</option>
+                            <option value="investment">Investment</option>
+                            <option value="financial">Financial</option>
+                            <option value="consulting">Consulting</option>
+                            <option value="general">General</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-product-image-url">Image URL:</label>
+                        <input type="url" id="edit-product-image-url" required>
+                    </div>
+                    <div class="form-group checkbox-group">
+                        <label>
+                            <input type="checkbox" id="edit-product-available">
+                            Available for Purchase
+                        </label>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" id="save-edit-button" class="btn-primary">Save Changes</button>
+                        <button type="button" id="cancel-edit-button" class="btn-secondary">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    <div id="message-container"></div>
+
+    <script src="admin.js"></script>
+</body>
+</html>
