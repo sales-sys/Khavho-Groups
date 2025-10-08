@@ -1,0 +1,32 @@
+# Environment variables (keep these secret!)
+.env
+.env.local
+.env.production
+
+# Firebase config files with real credentials
+firebase-config-real.js
+
+# Node modules (if you add any)
+node_modules/
+
+# Build files
+dist/
+build/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Temporary files
+*.tmp
+*.temp

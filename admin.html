@@ -1,0 +1,659 @@
+<!DO    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">"   <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">"TYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khavho Groups Admin Panel</title>
+    <link rel="stylesheet" href="admin.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
+    <!-- Firebase Configuration -->
+    <script src="firebase-config.js"></script>
+</head>
+<body>
+    <!-- Authentication UI -->
+    <div id="auth-ui">
+        <div class="auth-container">
+            <div class="auth-header">
+                <img src="images/logo.png" alt="Khavho Groups" class="auth-logo">
+                <h1>Khavho Groups Admin Panel</h1>
+                <p>Secure Administrative Access</p>
+            </div>
+            <div class="login-form">
+                <h2>Admin Login</h2>
+                <input type="email" id="email" placeholder="Admin Email" required>
+                <input type="password" id="password" placeholder="Password" required>
+                <button id="login-button">
+                    <span>Login</span>
+                    <div class="spinner" style="display: none;"></div>
+                </button>
+                <div id="auth-error" class="error-message"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="admin-dashboard" style="display:none;">
+        <!-- Admin Header -->
+        <header class="admin-header">
+            <div class="header-left">
+                <a href="#" class="logo" onclick="showSection('dashboard')">
+                    <div class="logo-icon">
+                        <img src="images/logo.png" alt="Khavho Groups Logo" class="admin-logo">
+                    </div>
+                </a>
+                <div class="header-info">
+                    <h1>Admin Dashboard</h1>
+                    <span class="welcome-text">Welcome back, Admin!</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="admin-stats">
+                    <div class="stat-item">
+                        <span class="stat-number" id="totalMessages">0</span>
+                        <span class="stat-label">Messages</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="totalOrders">0</span>
+                        <span class="stat-label">Orders</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="totalUsers">0</span>
+                        <span class="stat-label">Users</span>
+                    </div>
+                </div>
+                <button id="logout-button" class="logout-btn">
+                    <span>Logout</span>
+                </button>
+                
+                <button class="mobile-menu-toggle" id="adminMobileMenuToggle" onclick="toggleAdminMobileMenu()">
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Admin Navigation -->
+        <nav class="admin-nav" id="adminNav">
+            <div class="nav-container" id="adminNavContainer">
+                <button class="nav-btn active" onclick="showSection('dashboard')" data-section="dashboard">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-text">Dashboard</span>
+                </button>
+                <button class="nav-btn" onclick="showSection('messages')" data-section="messages">
+                    <span class="nav-icon">📩</span>
+                    <span class="nav-text">Messages</span>
+                    <span class="nav-badge" id="messagesBadge">0</span>
+                </button>
+                <button class="nav-btn" onclick="showSection('orders')" data-section="orders">
+                    <span class="nav-icon">🛒</span>
+                    <span class="nav-text">Orders</span>
+                    <span class="nav-badge" id="ordersBadge">0</span>
+                </button>
+                <button class="nav-btn" onclick="showSection('users')" data-section="users">
+                    <span class="nav-icon">👥</span>
+                    <span class="nav-text">Users</span>
+                </button>
+                <button class="nav-btn" onclick="showSection('products')" data-section="products">
+                    <span class="nav-icon">📦</span>
+                    <span class="nav-text">Products</span>
+                </button>
+                <button class="nav-btn" onclick="showSection('analytics')" data-section="analytics">
+                    <span class="nav-icon">📈</span>
+                    <span class="nav-text">Analytics</span>
+                </button>
+                <button class="nav-btn" onclick="showSection('settings')" data-section="settings">
+                    <span class="nav-icon">⚙️</span>
+                    <span class="nav-text">Settings</span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Admin Content -->
+        <main class="admin-content">
+            <!-- Dashboard Section -->
+            <section id="dashboard-section" class="admin-section active">
+                <div class="section-header">
+                    <h2>Dashboard Overview</h2>
+                    <p>Monitor your business performance and key metrics</p>
+                </div>
+                
+                <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3>Recent Messages</h3>
+                            <button class="view-all-btn" onclick="showSection('messages')">View All</button>
+                        </div>
+                        <div class="card-content" id="recentMessages">
+                            <!-- Recent messages will be loaded here -->
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3>Recent Orders</h3>
+                            <button class="view-all-btn" onclick="showSection('orders')">View All</button>
+                        </div>
+                        <div class="card-content" id="recentOrders">
+                            <!-- Recent orders will be loaded here -->
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3>Quick Actions</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="quick-actions">
+                                <button class="quick-action-btn" onclick="showSection('messages')">
+                                    <span class="action-icon">📩</span>
+                                    <span class="action-text">View Messages</span>
+                                </button>
+                                <button class="quick-action-btn" onclick="showSection('products')">
+                                    <span class="action-icon">➕</span>
+                                    <span class="action-text">Add Product</span>
+                                </button>
+                                <button class="quick-action-btn" onclick="exportData()">
+                                    <span class="action-icon">📊</span>
+                                    <span class="action-text">Export Data</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3>System Status</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="status-items">
+                                <div class="status-item">
+                                    <span class="status-indicator active"></span>
+                                    <span class="status-text">Firebase Connection</span>
+                                </div>
+                                <div class="status-item">
+                                    <span class="status-indicator active"></span>
+                                    <span class="status-text">Authentication Service</span>
+                                </div>
+                                <div class="status-item">
+                                    <span class="status-indicator active"></span>
+                                    <span class="status-text">Database Online</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- Messages Section -->
+            <section id="messages-section" class="admin-section">
+                <div class="section-header">
+                    <h2>Contact Messages</h2>
+                    <p>View and manage all contact form submissions</p>
+                    <div class="section-actions">
+                        <button class="export-btn" onclick="exportMessages()">Export Messages</button>
+                        <button class="refresh-btn" onclick="loadMessages()">Refresh</button>
+                    </div>
+                </div>
+                
+                <div class="messages-filters">
+                    <div class="filter-group">
+                        <label>Filter by Service:</label>
+                        <select id="serviceFilter" onchange="filterMessages()">
+                            <option value="">All Services</option>
+                            <option value="construction">Construction</option>
+                            <option value="investment">Investment</option>
+                            <option value="financial">Financial</option>
+                            <option value="consulting">Consulting</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Filter by Status:</label>
+                        <select id="statusFilter" onchange="filterMessages()">
+                            <option value="">All Status</option>
+                            <option value="new">New</option>
+                            <option value="read">Read</option>
+                            <option value="replied">Replied</option>
+                            <option value="closed">Closed</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Search:</label>
+                        <input type="text" id="messageSearch" placeholder="Search messages..." onkeyup="filterMessages()">
+                    </div>
+                </div>
+                
+                <div class="messages-container">
+                    <div class="messages-grid" id="messagesGrid">
+                        <!-- Messages will be loaded here -->
+                    </div>
+                </div>
+                
+                <!-- Loading state -->
+                <div id="messagesLoading" class="loading-state">
+                    <div class="spinner-large"></div>
+                    <p>Loading messages...</p>
+                </div>
+                
+                <!-- Empty state -->
+                <div id="messagesEmpty" class="empty-state" style="display: none;">
+                    <div class="empty-icon">📭</div>
+                    <h3>No Messages Yet</h3>
+                    <p>Contact form submissions will appear here.</p>
+                </div>
+            </section>
+
+            <!-- Orders Section -->
+            <section id="orders-section" class="admin-section">
+                <div class="section-header">
+                    <h2>Orders Management</h2>
+                    <p>View and manage all customer orders</p>
+                    <div class="section-actions">
+                        <button class="export-btn" onclick="exportOrders()">Export Orders</button>
+                        <button class="refresh-btn" onclick="loadOrders()">Refresh</button>
+                    </div>
+                </div>
+                
+                <div class="orders-container">
+                    <div class="table-container">
+                        <table id="orders-table" class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Products</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ordersTableBody">
+                                <!-- Orders will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div id="ordersEmpty" class="empty-state" style="display: none;">
+                    <div class="empty-icon">🛒</div>
+                    <h3>No Orders Yet</h3>
+                    <p>Customer orders will appear here.</p>
+                </div>
+            </section>
+
+            <!-- Users Section -->
+            <section id="users-section" class="admin-section">
+                <div class="section-header">
+                    <h2>Users Management</h2>
+                    <p>View and manage registered users</p>
+                    <div class="section-actions">
+                        <button class="export-btn" onclick="exportUsers()">Export Users</button>
+                        <button class="refresh-btn" onclick="loadUsers()">Refresh</button>
+                    </div>
+                </div>
+                
+                <div class="users-container">
+                    <div class="table-container">
+                        <table id="users-table" class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Registration Date</th>
+                                    <th>Last Login</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTableBody">
+                                <!-- Users will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div id="usersEmpty" class="empty-state" style="display: none;">
+                    <div class="empty-icon">👥</div>
+                    <h3>No Users Yet</h3>
+                    <p>Registered users will appear here.</p>
+                </div>
+            </section>
+
+            <!-- Products Section -->
+            <section id="products-section" class="admin-section">
+                <div class="section-header">
+                    <h2>Products Management</h2>
+                    <p>Add, edit, and manage your products and services</p>
+                    <div class="section-actions">
+                        <button class="add-btn" onclick="showAddProductModal()">Add New Product</button>
+                        <button class="refresh-btn" onclick="loadProducts()">Refresh</button>
+                    </div>
+                </div>
+                
+                <div class="products-container">
+                    <div class="products-grid" id="productsGrid">
+                        <!-- Products will be loaded here -->
+                    </div>
+                </div>
+                
+                <div id="productsEmpty" class="empty-state" style="display: none;">
+                    <div class="empty-icon">📦</div>
+                    <h3>No Products Yet</h3>
+                    <p>Add your first product to get started.</p>
+                    <button class="empty-action-btn" onclick="showAddProductModal()">Add Product</button>
+                </div>
+            </section>
+
+            <!-- Analytics Section -->
+            <section id="analytics-section" class="admin-section">
+                <div class="section-header">
+                    <h2>Analytics & Reports</h2>
+                    <p>View detailed analytics and generate reports</p>
+                </div>
+                
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <h3>Message Analytics</h3>
+                        <div class="chart-container">
+                            <canvas id="messagesChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <h3>Order Analytics</h3>
+                        <div class="chart-container">
+                            <canvas id="ordersChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <h3>User Growth</h3>
+                        <div class="chart-container">
+                            <canvas id="usersChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <h3>Revenue Overview</h3>
+                        <div class="chart-container">
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Section -->
+            <section id="settings-section" class="admin-section">
+                <div class="section-header">
+                    <h2>System Settings</h2>
+                    <p>Configure system settings and preferences</p>
+                </div>
+                
+                <div class="settings-grid">
+                    <div class="settings-card">
+                        <h3>General Settings</h3>
+                        <div class="settings-form">
+                            <div class="form-group">
+                                <label>Company Name</label>
+                                <input type="text" id="companyName" value="Khavho Groups">
+                            </div>
+                            <div class="form-group">
+                                <label>Contact Email</label>
+                                <input type="email" id="contactEmail" value="info@khavho-groups.com">
+                            </div>
+                            <div class="form-group">
+                                <label>Phone Number</label>
+                                <input type="tel" id="phoneNumber" value="+27 123 456 789">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-card">
+                        <h3>Notification Settings</h3>
+                        <div class="settings-form">
+                            <div class="form-group checkbox-group">
+                                <label>
+                                    <input type="checkbox" id="emailNotifications" checked>
+                                    Email Notifications
+                                </label>
+                            </div>
+                            <div class="form-group checkbox-group">
+                                <label>
+                                    <input type="checkbox" id="orderNotifications" checked>
+                                    Order Notifications
+                                </label>
+                            </div>
+                            <div class="form-group checkbox-group">
+                                <label>
+                                    <input type="checkbox" id="messageNotifications" checked>
+                                    Message Notifications
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-card">
+                        <h3>Security Settings</h3>
+                        <div class="settings-form">
+                            <button class="security-btn" onclick="changePassword()">Change Password</button>
+                            <button class="security-btn" onclick="enableTwoFactor()">Enable 2FA</button>
+                            <button class="security-btn danger" onclick="exportAllData()">Export All Data</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="settings-actions">
+                    <button class="save-btn" onclick="saveSettings()">Save Settings</button>
+                    <button class="reset-btn" onclick="resetSettings()">Reset to Default</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Message Detail Modal -->
+    <div id="messageModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Message Details</h3>
+                <button class="modal-close" onclick="closeModal('messageModal')">&times;</button>
+            </div>
+            <div class="modal-body" id="messageModalBody">
+                <!-- Message details will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeModal('messageModal')">Close</button>
+                <button class="btn-primary" onclick="replyToMessage()">Reply</button>
+                <button class="btn-danger" onclick="deleteMessage()">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Product Modal -->
+    <div id="addProductModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Product</h3>
+                <button class="modal-close" onclick="closeModal('addProductModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addProductForm">
+                    <div class="form-group">
+                        <label>Product Name</label>
+                        <input type="text" id="productName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select id="productCategory" required>
+                            <option value="construction">Construction</option>
+                            <option value="investment">Investment</option>
+                            <option value="financial">Financial</option>
+                            <option value="consulting">Consulting</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Price (ZAR)</label>
+                        <input type="number" id="productPrice" min="0" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="productDescription" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Image URL</label>
+                        <input type="url" id="productImageUrl">
+                    </div>
+                    <div class="form-group checkbox-group">
+                        <label>
+                            <input type="checkbox" id="productAvailable" checked>
+                            Available for Purchase
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeModal('addProductModal')">Cancel</button>
+                <button class="btn-primary" onclick="saveProduct()">Save Product</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success/Error Toast -->
+    <div id="toast" class="toast">
+        <div class="toast-content">
+            <span id="toastMessage"></span>
+        </div>
+    </div>
+
+    <!-- Admin JavaScript -->
+    <script src="admin.js"></script>
+</body>
+</html>
+                    <ul id="settings-list"></ul>
+                </div>
+            </section>
+
+            <!-- NEW: Products Management Section -->
+            <section class="admin-section">
+                <h2>Product Management</h2>
+                
+                <!-- Add New Product Form -->
+                <div class="add-product-section">
+                    <h3>Add New Product</h3>
+                    <form id="add-product-form">
+                        <div class="form-group">
+                            <input type="text" id="product-name" placeholder="Product Name" required>
+                        </div>
+                        <div class="form-group">
+                            <textarea id="product-description" placeholder="Product Description" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <input type="number" id="product-price" placeholder="Price (R)" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <select id="product-category" required>
+                                <option value="">Select Category</option>
+                                <option value="construction">Construction</option>
+                                <option value="investment">Investment</option>
+                                <option value="financial">Financial</option>
+                                <option value="consulting">Consulting</option>
+                                <option value="general">General</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <input type="url" id="product-image-url" placeholder="Image URL (e.g., https://example.com/image.jpg)" required>
+                        </div>
+                        <div class="form-group checkbox-group">
+                            <label>
+                                <input type="checkbox" id="product-available" checked>
+                                Available for Purchase
+                            </label>
+                        </div>
+                        <button type="submit" class="btn-primary">Add Product</button>
+                    </form>
+                </div>
+
+                <!-- Current Products Display -->
+                <div id="products-list-container" class="table-container">
+                    <h3>Existing Products</h3>
+                    <table id="products-table">
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Name</th>
+                                <th>Price</th>
+                                <th>Category</th>
+                                <th>Available</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Product Edit Modal -->
+    <div id="edit-product-modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Product</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="edit-product-form">
+                    <input type="hidden" id="edit-product-id">
+                    <div class="form-group">
+                        <label for="edit-product-name">Product Name:</label>
+                        <input type="text" id="edit-product-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-product-description">Description:</label>
+                        <textarea id="edit-product-description" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-product-price">Price (R):</label>
+                        <input type="number" id="edit-product-price" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-product-category">Category:</label>
+                        <select id="edit-product-category" required>
+                            <option value="">Select Category</option>
+                            <option value="construction">Construction</option>
+                            <option value="investment">Investment</option>
+                            <option value="financial">Financial</option>
+                            <option value="consulting">Consulting</option>
+                            <option value="general">General</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-product-image-url">Image URL:</label>
+                        <input type="url" id="edit-product-image-url" required>
+                    </div>
+                    <div class="form-group checkbox-group">
+                        <label>
+                            <input type="checkbox" id="edit-product-available">
+                            Available for Purchase
+                        </label>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" id="save-edit-button" class="btn-primary">Save Changes</button>
+                        <button type="button" id="cancel-edit-button" class="btn-secondary">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    <div id="message-container"></div>
+
+    <script src="admin.js"></script>
+</body>
+</html>
