@@ -230,8 +230,8 @@ if (!window.getSharedProducts) {
 }
 
 // Display products in the existing grid
-function displayProducts(products) {
-    console.log('🎨 displayProducts called with', products.length, 'products, filter:', currentFilter);
+function displayProducts(products, retryCount = 0) {
+    console.log('🎨 displayProducts called with', products.length, 'products, filter:', currentFilter, 'retry:', retryCount);
     
     // Try multiple ways to find the products grid element
     let productsGrid = document.getElementById('productsGrid');
@@ -244,12 +244,25 @@ function displayProducts(products) {
         productsGrid = document.querySelector('.products-grid');
     }
     if (!productsGrid) {
-        console.error('❌ Products grid element not found with any method!');
-        // Try to wait and retry once
-        setTimeout(() => {
-            displayProducts(products);
-        }, 100);
-        return;
+        console.error('❌ Products grid element not found with any method! Retry count:', retryCount);
+        console.log('🔍 Available elements:', {
+            byId: document.getElementById('productsGrid'),
+            byOldId: document.getElementById('products-grid'),
+            byClass: document.querySelector('.products-grid'),
+            documentReady: document.readyState,
+            bodyExists: !!document.body
+        });
+        
+        // Only retry up to 5 times to prevent infinite loop
+        if (retryCount < 5) {
+            setTimeout(() => {
+                displayProducts(products, retryCount + 1);
+            }, 100 * (retryCount + 1)); // Increase delay with each retry
+            return;
+        } else {
+            console.error('❌ Giving up after 5 retries. Products grid element not found.');
+            return;
+        }
     }
     
     console.log('✅ Products grid found, clearing content...');
@@ -1100,8 +1113,8 @@ async function loadFloatingAd() {
     }
     
     try {
-        const snapshot = await window.db.collection('floating_ads')
-            .where('active', '==', true)
+        const snapshot = await window.db.collection('floatingAds')
+            .where('isActive', '==', true)
             .limit(1)
             .get();
         
@@ -1201,10 +1214,31 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 1000);
 });
 
-// Function to fix categories of existing products
+// Function to fix categories of existing products (admin only)
 async function fixProductCategories() {
     if (!window.db) {
         console.error('Firebase not initialized');
+        return;
+    }
+
+    // Check if user is authenticated and is admin
+    const auth = window.firebase?.auth();
+    const currentUser = auth?.currentUser;
+    
+    if (!currentUser) {
+        console.log('⚠️ Category fixing skipped - user not authenticated');
+        return;
+    }
+
+    // Additional check - verify admin role from user document
+    try {
+        const userDoc = await window.db.collection('users').doc(currentUser.uid).get();
+        if (!userDoc.exists || userDoc.data().role !== 'admin') {
+            console.log('⚠️ Category fixing skipped - user is not admin');
+            return;
+        }
+    } catch (error) {
+        console.log('⚠️ Category fixing skipped - cannot verify admin status:', error);
         return;
     }
 
