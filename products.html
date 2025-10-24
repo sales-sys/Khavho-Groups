@@ -23,8 +23,9 @@
         .products-hero {
             background: linear-gradient(135deg, var(--primary-navy) 0%, #2c5282 100%);
             color: white;
-            padding: 120px 0 80px;
+            padding: 160px 0 80px; /* Increased top padding to account for header */
             text-align: center;
+            margin-top: 0; /* Remove any margin that might interfere with header */
         }
         
         .products-hero h1 {
@@ -297,6 +298,10 @@
         
         /* Responsive Design */
         @media (max-width: 768px) {
+            .products-hero {
+                padding: 140px 0 60px; /* Adjusted for mobile header */
+            }
+            
             .products-hero h1 {
                 font-size: 2rem;
             }
@@ -322,41 +327,165 @@
             .category-title {
                 font-size: 2rem;
             }
+            
+            /* Mobile Navigation */
+            .header-cta .mobile-menu-toggle {
+                display: block !important;
+            }
+            
+            .header-cta .auth-section {
+                display: none;
+            }
+            
+            .header-cta .cart-btn {
+                display: flex;
+            }
+            
+            .main-nav {
+                position: fixed;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: white;
+                border-top: 1px solid var(--border-gray);
+                transform: translateY(-100%);
+                transition: transform 0.3s ease;
+                z-index: 999;
+                max-height: calc(100vh - 120px);
+                overflow-y: auto;
+            }
+            
+            .main-nav.mobile-active {
+                transform: translateY(0);
+            }
+            
+            .nav-menu {
+                flex-direction: column;
+                padding: 20px;
+                gap: 0;
+            }
+            
+            .nav-item {
+                width: 100%;
+                border-bottom: 1px solid var(--border-gray);
+            }
+            
+            .nav-item:last-child {
+                border-bottom: none;
+            }
+            
+            .nav-link {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 15px 0;
+                font-size: 16px;
+            }
+            
+            .dropdown-menu {
+                position: static;
+                opacity: 1;
+                visibility: visible;
+                transform: none;
+                box-shadow: none;
+                background: var(--light-gray);
+                margin: 10px 0;
+                border-radius: 8px;
+            }
         }
     </style>
 </head>
 <body>
     <!-- Header -->
-    <header class="main-header">
-        <div class="container">
-            <div class="header-content">
-                <div class="logo">
-                    <img src="images/logo.png" alt="Khavho Groups">
-                    <span>Khavho Groups</span>
+    <header class="header" id="header">
+        <div class="header-top">
+            <div class="container">
+                <div class="header-top-content">
+                    <div>Khathu@khavhogroups.com | +27 766 927 310</div>
+                    <div>Johannesburg | Serving South Africa</div>
                 </div>
-                
-                <nav class="main-nav">
-                    <a href="index.html">Home</a>
-                    <a href="products.html" class="active">Products</a>
-                    <a href="khavho-capital.html">Capital</a>
-                    <a href="khavho-holdings.html">Holdings</a>
-                    <a href="khavho-inter-africa.html">Inter Africa</a>
-                    <a href="#contact">Contact</a>
-                </nav>
-                
-                <div class="header-actions">
-                    <button class="cart-btn" onclick="toggleCart()">
-                        <i data-lucide="shopping-cart"></i>
-                        <span class="cart-count" id="cartCount">0</span>
-                    </button>
-                    <div class="auth-section" id="authSection">
-                        <button class="auth-btn login-btn" onclick="showModal('loginModal')">Login</button>
-                        <button class="auth-btn register-btn" onclick="showModal('registerModal')">Register</button>
+            </div>
+        </div>
+        
+        <div class="header-main">
+            <div class="container">
+                <nav class="nav-container">
+                    <a href="index.html" class="logo">
+                        <div class="logo-icon">
+                            <img src="images/logo.png" alt="Khavho Groups Logo" onerror="this.parentElement.innerHTML='<i data-lucide=\'building-2\'></i>'">
+                        </div>
+                    </a>
+                    
+                    <div class="main-nav" id="mainNav">
+                        <ul class="nav-menu">
+                            <li class="nav-item">
+                                <a href="index.html" class="nav-link">
+                                    <i data-lucide="home"></i>
+                                    Home
+                                </a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a href="#" class="nav-link">
+                                    <i data-lucide="building"></i>
+                                    Companies
+                                    <i data-lucide="chevron-down"></i>
+                                </a>
+                                <div class="dropdown-menu">
+                                    <a href="khavho-holdings.html" class="dropdown-item">
+                                        <strong>Khavho Holdings</strong>
+                                        <small>Construction & Development</small>
+                                    </a>
+                                    <a href="khavho-capital.html" class="dropdown-item">
+                                        <strong>Khavho Capital</strong>
+                                        <small>Investment & Asset Management</small>
+                                    </a>
+                                    <a href="khavho-inter-africa.html" class="dropdown-item">
+                                        <strong>Khavho Inter Africa</strong>
+                                        <small>Financial Services</small>
+                                    </a>
+                                </div>
+                            </li>
+                            <li class="nav-item">
+                                <a href="index.html#about" class="nav-link">
+                                    <i data-lucide="users"></i>
+                                    About
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="index.html#services" class="nav-link">
+                                    <i data-lucide="briefcase"></i>
+                                    Services
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="products.html" class="nav-link active">
+                                    <i data-lucide="package"></i>
+                                    Products
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="index.html#contact" class="nav-link">
+                                    <i data-lucide="phone"></i>
+                                    Contact
+                                </a>
+                            </li>
+                        </ul>
+                        
+                        <div class="header-cta">
+                            <button class="cart-btn" onclick="toggleCart()" style="background: var(--primary-orange); color: white; border: 2px solid var(--primary-orange); padding: 8px 12px; border-radius: 6px; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; gap: 6px; font-weight: 600;">
+                                <i data-lucide="shopping-cart"></i>
+                                <span class="cart-count" id="cartCount">0</span>
+                            </button>
+                            <div class="auth-section" id="authSection">
+                                <button class="auth-btn login-btn" onclick="showModal('loginModal')" style="padding: 6px 12px; border: 2px solid var(--primary-orange); background: transparent; color: var(--primary-orange); border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">Login</button>
+                                <button class="auth-btn register-btn" onclick="showModal('registerModal')" style="padding: 6px 12px; border: 2px solid var(--primary-orange); background: var(--primary-orange); color: white; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;">Register</button>
+                            </div>
+                            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()" style="display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--black);">
+                                <i data-lucide="menu"></i>
+                            </button>
+                        </div>
                     </div>
-                    <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
-                        <i data-lucide="menu"></i>
-                    </button>
-                </div>
+                </nav>
             </div>
         </div>
     </header>
@@ -408,6 +537,63 @@
         </div>
     </section>
 
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Khavho Groups</h3>
+                    <p>Building excellence across South Africa through diversified business solutions in construction and financial services.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link">
+                            <i data-lucide="facebook"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i data-lucide="twitter"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i data-lucide="linkedin"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i data-lucide="instagram"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Products</h3>
+                    <ul class="footer-links">
+                        <li><a href="#" onclick="filterByCategory('civil-works', this)">Civil Works</a></li>
+                        <li><a href="#" onclick="filterByCategory('electrical', this)">Electrical</a></li>
+                        <li><a href="#" onclick="filterByCategory('mechanical', this)">Mechanical</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Subsidiaries</h3>
+                    <ul class="footer-links">
+                        <li><a href="khavho-holdings.html">Khavho Holdings</a></li>
+                        <li><a href="khavho-capital.html">Khavho Capital</a></li>
+                        <li><a href="khavho-inter-africa.html">Khavho Inter Africa</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Contact Info</h3>
+                    <ul class="footer-links">
+                        <li><i data-lucide="map-pin"></i> Johannesburg, South Africa</li>
+                        <li><i data-lucide="phone"></i> +27 766 927 310</li>
+                        <li><i data-lucide="mail"></i> Khathu@khavhogroups.com</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2018 Khavho Groups. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
     <!-- Cart Sidebar -->
     <div class="cart-sidebar" id="cartSidebar">
         <div class="cart-header">
@@ -435,7 +621,70 @@
 
     <!-- Include shared components -->
     <div id="shared-modals">
-        <!-- Auth modals and checkout modal will be loaded here -->
+        <!-- Authentication Modals -->
+        <div class="auth-modal" id="loginModal">
+            <div class="auth-modal-content">
+                <span class="modal-close" onclick="closeModal('loginModal')">&times;</span>
+                <div class="auth-header">
+                    <h2>Login to Your Account</h2>
+                    <p>Access your dashboard and manage your products</p>
+                </div>
+                <form id="loginForm" class="auth-form">
+                    <div class="form-group">
+                        <label for="loginEmail">Email Address</label>
+                        <input type="email" id="loginEmail" autocomplete="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" autocomplete="current-password" required>
+                    </div>
+                    <button type="submit" class="auth-form-btn">
+                        <i data-lucide="log-in"></i>
+                        Login
+                    </button>
+                    <p class="auth-switch">
+                        Don't have an account? 
+                        <a href="#" onclick="switchModal('loginModal', 'registerModal')">Register here</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+
+        <div class="auth-modal" id="registerModal">
+            <div class="auth-modal-content">
+                <span class="modal-close" onclick="closeModal('registerModal')">&times;</span>
+                <div class="auth-header">
+                    <h2>Create Your Account</h2>
+                    <p>Join Khavho Groups today</p>
+                </div>
+                <form id="registerForm" class="auth-form">
+                    <div class="form-group">
+                        <label for="registerName">Full Name</label>
+                        <input type="text" id="registerName" autocomplete="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerEmail">Email Address</label>
+                        <input type="email" id="registerEmail" autocomplete="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerPassword">Password</label>
+                        <input type="password" id="registerPassword" autocomplete="new-password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <input type="password" id="confirmPassword" autocomplete="new-password" required>
+                    </div>
+                    <button type="submit" class="auth-form-btn">
+                        <i data-lucide="user-plus"></i>
+                        Register
+                    </button>
+                    <p class="auth-switch">
+                        Already have an account? 
+                        <a href="#" onclick="switchModal('registerModal', 'loginModal')">Login here</a>
+                    </p>
+                </form>
+            </div>
+        </div>
     </div>
 
     <!-- External JavaScript -->
@@ -457,11 +706,36 @@
                 lucide.createIcons();
             }
             
+            // Initialize header scroll effect
+            initializeHeaderScroll();
+            
             // Wait for Firebase to initialize
             setTimeout(() => {
                 loadProducts();
             }, 500);
         });
+        
+        // Header scroll effect
+        function initializeHeaderScroll() {
+            const header = document.getElementById('header');
+            if (header) {
+                window.addEventListener('scroll', function() {
+                    if (window.scrollY > 50) {
+                        header.classList.add('scrolled');
+                    } else {
+                        header.classList.remove('scrolled');
+                    }
+                });
+            }
+        }
+        
+        // Mobile menu toggle
+        function toggleMobileMenu() {
+            const mainNav = document.getElementById('mainNav');
+            if (mainNav) {
+                mainNav.classList.toggle('mobile-active');
+            }
+        }
 
         // Load products from Firebase
         async function loadProducts() {
