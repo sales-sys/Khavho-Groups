@@ -900,36 +900,167 @@ function filterProducts(category) {
     try {
         // Update filter buttons active state
         const allButtons = document.querySelectorAll('.filter-btn');
-        console.log('Found', allButtons.length, 'filter buttons');
-        
-        allButtons.forEach(btn => {
-            btn.classList.remove('active');
-            console.log('Removed active from button:', btn.textContent);
-        });
+        allButtons.forEach(btn => btn.classList.remove('active'));
         
         // Find and activate the clicked button
         const clickedBtn = event ? event.target : document.querySelector(`.filter-btn[onclick*="${category}"]`);
         if (clickedBtn) {
             clickedBtn.classList.add('active');
-            console.log('Activated button:', clickedBtn.textContent);
-        } else {
-            console.log('Could not find button for category:', category);
         }
         
-        // Update current filter and display products
-        currentFilter = category;
-        console.log('Filter updated to:', currentFilter);
+        // Filter products based on category
+        const productCards = document.querySelectorAll('.product-card');
+        let visibleCount = 0;
         
-        if (productsData.length > 0) {
-            console.log('Displaying products with new filter...');
-            displayProducts(productsData);
-        } else {
-            console.log('No products data available for filtering');
+        productCards.forEach((card, index) => {
+            const productCategory = card.getAttribute('data-category');
+            const shouldShow = category === 'all' || productCategory === category;
+            
+            if (shouldShow) {
+                card.style.display = 'block';
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'all 0.3s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+                
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        
+        // Handle empty state
+        const productsContainer = document.getElementById('products-grid');
+        const existingMessage = document.querySelector('.filter-no-results');
+        
+        if (existingMessage) {
+            existingMessage.remove();
         }
+        
+        if (visibleCount === 0 && productCards.length > 0) {
+            const noResultsDiv = document.createElement('div');
+            noResultsDiv.className = 'filter-no-results';
+            noResultsDiv.innerHTML = `
+                <div class="no-products-message">
+                    <h3>No products found</h3>
+                    <p>No products match the selected category. Try selecting "All Products".</p>
+                    <button class="cta-button" onclick="filterProducts('all')">Show All Products</button>
+                </div>
+            `;
+            productsContainer.appendChild(noResultsDiv);
+        }
+        
+        console.log(`Filtered products: ${visibleCount} visible`);
         
     } catch (error) {
         console.error('Error in filterProducts:', error);
     }
+}
+
+// Main Products Loading Function
+async function loadFirebaseProducts() {
+    if (!window.db) {
+        console.error('Firebase not initialized');
+        showNotification('Unable to load products - Firebase not available', 'error');
+        return;
+    }
+
+    try {
+        showNotification('Loading products...', 'loading', 2000);
+        
+        const snapshot = await window.db.collection('products')
+            .where('isAvailable', '==', true)
+            .orderBy('createdAt', 'desc')
+            .get();
+        
+        const products = [];
+        snapshot.forEach(doc => {
+            products.push({ id: doc.id, ...doc.data() });
+        });
+        
+        displayProductsOnWebsite(products);
+        showNotification(`Loaded ${products.length} products successfully!`, 'success');
+        
+    } catch (error) {
+        console.error('Error loading products:', error);
+        showNotification('Error loading products', 'error');
+        
+        // Show fallback message
+        const productsContainer = document.getElementById('products-grid') || 
+                                document.getElementById('products-container') ||
+                                document.querySelector('.products-section');
+        
+        if (productsContainer) {
+            productsContainer.innerHTML = `
+                <div class="no-products-message">
+                    <h3>Products Coming Soon</h3>
+                    <p>We're currently updating our product catalog. Please check back soon or contact us for more information.</p>
+                    <a href="#contact" class="cta-button">Contact Us</a>
+                </div>
+            `;
+        }
+    }
+}
+
+function displayProductsOnWebsite(products) {
+    const productsContainer = document.getElementById('products-grid') || 
+                            document.getElementById('products-container') ||
+                            document.querySelector('.products-section .grid');
+    
+    if (!productsContainer) {
+        console.warn('Products container not found');
+        return;
+    }
+    
+    if (products.length === 0) {
+        productsContainer.innerHTML = `
+            <div class="no-products-message">
+                <h3>No Products Available</h3>
+                <p>We're currently updating our product catalog. Please check back soon!</p>
+            </div>
+        `;
+        return;
+    }
+    
+    const productsHTML = products.map(product => `
+        <div class="product-card" data-category="${product.category.toLowerCase().replace(/\s+/g, '-')}">
+            <div class="product-image">
+                <img src="${product.imageUrl || '/images/placeholder-product.jpg'}" 
+                     alt="${product.name}" 
+                     onerror="this.src='/images/placeholder-product.jpg'">
+            </div>
+            
+            <div class="product-info">
+                <h3>${product.name}</h3>
+                <span class="product-category">${product.category}</span>
+                <p class="product-description">${product.description}</p>
+                
+                <div class="product-footer">
+                    <span class="product-price">R${parseFloat(product.price || 0).toLocaleString()}</span>
+                    <div class="product-actions">
+                        <button class="btn-secondary" onclick="contactAboutProduct('${product.id}', '${product.name}')">
+                            Inquire
+                        </button>
+                        <button class="btn-primary" onclick="addToCart('${product.id}')">
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+    
+    productsContainer.innerHTML = productsHTML;
+}
+
+function contactAboutProduct(productId, productName) {
+    const message = `Hi! I'm interested in learning more about "${productName}". Could you please provide more details?`;
+    const whatsappURL = `https://wa.me/27123456789?text=${encodeURIComponent(message)}`;
+    window.open(whatsappURL, '_blank');
 }
 
 // Make functions globally available
@@ -937,11 +1068,115 @@ window.filterProducts = filterProducts;
 window.addToCart = addToCart;
 window.contactViaWhatsApp = contactViaWhatsApp;
 window.updateCartDisplay = updateCartDisplay;
+window.loadFirebaseProducts = loadFirebaseProducts;
+window.contactAboutProduct = contactAboutProduct;
 
-// Initialize cart display on page load
+// Floating Ad Functions
+async function loadFloatingAd() {
+    if (!window.db) {
+        console.log('Firebase not available for floating ad');
+        return;
+    }
+    
+    try {
+        const snapshot = await window.db.collection('floating_ads')
+            .where('active', '==', true)
+            .limit(1)
+            .get();
+        
+        if (!snapshot.empty) {
+            snapshot.forEach(doc => {
+                const adData = doc.data();
+                displayFloatingAd(adData);
+            });
+        }
+        
+    } catch (error) {
+        console.error('Error loading floating ad:', error);
+    }
+}
+
+function displayFloatingAd(adData) {
+    const floatingAd = document.getElementById('floatingAd');
+    if (!floatingAd) return;
+    
+    // Check if user has closed this ad recently
+    const adClosedKey = `ad_closed_${adData.title}`;
+    const lastClosed = localStorage.getItem(adClosedKey);
+    const now = new Date().getTime();
+    const hourInMs = 60 * 60 * 1000; // 1 hour
+    
+    if (lastClosed && (now - parseInt(lastClosed)) < hourInMs) {
+        return; // Don't show ad if closed within last hour
+    }
+    
+    // Update ad content
+    document.getElementById('adImage').src = adData.imageUrl || '/images/placeholder-ad.jpg';
+    document.getElementById('adTitle').textContent = adData.title;
+    document.getElementById('adDescription').textContent = adData.description;
+    
+    const adButton = document.getElementById('adButton');
+    adButton.textContent = adData.buttonText;
+    adButton.href = adData.buttonUrl;
+    adButton.target = '_blank';
+    
+    // Show the ad
+    floatingAd.style.display = 'block';
+    setTimeout(() => {
+        floatingAd.classList.add('active');
+    }, 500);
+    
+    // Auto-hide after duration (if specified)
+    if (adData.duration && adData.duration > 0) {
+        setTimeout(() => {
+            closeFloatingAd();
+        }, adData.duration * 1000);
+    }
+}
+
+function closeFloatingAd() {
+    const floatingAd = document.getElementById('floatingAd');
+    if (!floatingAd) return;
+    
+    // Get current ad title for localStorage key
+    const adTitle = document.getElementById('adTitle').textContent;
+    const adClosedKey = `ad_closed_${adTitle}`;
+    localStorage.setItem(adClosedKey, new Date().getTime().toString());
+    
+    floatingAd.classList.remove('active');
+    setTimeout(() => {
+        floatingAd.style.display = 'none';
+    }, 300);
+}
+
+// Make floating ad functions globally available
+window.loadFloatingAd = loadFloatingAd;
+window.closeFloatingAd = closeFloatingAd;
+
+// Initialize cart display and load products on page load
 document.addEventListener('DOMContentLoaded', function() {
     setTimeout(() => {
         updateCartDisplay();
+        
+        // Only load products on the main page (index.html)
+        if (window.location.pathname === '/' || 
+            window.location.pathname.includes('index.html') ||
+            window.location.pathname === '/index.html') {
+            
+            // Wait for Firebase to initialize
+            setTimeout(() => {
+                if (window.db) {
+                    loadFirebaseProducts();
+                } else {
+                    console.log('Firebase not ready, will retry...');
+                    setTimeout(() => {
+                        if (window.db) {
+                            loadFirebaseProducts();
+                        }
+                    }, 2000);
+                }
+            }, 1000);
+        }
     }, 1000);
 });
 

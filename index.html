@@ -180,6 +180,91 @@
                 </div>
             </section>
 
+            <!-- Business Model Section -->
+            <section class="business-model-section section-padding">
+                <div class="container">
+                    <div class="section-header">
+                        <div class="section-badge">How We Work</div>
+                        <h2 class="section-title">Our Business Model</h2>
+                        <p class="section-description">Khavho Groups generates revenue through its subsidiary companies while serving as the central procurement hub for materials and products.</p>
+                    </div>
+                    
+                    <div class="business-model-content">
+                        <div class="model-overview">
+                            <div class="model-item">
+                                <div class="model-icon">
+                                    <i data-lucide="building-2"></i>
+                                </div>
+                                <div class="model-info">
+                                    <h3>Central Procurement Hub</h3>
+                                    <p>Our subsidiary companies procure all their materials and products through Khavho Groups, ensuring quality control and cost efficiency.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="model-item">
+                                <div class="model-icon">
+                                    <i data-lucide="users"></i>
+                                </div>
+                                <div class="model-info">
+                                    <h3>Open to External Clients</h3>
+                                    <p>Outside companies and individuals can also purchase materials and products directly from us, expanding our market reach.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="model-item">
+                                <div class="model-icon">
+                                    <i data-lucide="credit-card"></i>
+                                </div>
+                                <div class="model-info">
+                                    <h3>Integrated Financial Solutions</h3>
+                                    <p>Through Khavho Capital & Investment, we provide financing options to help clients acquire the products they need.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="process-example">
+                            <h3>How Our Process Works</h3>
+                            <div class="example-card">
+                                <div class="example-header">
+                                    <i data-lucide="monitor"></i>
+                                    <h4>Example: Computer Purchase Process</h4>
+                                </div>
+                                <div class="process-steps">
+                                    <div class="step">
+                                        <div class="step-number">1</div>
+                                        <div class="step-content">
+                                            <h5>Client Request</h5>
+                                            <p>A client wants to purchase two computers from our website</p>
+                                        </div>
+                                    </div>
+                                    <div class="step">
+                                        <div class="step-number">2</div>
+                                        <div class="step-content">
+                                            <h5>Quote Generation</h5>
+                                            <p>We prepare a comprehensive quote including product costs and delivery fees</p>
+                                        </div>
+                                    </div>
+                                    <div class="step">
+                                        <div class="step-number">3</div>
+                                        <div class="step-content">
+                                            <h5>Financing Option</h5>
+                                            <p>Client applies for a loan through Khavho Capital & Investment</p>
+                                        </div>
+                                    </div>
+                                    <div class="step">
+                                        <div class="step-number">4</div>
+                                        <div class="step-content">
+                                            <h5>Delivery & Service</h5>
+                                            <p>Once approved, we provide and deliver the computers to the client</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <!-- Subsidiaries Section -->
             <section class="subsidiaries-section section-padding">
                 <div class="container">
@@ -273,13 +358,13 @@
                     
                     <div class="products-filter">
                         <button class="filter-btn active" onclick="filterProducts('all')">All Products</button>
-                        <button class="filter-btn" onclick="filterProducts('construction')">Construction</button>
-                        <button class="filter-btn" onclick="filterProducts('investment')">Investment</button>
-                        <button class="filter-btn" onclick="filterProducts('financial')">Financial</button>
-                        <button class="filter-btn" onclick="filterProducts('consulting')">Consulting</button>
+                        <button class="filter-btn" onclick="filterProducts('mechanical')">Mechanical</button>
+                        <button class="filter-btn" onclick="filterProducts('electrical')">Electrical</button>
+                        <button class="filter-btn" onclick="filterProducts('civil-work')">Civil Work</button>
+                        <button class="filter-btn" onclick="filterProducts('general-building')">General Building</button>
                     </div>
                     
-                    <div class="products-grid" id="productsGrid">
+                    <div class="products-grid" id="products-grid">
                         <!-- Products will be dynamically loaded here -->
                     </div>
                 </div>
@@ -852,12 +937,34 @@
     <script src="scripts.js"></script>
     
     <!-- Initialize Lucide Icons -->
+    <!-- Floating Ad Display -->
+    <div id="floatingAd" class="floating-ad" style="display: none;">
+        <button class="floating-ad-close" onclick="closeFloatingAd()">
+            <i data-lucide="x"></i>
+        </button>
+        <div class="floating-ad-content">
+            <div class="ad-image">
+                <img id="adImage" src="" alt="Advertisement">
+            </div>
+            <div class="ad-text">
+                <h4 id="adTitle">Special Offer</h4>
+                <p id="adDescription">Check out our latest products and services!</p>
+                <a href="#" id="adButton" class="ad-cta-btn">Learn More</a>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Initialize Lucide icons after all content is loaded
         document.addEventListener('DOMContentLoaded', function() {
             if (typeof lucide !== 'undefined') {
                 lucide.createIcons();
             }
+            
+            // Load floating ad
+            setTimeout(() => {
+                loadFloatingAd();
+            }, 2000);
         });
     </script>
 </body>

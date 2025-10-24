@@ -515,6 +515,238 @@ function showToast(message, type = 'info') {
     }, 4000);
 }
 
+// Products Management Functions
+let currentProductId = null;
+
+async function loadProducts() {
+    const loadingElement = document.getElementById('productsLoading');
+    const emptyElement = document.getElementById('productsEmpty');
+    const gridElement = document.getElementById('productsGrid');
+    
+    loadingElement.style.display = 'block';
+    emptyElement.style.display = 'none';
+    gridElement.innerHTML = '';
+    
+    try {
+        const snapshot = await db.collection('products')
+            .orderBy('createdAt', 'desc')
+            .get();
+        
+        loadingElement.style.display = 'none';
+        
+        if (snapshot.empty) {
+            emptyElement.style.display = 'block';
+            return;
+        }
+        
+        allProducts = [];
+        snapshot.forEach(doc => {
+            allProducts.push({ id: doc.id, ...doc.data() });
+        });
+        
+        displayProducts(allProducts);
+        
+    } catch (error) {
+        console.error('Error loading products:', error);
+        loadingElement.style.display = 'none';
+        showToast('Error loading products', 'error');
+    }
+}
+
+function displayProducts(products) {
+    const gridElement = document.getElementById('productsGrid');
+    
+    if (products.length === 0) {
+        document.getElementById('productsEmpty').style.display = 'block';
+        return;
+    }
+    
+    const productsHtml = products.map(product => `
+        <div class="product-card ${product.isAvailable ? 'available' : 'unavailable'}">
+            <div class="product-image">
+                <img src="${product.imageUrl || '/images/placeholder-product.jpg'}" alt="${product.name}" onerror="this.src='/images/placeholder-product.jpg'">
+                <span class="availability-badge ${product.isAvailable ? 'available' : 'unavailable'}">
+                    ${product.isAvailable ? 'Available' : 'Unavailable'}
+                </span>
+            </div>
+            
+            <div class="product-info">
+                <h4>${product.name}</h4>
+                <span class="product-category">${product.category}</span>
+                <p class="product-description">${truncateText(product.description, 100)}</p>
+                
+                <div class="product-details">
+                    <span class="product-price">R${parseFloat(product.price || 0).toLocaleString()}</span>
+                    <span class="product-date">${formatDate(product.createdAt)}</span>
+                </div>
+            </div>
+            
+            <div class="product-actions">
+                <button class="action-btn edit" onclick="editProduct('${product.id}')">Edit</button>
+                <button class="action-btn ${product.isAvailable ? 'disable' : 'enable'}" 
+                        onclick="toggleProductAvailability('${product.id}')">
+                    ${product.isAvailable ? 'Disable' : 'Enable'}
+                </button>
+                <button class="action-btn delete" onclick="deleteProduct('${product.id}')">Delete</button>
+            </div>
+        </div>
+    `).join('');
+    
+    gridElement.innerHTML = productsHtml;
+}
+
+function showAddProductModal() {
+    currentProductId = null;
+    document.getElementById('productModalTitle').textContent = 'Add New Product';
+    document.getElementById('productForm').reset();
+    showModal('productModal');
+}
+
+function editProduct(productId) {
+    const product = allProducts.find(p => p.id === productId);
+    if (!product) return;
+    
+    currentProductId = productId;
+    document.getElementById('productModalTitle').textContent = 'Edit Product';
+    
+    // Fill form with product data
+    document.getElementById('productName').value = product.name || '';
+    document.getElementById('productCategory').value = product.category || '';
+    document.getElementById('productPrice').value = product.price || '';
+    document.getElementById('productDescription').value = product.description || '';
+    document.getElementById('productImageUrl').value = product.imageUrl || '';
+    document.getElementById('productAvailable').checked = product.isAvailable || false;
+    
+    showModal('productModal');
+}
+
+async function saveProduct() {
+    const form = document.getElementById('productForm');
+    const formData = new FormData(form);
+    
+    // Validation
+    const name = formData.get('name')?.trim();
+    const category = formData.get('category')?.trim();
+    const price = formData.get('price');
+    const description = formData.get('description')?.trim();
+    
+    if (!name || !category || !price || !description) {
+        showToast('Please fill in all required fields', 'error');
+        return;
+    }
+    
+    if (isNaN(price) || parseFloat(price) < 0) {
+        showToast('Please enter a valid price', 'error');
+        return;
+    }
+    
+    try {
+        const productData = {
+            name: name,
+            category: category,
+            price: parseFloat(price),
+            description: description,
+            imageUrl: formData.get('imageUrl')?.trim() || '',
+            isAvailable: formData.get('available') === 'on',
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        
+        if (currentProductId) {
+            // Update existing product
+            await db.collection('products').doc(currentProductId).update(productData);
+            showToast('Product updated successfully', 'success');
+        } else {
+            // Add new product
+            productData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+            await db.collection('products').add(productData);
+            showToast('Product added successfully', 'success');
+        }
+        
+        closeModal('productModal');
+        loadProducts();
+        loadDashboardData(); // Update dashboard stats
+        
+    } catch (error) {
+        console.error('Error saving product:', error);
+        showToast('Error saving product', 'error');
+    }
+}
+
+async function toggleProductAvailability(productId) {
+    const product = allProducts.find(p => p.id === productId);
+    if (!product) return;
+    
+    try {
+        const newAvailability = !product.isAvailable;
+        await db.collection('products').doc(productId).update({
+            isAvailable: newAvailability,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        // Update local data
+        product.isAvailable = newAvailability;
+        
+        loadProducts();
+        showToast(`Product ${newAvailability ? 'enabled' : 'disabled'} successfully`, 'success');
+        
+    } catch (error) {
+        console.error('Error updating product availability:', error);
+        showToast('Error updating product', 'error');
+    }
+}
+
+async function deleteProduct(productId) {
+    const product = allProducts.find(p => p.id === productId);
+    if (!product) return;
+    
+    if (!confirm(`Are you sure you want to delete "${product.name}"? This action cannot be undone.`)) {
+        return;
+    }
+    
+    try {
+        await db.collection('products').doc(productId).delete();
+        
+        // Remove from local array
+        allProducts = allProducts.filter(p => p.id !== productId);
+        
+        displayProducts(allProducts);
+        loadDashboardData(); // Update dashboard stats
+        
+        showToast('Product deleted successfully', 'success');
+        
+    } catch (error) {
+        console.error('Error deleting product:', error);
+        showToast('Error deleting product', 'error');
+    }
+}
+
+function filterProducts() {
+    const categoryFilter = document.getElementById('productCategoryFilter').value;
+    const availabilityFilter = document.getElementById('productAvailabilityFilter').value;
+    const searchTerm = document.getElementById('productSearch').value.toLowerCase();
+    
+    let filteredProducts = allProducts;
+    
+    if (categoryFilter) {
+        filteredProducts = filteredProducts.filter(p => p.category === categoryFilter);
+    }
+    
+    if (availabilityFilter) {
+        const isAvailable = availabilityFilter === 'available';
+        filteredProducts = filteredProducts.filter(p => p.isAvailable === isAvailable);
+    }
+    
+    if (searchTerm) {
+        filteredProducts = filteredProducts.filter(p => 
+            p.name.toLowerCase().includes(searchTerm) ||
+            p.description.toLowerCase().includes(searchTerm) ||
+            p.category.toLowerCase().includes(searchTerm)
+        );
+    }
+    
+    displayProducts(filteredProducts);
+}
+
 // Placeholder functions for other sections
 async function loadOrders() {
     showToast('Orders management coming soon', 'info');
@@ -522,10 +754,6 @@ async function loadOrders() {
 
 async function loadUsers() {
     showToast('User management coming soon', 'info');
-}
-
-async function loadProducts() {
-    showToast('Product management coming soon', 'info');
 }
 
 function loadAnalytics() {
@@ -600,7 +828,254 @@ function showSection(sectionName) {
         case 'analytics':
             loadAnalytics();
             break;
+        case 'floating-ad':
+            loadFloatingAds();
+            break;
     }
+}
+
+// Floating Ad Management Functions
+let currentAdData = null;
+
+async function loadFloatingAds() {
+    const loadingElement = document.getElementById('adLoading');
+    const emptyElement = document.getElementById('adEmpty');
+    const displayElement = document.getElementById('currentAdDisplay');
+    
+    loadingElement.style.display = 'block';
+    emptyElement.style.display = 'none';
+    displayElement.style.display = 'none';
+    
+    try {
+        const snapshot = await db.collection('floating_ads')
+            .where('active', '==', true)
+            .limit(1)
+            .get();
+        
+        loadingElement.style.display = 'none';
+        
+        if (snapshot.empty) {
+            emptyElement.style.display = 'block';
+            updateAdStatus('inactive', 'Never');
+            return;
+        }
+        
+        snapshot.forEach(doc => {
+            currentAdData = { id: doc.id, ...doc.data() };
+        });
+        
+        displayCurrentAd(currentAdData);
+        updateAdStatus('active', formatDate(currentAdData.updatedAt));
+        displayElement.style.display = 'block';
+        
+    } catch (error) {
+        console.error('Error loading floating ads:', error);
+        loadingElement.style.display = 'none';
+        showToast('Error loading ad data', 'error');
+    }
+}
+
+function displayCurrentAd(adData) {
+    const previewCard = document.getElementById('adPreviewCard');
+    
+    previewCard.innerHTML = `
+        <div class="ad-preview-content">
+            <div class="ad-preview-image">
+                <img src="${adData.imageUrl || '/images/placeholder-ad.jpg'}" 
+                     alt="${adData.title}" 
+                     onerror="this.src='/images/placeholder-ad.jpg'">
+            </div>
+            <div class="ad-preview-text">
+                <h4>${adData.title}</h4>
+                <p>${adData.description}</p>
+                <div class="ad-preview-meta">
+                    <span class="ad-duration">Duration: ${adData.duration}s</span>
+                    <a href="${adData.buttonUrl}" target="_blank" class="ad-preview-button">
+                        ${adData.buttonText}
+                    </a>
+                </div>
+            </div>
+            <div class="ad-preview-actions">
+                <button class="action-btn edit" onclick="editFloatingAd()">Edit</button>
+                <button class="action-btn delete" onclick="deleteFloatingAd()">Delete</button>
+            </div>
+        </div>
+    `;
+}
+
+function updateAdStatus(status, lastUpdated) {
+    const statusBadge = document.getElementById('adStatusBadge');
+    const statusText = document.getElementById('adLastUpdated');
+    const toggleBtn = document.getElementById('toggleAdBtn');
+    
+    statusBadge.className = `status-badge ${status}`;
+    statusBadge.textContent = status === 'active' ? 'Active' : 'Inactive';
+    statusText.textContent = `Last updated: ${lastUpdated}`;
+    
+    toggleBtn.textContent = status === 'active' ? 'Deactivate Ad' : 'Activate Ad';
+    toggleBtn.onclick = status === 'active' ? deactivateFloatingAd : activateFloatingAd;
+}
+
+function showAddAdModal() {
+    currentAdData = null;
+    document.getElementById('adModalTitle').textContent = 'Create Floating Advertisement';
+    document.getElementById('floatingAdForm').reset();
+    showModal('floatingAdModal');
+}
+
+function editFloatingAd() {
+    if (!currentAdData) return;
+    
+    document.getElementById('adModalTitle').textContent = 'Edit Floating Advertisement';
+    
+    // Fill form with current data
+    document.getElementById('adTitle').value = currentAdData.title || '';
+    document.getElementById('adDescription').value = currentAdData.description || '';
+    document.getElementById('adImageUrl').value = currentAdData.imageUrl || '';
+    document.getElementById('adButtonText').value = currentAdData.buttonText || '';
+    document.getElementById('adButtonUrl').value = currentAdData.buttonUrl || '';
+    document.getElementById('adDisplayDuration').value = currentAdData.duration || 10;
+    document.getElementById('adActive').checked = currentAdData.active || false;
+    
+    showModal('floatingAdModal');
+}
+
+async function saveFloatingAd() {
+    const form = document.getElementById('floatingAdForm');
+    const formData = new FormData(form);
+    
+    // Validation
+    const title = formData.get('title')?.trim();
+    const description = formData.get('description')?.trim();
+    const buttonText = formData.get('buttonText')?.trim();
+    const buttonUrl = formData.get('buttonUrl')?.trim();
+    
+    if (!title || !description || !buttonText || !buttonUrl) {
+        showToast('Please fill in all required fields', 'error');
+        return;
+    }
+    
+    try {
+        // Deactivate all existing ads first
+        const existingAds = await db.collection('floating_ads').where('active', '==', true).get();
+        const batch = db.batch();
+        
+        existingAds.forEach(doc => {
+            batch.update(doc.ref, { active: false });
+        });
+        
+        const adData = {
+            title: title,
+            description: description,
+            imageUrl: formData.get('imageUrl')?.trim() || '',
+            buttonText: buttonText,
+            buttonUrl: buttonUrl,
+            duration: parseInt(formData.get('duration')) || 10,
+            active: formData.get('active') === 'on',
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        
+        if (currentAdData) {
+            // Update existing ad
+            batch.update(db.collection('floating_ads').doc(currentAdData.id), adData);
+        } else {
+            // Create new ad
+            adData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+            const newAdRef = db.collection('floating_ads').doc();
+            batch.set(newAdRef, adData);
+        }
+        
+        await batch.commit();
+        
+        closeModal('floatingAdModal');
+        loadFloatingAds();
+        showToast('Advertisement saved successfully', 'success');
+        
+    } catch (error) {
+        console.error('Error saving floating ad:', error);
+        showToast('Error saving advertisement', 'error');
+    }
+}
+
+async function toggleFloatingAd() {
+    if (!currentAdData) {
+        showAddAdModal();
+        return;
+    }
+    
+    const newStatus = !currentAdData.active;
+    
+    try {
+        await db.collection('floating_ads').doc(currentAdData.id).update({
+            active: newStatus,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        currentAdData.active = newStatus;
+        updateAdStatus(newStatus ? 'active' : 'inactive', 'Just now');
+        showToast(`Advertisement ${newStatus ? 'activated' : 'deactivated'}`, 'success');
+        
+    } catch (error) {
+        console.error('Error toggling ad status:', error);
+        showToast('Error updating advertisement', 'error');
+    }
+}
+
+async function deleteFloatingAd() {
+    if (!currentAdData) return;
+    
+    if (!confirm('Are you sure you want to delete this advertisement? This action cannot be undone.')) {
+        return;
+    }
+    
+    try {
+        await db.collection('floating_ads').doc(currentAdData.id).delete();
+        
+        currentAdData = null;
+        loadFloatingAds();
+        showToast('Advertisement deleted successfully', 'success');
+        
+    } catch (error) {
+        console.error('Error deleting floating ad:', error);
+        showToast('Error deleting advertisement', 'error');
+    }
+}
+
+function previewAd() {
+    if (!currentAdData) {
+        showToast('No active advertisement to preview', 'info');
+        return;
+    }
+    
+    // Create a temporary preview
+    const preview = document.createElement('div');
+    preview.className = 'floating-ad active';
+    preview.innerHTML = `
+        <button class="floating-ad-close" onclick="this.parentElement.remove()">
+            <i data-lucide="x"></i>
+        </button>
+        <div class="floating-ad-content">
+            <div class="ad-image">
+                <img src="${currentAdData.imageUrl || '/images/placeholder-ad.jpg'}" alt="${currentAdData.title}">
+            </div>
+            <div class="ad-text">
+                <h4>${currentAdData.title}</h4>
+                <p>${currentAdData.description}</p>
+                <a href="#" class="ad-cta-btn" onclick="event.preventDefault()">${currentAdData.buttonText}</a>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(preview);
+    
+    // Auto-remove after duration
+    setTimeout(() => {
+        if (preview.parentElement) {
+            preview.remove();
+        }
+    }, (currentAdData.duration || 10) * 1000);
+    
+    showToast('Ad preview displayed', 'info');
 }
 
 function exportMessages() {

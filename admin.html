@@ -111,6 +111,10 @@
                     <span class="nav-icon">⚙️</span>
                     <span class="nav-text">Settings</span>
                 </button>
+                <button class="nav-btn" onclick="showSection('floating-ad')" data-section="floating-ad">
+                    <span class="nav-icon">📢</span>
+                    <span class="nav-text">Floating Ad</span>
+                </button>
             </div>
         </nav>
 
@@ -336,6 +340,31 @@
                     </div>
                 </div>
                 
+                <div class="filter-controls">
+                    <div class="search-box">
+                        <input type="text" id="productSearch" placeholder="Search products..." oninput="filterProducts()">
+                    </div>
+                    <div class="filter-group">
+                        <select id="productCategoryFilter" onchange="filterProducts()">
+                            <option value="">All Categories</option>
+                            <option value="Mechanical">Mechanical</option>
+                            <option value="Electrical">Electrical</option>
+                            <option value="Civil Work">Civil Work</option>
+                            <option value="General Building">General Building</option>
+                        </select>
+                        <select id="productAvailabilityFilter" onchange="filterProducts()">
+                            <option value="">All Products</option>
+                            <option value="available">Available Only</option>
+                            <option value="unavailable">Unavailable Only</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div id="productsLoading" class="loading-state" style="display: none;">
+                    <div class="loading-spinner"></div>
+                    <p>Loading products...</p>
+                </div>
+                
                 <div class="products-container">
                     <div class="products-grid" id="productsGrid">
                         <!-- Products will be loaded here -->
@@ -453,6 +482,51 @@
                     <button class="reset-btn" onclick="resetSettings()">Reset to Default</button>
                 </div>
             </section>
+
+            <!-- Floating Ad Management Section -->
+            <section id="floating-ad-section" class="admin-section">
+                <div class="section-header">
+                    <h2>Floating Ad Management</h2>
+                    <p>Manage the floating advertisement displayed on the main website</p>
+                    <div class="section-actions">
+                        <button class="add-btn" onclick="showAddAdModal()">Create New Ad</button>
+                        <button class="refresh-btn" onclick="loadFloatingAds()">Refresh</button>
+                    </div>
+                </div>
+                
+                <div class="floating-ad-controls">
+                    <div class="ad-status">
+                        <h3>Current Ad Status</h3>
+                        <div class="status-display">
+                            <span id="adStatusBadge" class="status-badge inactive">Inactive</span>
+                            <span id="adLastUpdated" class="status-text">Last updated: Never</span>
+                        </div>
+                        <div class="ad-actions">
+                            <button id="toggleAdBtn" class="btn-primary" onclick="toggleFloatingAd()">Activate Ad</button>
+                            <button class="btn-secondary" onclick="previewAd()">Preview Ad</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="adLoading" class="loading-state" style="display: none;">
+                    <div class="loading-spinner"></div>
+                    <p>Loading ad data...</p>
+                </div>
+                
+                <div class="current-ad-display" id="currentAdDisplay">
+                    <h3>Current Advertisement</h3>
+                    <div class="ad-preview-card" id="adPreviewCard">
+                        <!-- Current ad will be displayed here -->
+                    </div>
+                </div>
+                
+                <div id="adEmpty" class="empty-state" style="display: none;">
+                    <div class="empty-icon">📢</div>
+                    <h3>No Active Advertisement</h3>
+                    <p>Create your first floating ad to display on the website.</p>
+                    <button class="empty-action-btn" onclick="showAddAdModal()">Create Ad</button>
+                </div>
+            </section>
         </main>
     </div>
 
@@ -474,50 +548,59 @@
         </div>
     </div>
 
-    <!-- Add Product Modal -->
-    <div id="addProductModal" class="modal">
+    <!-- Product Modal -->
+    <div id="productModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Add New Product</h3>
-                <button class="modal-close" onclick="closeModal('addProductModal')">&times;</button>
+                <h3 id="productModalTitle">Add New Product</h3>
+                <button class="modal-close" onclick="closeModal('productModal')">&times;</button>
             </div>
             <div class="modal-body">
-                <form id="addProductForm">
-                    <div class="form-group">
-                        <label>Product Name</label>
-                        <input type="text" id="productName" required>
+                <form id="productForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="productName">Product Name *</label>
+                            <input type="text" id="productName" name="name" required placeholder="Enter product name">
+                        </div>
+                        <div class="form-group">
+                            <label for="productCategory">Category *</label>
+                            <select id="productCategory" name="category" required>
+                                <option value="">Select Category</option>
+                                <option value="Mechanical">Mechanical</option>
+                                <option value="Electrical">Electrical</option>
+                                <option value="Civil Work">Civil Work</option>
+                                <option value="General Building">General Building</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label>Category</label>
-                        <select id="productCategory" required>
-                            <option value="construction">Construction</option>
-                            <option value="investment">Investment</option>
-                            <option value="financial">Financial</option>
-                            <option value="consulting">Consulting</option>
-                        </select>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="productPrice">Price (ZAR) *</label>
+                            <input type="number" id="productPrice" name="price" min="0" step="0.01" required placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label for="productImageUrl">Image URL</label>
+                            <input type="url" id="productImageUrl" name="imageUrl" placeholder="https://example.com/image.jpg">
+                        </div>
                     </div>
+                    
                     <div class="form-group">
-                        <label>Price (ZAR)</label>
-                        <input type="number" id="productPrice" min="0" step="0.01" required>
+                        <label for="productDescription">Description *</label>
+                        <textarea id="productDescription" name="description" required placeholder="Enter detailed product description..." rows="4"></textarea>
                     </div>
-                    <div class="form-group">
-                        <label>Description</label>
-                        <textarea id="productDescription" required></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Image URL</label>
-                        <input type="url" id="productImageUrl">
-                    </div>
+                    
                     <div class="form-group checkbox-group">
-                        <label>
-                            <input type="checkbox" id="productAvailable" checked>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="productAvailable" name="available" checked>
+                            <span class="checkmark"></span>
                             Available for Purchase
                         </label>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button class="btn-secondary" onclick="closeModal('addProductModal')">Cancel</button>
+                <button class="btn-secondary" onclick="closeModal('productModal')">Cancel</button>
                 <button class="btn-primary" onclick="saveProduct()">Save Product</button>
             </div>
         </div>
@@ -647,6 +730,64 @@
                         <button type="button" id="cancel-edit-button" class="btn-secondary">Cancel</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Ad Modal -->
+    <div id="floatingAdModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="adModalTitle">Create Floating Advertisement</h3>
+                <button class="modal-close" onclick="closeModal('floatingAdModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="floatingAdForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="adTitle">Ad Title *</label>
+                            <input type="text" id="adTitle" name="title" required placeholder="Enter ad title">
+                        </div>
+                        <div class="form-group">
+                            <label for="adButtonText">Button Text *</label>
+                            <input type="text" id="adButtonText" name="buttonText" required placeholder="e.g., Learn More">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="adDescription">Description *</label>
+                        <textarea id="adDescription" name="description" required placeholder="Enter ad description..." rows="3"></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="adImageUrl">Image URL</label>
+                            <input type="url" id="adImageUrl" name="imageUrl" placeholder="https://example.com/image.jpg">
+                        </div>
+                        <div class="form-group">
+                            <label for="adButtonUrl">Button Link *</label>
+                            <input type="url" id="adButtonUrl" name="buttonUrl" required placeholder="https://example.com">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="adDisplayDuration">Display Duration (seconds)</label>
+                            <input type="number" id="adDisplayDuration" name="duration" value="10" min="5" max="60">
+                        </div>
+                        <div class="form-group checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="adActive" name="active" checked>
+                                <span class="checkmark"></span>
+                                Activate immediately
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeModal('floatingAdModal')">Cancel</button>
+                <button class="btn-primary" onclick="saveFloatingAd()">Save Advertisement</button>
             </div>
         </div>
     </div>
