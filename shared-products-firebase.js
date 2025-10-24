@@ -1006,14 +1006,23 @@ async function loadFirebaseProducts() {
     try {
         showNotification('Loading products...', 'loading', 2000);
         
-        const snapshot = await window.db.collection('products')
-            .where('isAvailable', '==', true)
-            .orderBy('createdAt', 'desc')
-            .get();
+        // Simple query without composite index requirement
+        const snapshot = await window.db.collection('products').get();
         
         const products = [];
         snapshot.forEach(doc => {
-            products.push({ id: doc.id, ...doc.data() });
+            const productData = { id: doc.id, ...doc.data() };
+            // Filter for available products on client side to avoid index requirement
+            if (productData.isAvailable !== false) {
+                products.push(productData);
+            }
+        });
+        
+        // Sort by createdAt on client side (if available)
+        products.sort((a, b) => {
+            const aDate = a.createdAt ? new Date(a.createdAt) : new Date(0);
+            const bDate = b.createdAt ? new Date(b.createdAt) : new Date(0);
+            return bDate - aDate;
         });
         
         displayProductsOnWebsite(products);
@@ -1041,12 +1050,17 @@ async function loadFirebaseProducts() {
 }
 
 function displayProductsOnWebsite(products) {
-    const productsContainer = document.getElementById('products-grid') || 
+    const productsContainer = document.getElementById('productsGrid') || 
+                            document.getElementById('products-grid') ||
                             document.getElementById('products-container') ||
-                            document.querySelector('.products-section .grid');
+                            document.querySelector('.products-grid');
     
     if (!productsContainer) {
-        console.warn('Products container not found');
+        console.warn('Products container not found. Available elements:', {
+            productsGrid: !!document.getElementById('productsGrid'),
+            productsGridClass: !!document.querySelector('.products-grid'),
+            documentReady: document.readyState
+        });
         return;
     }
     
@@ -1113,20 +1127,35 @@ async function loadFloatingAd() {
     }
     
     try {
-        const snapshot = await window.db.collection('floatingAds')
+        console.log('🔍 Checking for floating ads...');
+        
+        // First check if the collection exists and has any documents
+        const snapshot = await window.db.collection('floatingAds').limit(1).get();
+        
+        if (snapshot.empty) {
+            console.log('📭 No floating ads found in database');
+            return;
+        }
+        
+        // Then check for active ads
+        const activeSnapshot = await window.db.collection('floatingAds')
             .where('isActive', '==', true)
             .limit(1)
             .get();
         
-        if (!snapshot.empty) {
-            snapshot.forEach(doc => {
+        if (!activeSnapshot.empty) {
+            activeSnapshot.forEach(doc => {
                 const adData = doc.data();
+                console.log('📢 Found active floating ad:', adData.title);
                 displayFloatingAd(adData);
             });
+        } else {
+            console.log('📭 No active floating ads found');
         }
         
     } catch (error) {
-        console.error('Error loading floating ad:', error);
+        console.log('⚠️ Floating ads not available:', error.message);
+        // Don't show error to user, just log it
     }
 }
 
@@ -1292,11 +1321,15 @@ async function fixProductCategories() {
     }
 }
 
-// Automatically fix categories when page loads
+// Automatically fix categories when page loads (admin only)
+// This is disabled on public website to avoid permission errors
+// Call fixProductCategories() manually from admin panel when needed
+/*
 setTimeout(() => {
     if (window.db) {
         fixProductCategories();
     }
 }, 3000);
+*/
 
 console.log('Firebase Products System loaded successfully!');
