@@ -39,6 +39,14 @@ service cloud.firestore {
       allow write: if isAdminUser();
     }
     
+    // Floating ads collection
+    match /floatingAds/{document} {
+      // Anyone can read active floating ads (public display)
+      allow read: if true;
+      // Only admin users can write floating ads
+      allow write: if isAdminUser();
+    }
+    
     // Admin settings and configurations
     match /admin/{document} {
       allow read, write: if isAdminUser();

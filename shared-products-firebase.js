@@ -233,9 +233,22 @@ if (!window.getSharedProducts) {
 function displayProducts(products) {
     console.log('🎨 displayProducts called with', products.length, 'products, filter:', currentFilter);
     
-    const productsGrid = document.getElementById('productsGrid');
+    // Try multiple ways to find the products grid element
+    let productsGrid = document.getElementById('productsGrid');
     if (!productsGrid) {
-        console.error('❌ Products grid element not found!');
+        // Fallback: try looking for products-grid (in case HTML wasn't updated)
+        productsGrid = document.getElementById('products-grid');
+    }
+    if (!productsGrid) {
+        // Fallback: try querySelector
+        productsGrid = document.querySelector('.products-grid');
+    }
+    if (!productsGrid) {
+        console.error('❌ Products grid element not found with any method!');
+        // Try to wait and retry once
+        setTimeout(() => {
+            displayProducts(products);
+        }, 100);
         return;
     }
     
@@ -1187,5 +1200,69 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }, 1000);
 });
+
+// Function to fix categories of existing products
+async function fixProductCategories() {
+    if (!window.db) {
+        console.error('Firebase not initialized');
+        return;
+    }
+
+    try {
+        console.log('🔧 Starting to fix product categories...');
+        
+        // Get all products using Firebase v8 syntax
+        const productsRef = window.db.collection('products');
+        const snapshot = await productsRef.get();
+        
+        const categoryMappings = {
+            'Power drill': 'mechanical',
+            'drill': 'mechanical',
+            'Professional Power Drill Set': 'mechanical'
+        };
+
+        let updatesCount = 0;
+        
+        for (const docSnapshot of snapshot.docs) {
+            const product = docSnapshot.data();
+            const productId = docSnapshot.id;
+            
+            // If product has no category or undefined category
+            if (!product.category || product.category === 'undefined') {
+                // Assign category based on product name or default to mechanical
+                const suggestedCategory = categoryMappings[product.name] || 'mechanical';
+                
+                try {
+                    await window.db.collection('products').doc(productId).update({
+                        category: suggestedCategory
+                    });
+                    console.log(`✅ Updated ${product.name} -> ${suggestedCategory}`);
+                    updatesCount++;
+                } catch (error) {
+                    console.error(`❌ Failed to update ${product.name}:`, error);
+                }
+            }
+        }
+        
+        console.log(`🎉 Successfully updated ${updatesCount} products with categories`);
+        
+        // Reload products to see the changes
+        if (updatesCount > 0) {
+            setTimeout(() => {
+                loadFirebaseProducts();
+            }, 1000);
+        }
+        
+    } catch (error) {
+        console.error('❌ Error fixing product categories:', error);
+    }
+}
+
+// Automatically fix categories when page loads
+setTimeout(() => {
+    if (window.db) {
+        fixProductCategories();
+    }
+}, 3000);
 
 console.log('Firebase Products System loaded successfully!');
