@@ -923,8 +923,13 @@ document.addEventListener('DOMContentLoaded', function() {
     setInterval(loadProducts, 30000);
 });
 
-// Notification system
+// Notification system (ADMIN ONLY)
 function showNotification(message, type = 'info') {
+    // Only show notifications on admin pages
+    if (!window.location.pathname.includes('admin')) {
+        return; // Exit early for non-admin pages
+    }
+    
     const notification = document.createElement('div');
     notification.className = `notification notification-${type}`;
     notification.innerHTML = `

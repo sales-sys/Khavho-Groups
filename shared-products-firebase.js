@@ -1,8 +1,13 @@
 // Firebase Products System for Khavho Groups
 // Integrated with existing website structure - ECOMMERCE VERSION
 
-// Creative notification system
+// Creative notification system (ADMIN ONLY)
 function showNotification(message, type = 'info', duration = 4000) {
+    // Only show notifications on admin pages
+    if (!window.location.pathname.includes('admin')) {
+        return; // Exit early for non-admin pages
+    }
+    
     // Remove existing notifications
     const existingNotifications = document.querySelectorAll('.notification');
     existingNotifications.forEach(notif => notif.remove());
@@ -58,37 +63,52 @@ let productsData = [];
 let currentFilter = 'all';
 let unsubscribeProducts = null;
 
-// AUTOMATIC PRODUCT LOADING - NO MANUAL INTERVENTION
-// Multiple attempts for maximum reliability
+// AUTOMATIC PRODUCT LOADING - NO MANUAL INTERVENTION  
+// Single coordinated loading system with duplicate protection
+let productsLoaded = false;
+let loadingInProgress = false;
+
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 DOM loaded, starting immediate product loading...');
+    console.log('🚀 DOM loaded, starting product loading...');
     
     // Initialize cart display
     updateCartDisplay();
     
-    // Immediate attempts with different timings
-    setTimeout(automaticProductLoad, 100);
-    setTimeout(automaticProductLoad, 500);
-    setTimeout(automaticProductLoad, 1000);
+    // Single coordinated loading attempt
+    setTimeout(() => {
+        if (!productsLoaded && !loadingInProgress) {
+            automaticProductLoad();
+        }
+    }, 500);
 });
 
 window.addEventListener('load', function() {
-    console.log('🚀 Window loaded, additional loading attempts...');
+    console.log('🚀 Window loaded, checking if products need loading...');
     
-    // Additional attempts after window load
-    setTimeout(automaticProductLoad, 200);
-    setTimeout(automaticProductLoad, 1500);
+    // Additional attempt only if products haven't loaded yet
+    setTimeout(() => {
+        if (!productsLoaded && !loadingInProgress) {
+            automaticProductLoad();
+        }
+    }, 1000);
 });
 
 // AUTOMATIC PRODUCT LOADING FUNCTION
 function automaticProductLoad() {
-    // Don't reload if already loaded
+    // Don't reload if already loaded or loading in progress
+    if (productsLoaded || loadingInProgress) {
+        console.log('✅ Products already loaded or loading in progress');
+        return;
+    }
+    
     if (productsData.length > 0) {
-        console.log('✅ Products already loaded:', productsData.length);
+        console.log('✅ Products already in memory:', productsData.length);
+        productsLoaded = true;
         return;
     }
     
     console.log('🔄 Automatic product loading initiated...');
+    loadingInProgress = true;
     
     if (!window.db) {
         console.log('⏳ Database not ready yet...');
@@ -120,6 +140,10 @@ function automaticProductLoad() {
             
             console.log('✅ Total products loaded from Firebase:', productsData.length);
             
+            // Mark as loaded
+            productsLoaded = true;
+            loadingInProgress = false;
+            
             // Update shared function immediately
             window.getSharedProducts = function() {
                 return productsData;
@@ -139,6 +163,7 @@ function automaticProductLoad() {
         .catch((error) => {
             console.error('❌ Firebase error:', error.code, error.message);
             console.log('🆘 Loading demo products as fallback...');
+            loadingInProgress = false; // Reset loading flag
             loadDemoProducts();
         });
 }
@@ -187,6 +212,10 @@ function loadDemoProducts() {
     ];
     
     console.log('🎯 Demo products created:', productsData.length);
+    
+    // Mark as loaded
+    productsLoaded = true;
+    loadingInProgress = false;
     
     // Update getSharedProducts immediately
     window.getSharedProducts = function() {
@@ -1450,33 +1479,6 @@ window.contactViaWhatsApp = contactViaWhatsApp;
 window.updateCartDisplay = updateCartDisplay;
 window.loadFirebaseProducts = loadFirebaseProducts;
 window.contactAboutProduct = contactAboutProduct;
-
-// Initialize cart display and load products on page load
-document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(() => {
-        updateCartDisplay();
-        
-        // Only load products on the main page (index.html)
-        if (window.location.pathname === '/' || 
-            window.location.pathname.includes('index.html') ||
-            window.location.pathname === '/index.html') {
-            
-            // Wait for Firebase to initialize
-            setTimeout(() => {
-                if (window.db) {
-                    loadFirebaseProducts();
-                } else {
-                    console.log('Firebase not ready, will retry...');
-                    setTimeout(() => {
-                        if (window.db) {
-                            loadFirebaseProducts();
-                        }
-                    }, 2000);
-                }
-            }, 1000);
-        }
-    }, 1000);
-});
 
 // Function to fix categories of existing products (admin only)
 async function fixProductCategories() {
