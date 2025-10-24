@@ -344,6 +344,10 @@ function getProductIcon(category) {
         'investment': 'trending-up',
         'financial': 'banknote',
         'consulting': 'users',
+        'mechanical': 'settings',
+        'electrical': 'zap',
+        'civil-work': 'hard-hat',
+        'general-building': 'building',
         'other': 'briefcase'
     };
     return icons[category] || 'package';
@@ -356,6 +360,10 @@ function getCategoryDisplayName(category) {
         'investment': 'Investment',
         'financial': 'Financial',
         'consulting': 'Consulting',
+        'mechanical': 'Mechanical',
+        'electrical': 'Electrical',
+        'civil-work': 'Civil Work',
+        'general-building': 'General Building',
         'other': 'Other'
     };
     return names[category] || 'Product';
@@ -753,8 +761,8 @@ async function completeOrder() {
         // Get order data
         const cart = JSON.parse(localStorage.getItem('khavho_cart') || '[]');
         const customerData = {
-            firstName: document.getElementById('firstName').value,
-            lastName: document.getElementById('lastName').value,
+            firstName: document.getElementById('checkoutFirstName').value,
+            lastName: document.getElementById('checkoutLastName').value,
             email: document.getElementById('customerEmail').value,
             phone: document.getElementById('customerPhone').value,
             address: document.getElementById('deliveryAddress').value
