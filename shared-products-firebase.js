@@ -1105,13 +1105,15 @@ async function loadFirebaseProducts() {
 }
 
 function displayProductsOnWebsite(products) {
-    const productsContainer = document.getElementById('productsGrid') || 
+    const productsContainer = document.getElementById('homepage-products-showcase') ||
+                            document.getElementById('productsGrid') || 
                             document.getElementById('products-grid') ||
                             document.getElementById('products-container') ||
                             document.querySelector('.products-grid');
     
     if (!productsContainer) {
         console.warn('Products container not found. Available elements:', {
+            homepageShowcase: !!document.getElementById('homepage-products-showcase'),
             productsGrid: !!document.getElementById('productsGrid'),
             productsGridClass: !!document.querySelector('.products-grid'),
             documentReady: document.readyState
@@ -1156,30 +1158,55 @@ function displayHomepageProducts(products, container) {
     
     // Category information for homepage display
     const categoryInfo = {
+        'Civil Works': {
+            title: 'Civil Works',
+            description: 'Essential construction materials & equipment',
+            icon: 'hard-hat'
+        },
         'civil-works': {
             title: 'Civil Works',
-            description: 'Essential construction materials',
-            icon: 'hammer'
+            description: 'Essential construction materials & equipment',
+            icon: 'hard-hat'
+        },
+        'General Building': {
+            title: 'General Building',
+            description: 'Building materials & components',
+            icon: 'building'
         },
         'general-building': {
             title: 'General Building',
             description: 'Building materials & components',
-            icon: 'home'
+            icon: 'building'
+        },
+        'Electrical': {
+            title: 'Electrical',
+            description: 'Complete electrical solutions & equipment',
+            icon: 'zap'
         },
         'electrical': {
             title: 'Electrical',
-            description: 'Complete electrical solutions',
+            description: 'Complete electrical solutions & equipment',
             icon: 'zap'
+        },
+        'Mechanical': {
+            title: 'Mechanical',
+            description: 'HVAC, pumps & mechanical systems',
+            icon: 'settings'
         },
         'mechanical': {
             title: 'Mechanical',
             description: 'HVAC, pumps & mechanical systems',
-            icon: 'cog'
+            icon: 'settings'
+        },
+        'General Procurement': {
+            title: 'General Procurement',
+            description: 'Office equipment, tools & supplies',
+            icon: 'briefcase'
         },
         'general-procurement': {
-            title: 'Office & IT',
-            description: 'Office equipment & furniture',
-            icon: 'monitor'
+            title: 'General Procurement',
+            description: 'Office equipment, tools & supplies',
+            icon: 'briefcase'
         }
     };
     
@@ -1207,7 +1234,7 @@ function displayHomepageProducts(products, container) {
                     <a href="products.html#${category}" class="view-all-btn">View All <i data-lucide="arrow-right"></i></a>
                 </div>
                 <div class="products-row">
-                    ${categoryProducts.map(product => createProductCard(product)).join('')}
+                    ${categoryProducts.map((product, index) => createHomepageProductCard(product, index)).join('')}
                 </div>
             </div>
         `;
@@ -1219,6 +1246,145 @@ function displayHomepageProducts(products, container) {
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
     }
+}
+
+// Create homepage product card (simplified with click functionality)
+function createHomepageProductCard(product, index) {
+    const isAvailable = product.available !== false && product.stock !== 0;
+    const price = product.price || 'Contact for Quote';
+    const category = product.category || 'other';
+    const description = product.description || 'No description available';
+    const productCode = product.productCode || `KG-${Date.now()}-${index}`;
+    
+    // Sanitize for HTML
+    const productName = String(product.name || '').replace(/'/g, '&#39;').replace(/"/g, '&quot;');
+    const productId = product.id || `product-${index}`;
+    
+    return `
+        <div class="product-card homepage-card" onclick="showProductDetails('${productId}', '${productName}', '${category}', '${price}', '${description}', '${productCode}')">
+            <div class="product-image">
+                ${product.imageUrl ? 
+                    `<img src="${getImageUrl(product.imageUrl)}" alt="${productName}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                    <div class="product-icon" style="display: none;">
+                        <i data-lucide="${getProductIcon(category)}"></i>
+                    </div>` :
+                    `<div class="product-icon">
+                        <i data-lucide="${getProductIcon(category)}"></i>
+                    </div>`
+                }
+                <div class="product-code">${productCode}</div>
+                ${!isAvailable ? '<div class="product-badge out-of-stock">Out of Stock</div>' : ''}
+            </div>
+            <div class="product-info">
+                <div class="product-category">${getCategoryDisplayName(category)}</div>
+                <h3 class="product-title">${productName}</h3>
+                <div class="product-unit">${product.unit || 'per unit'}</div>
+                <div class="product-price">R${typeof price === 'number' ? price.toLocaleString() : price}</div>
+                <div class="product-actions">
+                    <button class="btn btn-primary" onclick="event.stopPropagation(); ${isAvailable ? `addToCart('${productId}')` : 'showOutOfStockMessage()'}">
+                        <i data-lucide="${isAvailable ? 'shopping-cart' : 'x-circle'}"></i>
+                        ${isAvailable ? 'Add to Cart' : 'Out of Stock'}
+                    </button>
+                    <button class="btn btn-outline" onclick="event.stopPropagation(); contactViaWhatsApp('${productName}')">
+                        <i data-lucide="message-circle"></i>
+                        Enquire
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// Show product details modal
+function showProductDetails(productId, name, category, price, description, productCode) {
+    // Create modal HTML
+    const modalHTML = `
+        <div class="product-modal-overlay" id="productModal" onclick="closeProductModal()">
+            <div class="product-modal" onclick="event.stopPropagation()">
+                <div class="product-modal-header">
+                    <h2>${name}</h2>
+                    <button class="modal-close-btn" onclick="closeProductModal()">
+                        <i data-lucide="x"></i>
+                    </button>
+                </div>
+                <div class="product-modal-content">
+                    <div class="product-modal-info">
+                        <div class="product-meta">
+                            <span class="product-code-display">Product Code: ${productCode}</span>
+                            <span class="product-category-display">${getCategoryDisplayName(category)}</span>
+                        </div>
+                        <div class="product-description">
+                            <h3>Description</h3>
+                            <p>${description}</p>
+                        </div>
+                        <div class="product-pricing">
+                            <h3>Pricing</h3>
+                            <div class="price-display">R${typeof price === 'number' ? price.toLocaleString() : price}</div>
+                            <p class="price-note">Prices may vary based on quantity and specifications. Contact us for detailed quotes.</p>
+                        </div>
+                    </div>
+                    <div class="product-modal-actions">
+                        <button class="btn btn-primary" onclick="addToCart('${productId}')">
+                            <i data-lucide="shopping-cart"></i>
+                            Add to Cart
+                        </button>
+                        <button class="btn btn-outline" onclick="contactViaWhatsApp('${name}')">
+                            <i data-lucide="message-circle"></i>
+                            WhatsApp Enquiry
+                        </button>
+                        <button class="btn btn-secondary" onclick="requestQuote('${name}', '${productCode}')">
+                            <i data-lucide="file-text"></i>
+                            Request Quote
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Add modal to page
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    
+    // Initialize icons in modal
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+    
+    // Add body class to prevent scrolling
+    document.body.classList.add('modal-open');
+}
+
+// Close product details modal
+function closeProductModal() {
+    const modal = document.getElementById('productModal');
+    if (modal) {
+        modal.remove();
+    }
+    document.body.classList.remove('modal-open');
+}
+
+// Request quote function
+function requestQuote(productName, productCode) {
+    const subject = encodeURIComponent(`Quote Request - ${productName} (${productCode})`);
+    const body = encodeURIComponent(`Hello Khavho Groups,
+
+I would like to request a detailed quote for:
+
+Product: ${productName}
+Product Code: ${productCode}
+
+Please provide pricing information including:
+- Unit price
+- Bulk pricing (if applicable)
+- Delivery options and costs
+- Availability and lead times
+
+Thank you for your assistance.
+
+Best regards`);
+    
+    // Open email client
+    window.location.href = `mailto:info@khavhogroups.com?subject=${subject}&body=${body}`;
 }
 
 function displayAllProducts(products, container) {
