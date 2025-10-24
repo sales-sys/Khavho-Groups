@@ -1074,21 +1074,122 @@ function displayProductsOnWebsite(products) {
         return;
     }
     
-    const productsHTML = products.map(product => `
-        <div class="product-card" data-category="${product.category.toLowerCase().replace(/\s+/g, '-')}">
+    // Check if we're on the homepage (index.html) or products page
+    const isHomepage = window.location.pathname === '/' || 
+                      window.location.pathname.endsWith('index.html') || 
+                      window.location.pathname === '/index.html';
+    
+    if (isHomepage) {
+        // Homepage: Display 3 products per category
+        displayHomepageProducts(products, productsContainer);
+    } else {
+        // Products page: Display all products
+        displayAllProducts(products, productsContainer);
+    }
+}
+
+function displayHomepageProducts(products, container) {
+    // Group products by category
+    const productsByCategory = {};
+    products.forEach(product => {
+        const category = product.category || 'other';
+        if (!productsByCategory[category]) {
+            productsByCategory[category] = [];
+        }
+        productsByCategory[category].push(product);
+    });
+    
+    // Category information for homepage display
+    const categoryInfo = {
+        'civil-works': {
+            title: 'Civil Works',
+            description: 'Essential construction materials',
+            icon: 'hammer'
+        },
+        'general-building': {
+            title: 'General Building',
+            description: 'Building materials & components',
+            icon: 'home'
+        },
+        'electrical': {
+            title: 'Electrical',
+            description: 'Complete electrical solutions',
+            icon: 'zap'
+        },
+        'mechanical': {
+            title: 'Mechanical',
+            description: 'HVAC, pumps & mechanical systems',
+            icon: 'cog'
+        },
+        'general-procurement': {
+            title: 'Office & IT',
+            description: 'Office equipment & furniture',
+            icon: 'monitor'
+        }
+    };
+    
+    let html = '';
+    
+    // Display up to 3 products per category
+    Object.keys(productsByCategory).forEach(category => {
+        const categoryProducts = productsByCategory[category].slice(0, 3); // Take first 3
+        const info = categoryInfo[category] || { 
+            title: category.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()), 
+            description: 'Quality products and services',
+            icon: 'package'
+        };
+        
+        html += `
+            <div class="category-showcase">
+                <div class="category-header">
+                    <div class="category-icon">
+                        <i data-lucide="${info.icon}"></i>
+                    </div>
+                    <div class="category-info">
+                        <h3>${info.title}</h3>
+                        <p>${info.description}</p>
+                    </div>
+                    <a href="products.html#${category}" class="view-all-btn">View All <i data-lucide="arrow-right"></i></a>
+                </div>
+                <div class="products-row">
+                    ${categoryProducts.map(product => createProductCard(product)).join('')}
+                </div>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
+    
+    // Re-initialize Lucide icons
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+}
+
+function displayAllProducts(products, container) {
+    const productsHTML = products.map(product => createProductCard(product)).join('');
+    container.innerHTML = productsHTML;
+}
+
+function createProductCard(product) {
+    return `
+        <div class="product-card" data-category="${(product.category || '').toLowerCase().replace(/\s+/g, '-')}">
             <div class="product-image">
-                <img src="${product.imageUrl || '/images/placeholder-product.jpg'}" 
-                     alt="${product.name}" 
-                     onerror="this.src='/images/placeholder-product.jpg'">
+                ${product.imageUrl ? 
+                    `<img src="${product.imageUrl}" alt="${product.name}" onerror="this.src='/images/placeholder-product.jpg'">` :
+                    `<div class="product-placeholder"><i data-lucide="package"></i></div>`
+                }
+                ${product.productCode ? `<div class="product-code">${product.productCode}</div>` : ''}
             </div>
             
             <div class="product-info">
                 <h3>${product.name}</h3>
-                <span class="product-category">${product.category}</span>
-                <p class="product-description">${product.description}</p>
+                <span class="product-category">${getCategoryDisplayName(product.category)}</span>
+                ${product.unit ? `<div class="product-unit">${product.unit}</div>` : ''}
+                <p class="product-description">${product.description || 'High-quality product for professional use.'}</p>
                 
                 <div class="product-footer">
-                    <span class="product-price">R${parseFloat(product.price || 0).toLocaleString()}</span>
+                    <span class="product-price">R${parseFloat(product.price || 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
                     <div class="product-actions">
                         <button class="btn-secondary" onclick="contactAboutProduct('${product.id}', '${product.name}')">
                             Inquire
@@ -1100,9 +1201,19 @@ function displayProductsOnWebsite(products) {
                 </div>
             </div>
         </div>
-    `).join('');
-    
-    productsContainer.innerHTML = productsHTML;
+    `;
+}
+
+// Get category display name
+function getCategoryDisplayName(category) {
+    const names = {
+        'civil-works': 'Civil Works',
+        'general-building': 'General Building',
+        'electrical': 'Electrical',
+        'mechanical': 'Mechanical',
+        'general-procurement': 'General Procurement'
+    };
+    return names[category] || (category || 'Product').replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 }
 
 function contactAboutProduct(productId, productName) {
@@ -1118,103 +1229,6 @@ window.contactViaWhatsApp = contactViaWhatsApp;
 window.updateCartDisplay = updateCartDisplay;
 window.loadFirebaseProducts = loadFirebaseProducts;
 window.contactAboutProduct = contactAboutProduct;
-
-// Floating Ad Functions
-async function loadFloatingAd() {
-    if (!window.db) {
-        console.log('Firebase not available for floating ad');
-        return;
-    }
-    
-    try {
-        console.log('🔍 Checking for floating ads...');
-        
-        // First check if the collection exists and has any documents
-        const snapshot = await window.db.collection('floatingAds').limit(1).get();
-        
-        if (snapshot.empty) {
-            console.log('📭 No floating ads found in database');
-            return;
-        }
-        
-        // Then check for active ads
-        const activeSnapshot = await window.db.collection('floatingAds')
-            .where('isActive', '==', true)
-            .limit(1)
-            .get();
-        
-        if (!activeSnapshot.empty) {
-            activeSnapshot.forEach(doc => {
-                const adData = doc.data();
-                console.log('📢 Found active floating ad:', adData.title);
-                displayFloatingAd(adData);
-            });
-        } else {
-            console.log('📭 No active floating ads found');
-        }
-        
-    } catch (error) {
-        console.log('⚠️ Floating ads not available:', error.message);
-        // Don't show error to user, just log it
-    }
-}
-
-function displayFloatingAd(adData) {
-    const floatingAd = document.getElementById('floatingAd');
-    if (!floatingAd) return;
-    
-    // Check if user has closed this ad recently
-    const adClosedKey = `ad_closed_${adData.title}`;
-    const lastClosed = localStorage.getItem(adClosedKey);
-    const now = new Date().getTime();
-    const hourInMs = 60 * 60 * 1000; // 1 hour
-    
-    if (lastClosed && (now - parseInt(lastClosed)) < hourInMs) {
-        return; // Don't show ad if closed within last hour
-    }
-    
-    // Update ad content
-    document.getElementById('adImage').src = adData.imageUrl || '/images/placeholder-ad.jpg';
-    document.getElementById('adTitle').textContent = adData.title;
-    document.getElementById('adDescription').textContent = adData.description;
-    
-    const adButton = document.getElementById('adButton');
-    adButton.textContent = adData.buttonText;
-    adButton.href = adData.buttonUrl;
-    adButton.target = '_blank';
-    
-    // Show the ad
-    floatingAd.style.display = 'block';
-    setTimeout(() => {
-        floatingAd.classList.add('active');
-    }, 500);
-    
-    // Auto-hide after duration (if specified)
-    if (adData.duration && adData.duration > 0) {
-        setTimeout(() => {
-            closeFloatingAd();
-        }, adData.duration * 1000);
-    }
-}
-
-function closeFloatingAd() {
-    const floatingAd = document.getElementById('floatingAd');
-    if (!floatingAd) return;
-    
-    // Get current ad title for localStorage key
-    const adTitle = document.getElementById('adTitle').textContent;
-    const adClosedKey = `ad_closed_${adTitle}`;
-    localStorage.setItem(adClosedKey, new Date().getTime().toString());
-    
-    floatingAd.classList.remove('active');
-    setTimeout(() => {
-        floatingAd.style.display = 'none';
-    }, 300);
-}
-
-// Make floating ad functions globally available
-window.loadFloatingAd = loadFloatingAd;
-window.closeFloatingAd = closeFloatingAd;
 
 // Initialize cart display and load products on page load
 document.addEventListener('DOMContentLoaded', function() {

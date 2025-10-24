@@ -937,22 +937,6 @@
     <script src="scripts.js"></script>
     
     <!-- Initialize Lucide Icons -->
-    <!-- Floating Ad Display -->
-    <div id="floatingAd" class="floating-ad" style="display: none;">
-        <button class="floating-ad-close" onclick="closeFloatingAd()">
-            <i data-lucide="x"></i>
-        </button>
-        <div class="floating-ad-content">
-            <div class="ad-image">
-                <img id="adImage" src="" alt="Advertisement">
-            </div>
-            <div class="ad-text">
-                <h4 id="adTitle">Special Offer</h4>
-                <p id="adDescription">Check out our latest products and services!</p>
-                <a href="#" id="adButton" class="ad-cta-btn">Learn More</a>
-            </div>
-        </div>
-    </div>
 
     <script>
         // Initialize Lucide icons after all content is loaded
@@ -960,11 +944,6 @@
             if (typeof lucide !== 'undefined') {
                 lucide.createIcons();
             }
-            
-            // Load floating ad
-            setTimeout(() => {
-                loadFloatingAd();
-            }, 2000);
         });
     </script>
 </body>

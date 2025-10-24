@@ -10,7 +10,7 @@ service cloud.firestore {
       allow read, update, delete: if isAdminUser();
     }
     
-    // Users collection (for admin management)
+    // Users collection (for admin management and user authentication)
     match /users/{userId} {
       // Users can read/write their own data
       allow read, write: if request.auth != null && request.auth.uid == userId;
@@ -20,10 +20,10 @@ service cloud.firestore {
       allow update: if isAdminUser();
     }
     
-    // Orders collection (for future use)
+    // Orders collection (for e-commerce functionality)
     match /orders/{document} {
       // Authenticated users can create orders
-      allow create: if request.auth != null;
+      allow create: if request.auth != null && validateOrderData(resource.data);
       // Users can read their own orders
       allow read: if request.auth != null && 
                      request.auth.uid == resource.data.userId;
@@ -31,7 +31,7 @@ service cloud.firestore {
       allow read, update: if isAdminUser();
     }
     
-    // Products collection (for future use)
+    // Products collection (public catalog with admin management)
     match /products/{document} {
       // Anyone can read products (public catalog)
       allow read: if true;
@@ -39,12 +39,12 @@ service cloud.firestore {
       allow write: if isAdminUser();
     }
     
-    // Floating ads collection
-    match /floatingAds/{document} {
-      // Anyone can read active floating ads (public display)
-      allow read: if true;
-      // Only admin users can write floating ads
-      allow write: if isAdminUser();
+    // Carts collection (user shopping carts)
+    match /carts/{userId} {
+      // Users can read/write their own cart
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+      // Admin users can read all carts (for support/analytics)
+      allow read: if isAdminUser();
     }
     
     // Admin settings and configurations
@@ -68,6 +68,20 @@ service cloud.firestore {
              data.message.size() > 0 &&
              data.message.size() <= 5000 &&
              data.status == 'new' &&
+             data.timestamp == request.time;
+    }
+    
+    function validateOrderData(data) {
+      return data.keys().hasAll(['userId', 'items', 'totalAmount', 'customerInfo', 'timestamp', 'status']) &&
+             data.userId == request.auth.uid &&
+             data.userId is string &&
+             data.items is list &&
+             data.items.size() > 0 &&
+             data.totalAmount is number &&
+             data.totalAmount > 0 &&
+             data.customerInfo is map &&
+             data.customerInfo.keys().hasAll(['firstName', 'lastName', 'email', 'phone']) &&
+             data.status == 'pending' &&
              data.timestamp == request.time;
     }
   }

@@ -828,256 +828,280 @@ function showSection(sectionName) {
         case 'analytics':
             loadAnalytics();
             break;
-        case 'floating-ad':
-            loadFloatingAds();
-            break;
     }
 }
 
-// Floating Ad Management Functions
-let currentAdData = null;
+// Product Import Functions
+function showImportProductsModal() {
+    showModal('importProductsModal');
+}
 
-async function loadFloatingAds() {
-    const loadingElement = document.getElementById('adLoading');
-    const emptyElement = document.getElementById('adEmpty');
-    const displayElement = document.getElementById('currentAdDisplay');
+async function importKhavhoProducts() {
+    const importBtn = document.getElementById('importConfirmBtn');
+    const clearExisting = document.getElementById('clearExistingProducts').checked;
+    const updateFilters = document.getElementById('updateCategoryFilters').checked;
     
-    loadingElement.style.display = 'block';
-    emptyElement.style.display = 'none';
-    displayElement.style.display = 'none';
+    // Show loading state
+    importBtn.textContent = 'Importing...';
+    importBtn.disabled = true;
     
     try {
-        const snapshot = await db.collection('floating_ads')
-            .where('active', '==', true)
-            .limit(1)
-            .get();
-        
-        loadingElement.style.display = 'none';
-        
-        if (snapshot.empty) {
-            emptyElement.style.display = 'block';
-            updateAdStatus('inactive', 'Never');
-            return;
+        // Step 1: Clear existing products if selected
+        if (clearExisting) {
+            showToast('Clearing existing products...', 'info');
+            await clearAllProducts();
         }
         
-        snapshot.forEach(doc => {
-            currentAdData = { id: doc.id, ...doc.data() };
-        });
+        // Step 2: Import new products
+        showToast('Importing Khavho products...', 'info');
+        await batchImportProducts(window.KHAVHO_PRODUCTS);
         
-        displayCurrentAd(currentAdData);
-        updateAdStatus('active', formatDate(currentAdData.updatedAt));
-        displayElement.style.display = 'block';
+        // Step 3: Update category filters if selected
+        if (updateFilters) {
+            updateProductCategoryFilters();
+        }
+        
+        // Success!
+        showToast('Successfully imported all Khavho products!', 'success');
+        closeModal('importProductsModal');
+        loadProducts(); // Refresh the product list
+        loadDashboardData(); // Update dashboard stats
         
     } catch (error) {
-        console.error('Error loading floating ads:', error);
-        loadingElement.style.display = 'none';
-        showToast('Error loading ad data', 'error');
+        console.error('Error importing products:', error);
+        showToast('Error importing products: ' + error.message, 'error');
+    } finally {
+        // Reset button
+        importBtn.textContent = 'Import Products';
+        importBtn.disabled = false;
     }
 }
 
-function displayCurrentAd(adData) {
-    const previewCard = document.getElementById('adPreviewCard');
+async function clearAllProducts() {
+    const snapshot = await db.collection('products').get();
+    const batch = db.batch();
     
-    previewCard.innerHTML = `
-        <div class="ad-preview-content">
-            <div class="ad-preview-image">
-                <img src="${adData.imageUrl || '/images/placeholder-ad.jpg'}" 
-                     alt="${adData.title}" 
-                     onerror="this.src='/images/placeholder-ad.jpg'">
-            </div>
-            <div class="ad-preview-text">
-                <h4>${adData.title}</h4>
-                <p>${adData.description}</p>
-                <div class="ad-preview-meta">
-                    <span class="ad-duration">Duration: ${adData.duration}s</span>
-                    <a href="${adData.buttonUrl}" target="_blank" class="ad-preview-button">
-                        ${adData.buttonText}
-                    </a>
-                </div>
-            </div>
-            <div class="ad-preview-actions">
-                <button class="action-btn edit" onclick="editFloatingAd()">Edit</button>
-                <button class="action-btn delete" onclick="deleteFloatingAd()">Delete</button>
-            </div>
-        </div>
-    `;
+    snapshot.docs.forEach(doc => {
+        batch.delete(doc.ref);
+    });
+    
+    await batch.commit();
+    console.log('✅ Cleared all existing products');
 }
 
-function updateAdStatus(status, lastUpdated) {
-    const statusBadge = document.getElementById('adStatusBadge');
-    const statusText = document.getElementById('adLastUpdated');
-    const toggleBtn = document.getElementById('toggleAdBtn');
+async function batchImportProducts(products) {
+    const batchSize = 25; // Firestore batch limit is 500, but we'll use smaller batches
     
-    statusBadge.className = `status-badge ${status}`;
-    statusBadge.textContent = status === 'active' ? 'Active' : 'Inactive';
-    statusText.textContent = `Last updated: ${lastUpdated}`;
-    
-    toggleBtn.textContent = status === 'active' ? 'Deactivate Ad' : 'Activate Ad';
-    toggleBtn.onclick = status === 'active' ? deactivateFloatingAd : activateFloatingAd;
-}
-
-function showAddAdModal() {
-    currentAdData = null;
-    document.getElementById('adModalTitle').textContent = 'Create Floating Advertisement';
-    document.getElementById('floatingAdForm').reset();
-    showModal('floatingAdModal');
-}
-
-function editFloatingAd() {
-    if (!currentAdData) return;
-    
-    document.getElementById('adModalTitle').textContent = 'Edit Floating Advertisement';
-    
-    // Fill form with current data
-    document.getElementById('adTitle').value = currentAdData.title || '';
-    document.getElementById('adDescription').value = currentAdData.description || '';
-    document.getElementById('adImageUrl').value = currentAdData.imageUrl || '';
-    document.getElementById('adButtonText').value = currentAdData.buttonText || '';
-    document.getElementById('adButtonUrl').value = currentAdData.buttonUrl || '';
-    document.getElementById('adDisplayDuration').value = currentAdData.duration || 10;
-    document.getElementById('adActive').checked = currentAdData.active || false;
-    
-    showModal('floatingAdModal');
-}
-
-async function saveFloatingAd() {
-    const form = document.getElementById('floatingAdForm');
-    const formData = new FormData(form);
-    
-    // Validation
-    const title = formData.get('title')?.trim();
-    const description = formData.get('description')?.trim();
-    const buttonText = formData.get('buttonText')?.trim();
-    const buttonUrl = formData.get('buttonUrl')?.trim();
-    
-    if (!title || !description || !buttonText || !buttonUrl) {
-        showToast('Please fill in all required fields', 'error');
-        return;
-    }
-    
-    try {
-        // Deactivate all existing ads first
-        const existingAds = await db.collection('floating_ads').where('active', '==', true).get();
+    for (let i = 0; i < products.length; i += batchSize) {
         const batch = db.batch();
+        const currentBatch = products.slice(i, i + batchSize);
         
-        existingAds.forEach(doc => {
-            batch.update(doc.ref, { active: false });
+        currentBatch.forEach(product => {
+            const productData = {
+                ...product,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                stock: 50, // Default stock level
+                lowStockAlert: 10, // Default low stock threshold
+                status: 'active',
+                tags: [product.category, product.subcategory],
+                imageUrl: '', // Will be populated later
+                supplier: 'Khavho Groups',
+                region: 'Gauteng/Limpopo'
+            };
+            
+            // Use product code as document ID for easy reference
+            const docRef = db.collection('products').doc(product.productCode);
+            batch.set(docRef, productData);
         });
-        
-        const adData = {
-            title: title,
-            description: description,
-            imageUrl: formData.get('imageUrl')?.trim() || '',
-            buttonText: buttonText,
-            buttonUrl: buttonUrl,
-            duration: parseInt(formData.get('duration')) || 10,
-            active: formData.get('active') === 'on',
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        };
-        
-        if (currentAdData) {
-            // Update existing ad
-            batch.update(db.collection('floating_ads').doc(currentAdData.id), adData);
-        } else {
-            // Create new ad
-            adData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-            const newAdRef = db.collection('floating_ads').doc();
-            batch.set(newAdRef, adData);
-        }
         
         await batch.commit();
+        console.log(`✅ Imported batch ${Math.floor(i / batchSize) + 1} of ${Math.ceil(products.length / batchSize)}`);
         
-        closeModal('floatingAdModal');
-        loadFloatingAds();
-        showToast('Advertisement saved successfully', 'success');
-        
-    } catch (error) {
-        console.error('Error saving floating ad:', error);
-        showToast('Error saving advertisement', 'error');
+        // Show progress
+        const progress = Math.round(((i + currentBatch.length) / products.length) * 100);
+        showToast(`Import progress: ${progress}%`, 'info', 1000);
     }
+    
+    console.log(`🎉 Successfully imported ${products.length} products!`);
 }
 
-async function toggleFloatingAd() {
-    if (!currentAdData) {
-        showAddAdModal();
-        return;
-    }
+function updateProductCategoryFilters() {
+    const categoryFilter = document.getElementById('productCategoryFilter');
+    if (!categoryFilter) return;
     
-    const newStatus = !currentAdData.active;
+    // Clear existing options
+    categoryFilter.innerHTML = '<option value="">All Categories</option>';
     
-    try {
-        await db.collection('floating_ads').doc(currentAdData.id).update({
-            active: newStatus,
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        
-        currentAdData.active = newStatus;
-        updateAdStatus(newStatus ? 'active' : 'inactive', 'Just now');
-        showToast(`Advertisement ${newStatus ? 'activated' : 'deactivated'}`, 'success');
-        
-    } catch (error) {
-        console.error('Error toggling ad status:', error);
-        showToast('Error updating advertisement', 'error');
-    }
+    // Add new category options based on imported products
+    const categories = [
+        { value: 'civil-works', label: 'Civil Works' },
+        { value: 'general-building', label: 'General Building' },
+        { value: 'electrical', label: 'Electrical' },
+        { value: 'mechanical', label: 'Mechanical' },
+        { value: 'general-procurement', label: 'General Procurement' }
+    ];
+    
+    categories.forEach(cat => {
+        const option = document.createElement('option');
+        option.value = cat.value;
+        option.textContent = cat.label;
+        categoryFilter.appendChild(option);
+    });
+    
+    console.log('✅ Updated category filters');
 }
 
-async function deleteFloatingAd() {
-    if (!currentAdData) return;
+// Product Code Generation Function
+function generateNextProductCode(category, subcategory) {
+    const categoryCode = window.PRODUCT_CATEGORIES[category]?.code;
+    if (!categoryCode) return null;
     
-    if (!confirm('Are you sure you want to delete this advertisement? This action cannot be undone.')) {
-        return;
-    }
-    
-    try {
-        await db.collection('floating_ads').doc(currentAdData.id).delete();
-        
-        currentAdData = null;
-        loadFloatingAds();
-        showToast('Advertisement deleted successfully', 'success');
-        
-    } catch (error) {
-        console.error('Error deleting floating ad:', error);
-        showToast('Error deleting advertisement', 'error');
-    }
-}
-
-function previewAd() {
-    if (!currentAdData) {
-        showToast('No active advertisement to preview', 'info');
-        return;
-    }
-    
-    // Create a temporary preview
-    const preview = document.createElement('div');
-    preview.className = 'floating-ad active';
-    preview.innerHTML = `
-        <button class="floating-ad-close" onclick="this.parentElement.remove()">
-            <i data-lucide="x"></i>
-        </button>
-        <div class="floating-ad-content">
-            <div class="ad-image">
-                <img src="${currentAdData.imageUrl || '/images/placeholder-ad.jpg'}" alt="${currentAdData.title}">
-            </div>
-            <div class="ad-text">
-                <h4>${currentAdData.title}</h4>
-                <p>${currentAdData.description}</p>
-                <a href="#" class="ad-cta-btn" onclick="event.preventDefault()">${currentAdData.buttonText}</a>
-            </div>
-        </div>
-    `;
-    
-    document.body.appendChild(preview);
-    
-    // Auto-remove after duration
-    setTimeout(() => {
-        if (preview.parentElement) {
-            preview.remove();
-        }
-    }, (currentAdData.duration || 10) * 1000);
-    
-    showToast('Ad preview displayed', 'info');
+    // This function will analyze existing products and generate the next code
+    // For now, we'll return a placeholder - this will be enhanced when adding new products
+    return `KG-${categoryCode}-${subcategory}-XXX`;
 }
 
 function exportMessages() {
     showToast('Export feature coming soon', 'info');
+}
+
+// Auto Upload All Products Function
+async function autoUploadAllProducts() {
+    const uploadBtn = document.getElementById('uploadProductsBtn');
+    const statusCard = document.getElementById('uploadStatusCard');
+    const progressBar = document.getElementById('uploadProgressBar');
+    const progressText = document.getElementById('uploadProgressText');
+    const statusLog = document.getElementById('uploadStatusLog');
+    
+    // Show upload status card
+    statusCard.style.display = 'block';
+    statusCard.scrollIntoView({ behavior: 'smooth' });
+    
+    // Update button state
+    uploadBtn.innerHTML = '<span class="action-icon">⏳</span><span class="action-text">Uploading...</span>';
+    uploadBtn.disabled = true;
+    
+    // Clear previous logs
+    statusLog.innerHTML = '';
+    
+    try {
+        // Load product data if not already loaded
+        if (!window.KHAVHO_PRODUCTS) {
+            addUploadLog('❌ Product data not found! Please ensure product-data-import.js is loaded.', 'error');
+            return;
+        }
+        
+        addUploadLog('🚀 Starting automatic upload of 65 Khavho products...', 'info');
+        updateUploadProgress(0, 'Initializing...');
+        
+        // Step 1: Clear existing products
+        addUploadLog('🧹 Clearing existing products...', 'info');
+        updateUploadProgress(10, 'Clearing existing products...');
+        
+        const snapshot = await db.collection('products').get();
+        if (!snapshot.empty) {
+            const batch = db.batch();
+            snapshot.docs.forEach(doc => batch.delete(doc.ref));
+            await batch.commit();
+            addUploadLog(`✅ Cleared ${snapshot.size} existing products`, 'success');
+        } else {
+            addUploadLog('ℹ️ No existing products to clear', 'info');
+        }
+        
+        updateUploadProgress(20, 'Starting product upload...');
+        
+        // Step 2: Upload products in batches
+        const products = window.KHAVHO_PRODUCTS;
+        const totalProducts = products.length;
+        const batchSize = 10;
+        let uploadedCount = 0;
+        
+        addUploadLog(`📦 Uploading ${totalProducts} products in batches...`, 'info');
+        
+        for (let i = 0; i < totalProducts; i += batchSize) {
+            const batch = db.batch();
+            const currentBatch = products.slice(i, i + batchSize);
+            
+            currentBatch.forEach(product => {
+                const docRef = db.collection('products').doc();
+                const productData = {
+                    ...product,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    featured: false,
+                    tags: [product.category.toLowerCase(), product.subcategory.toLowerCase()]
+                };
+                batch.set(docRef, productData);
+            });
+            
+            await batch.commit();
+            uploadedCount += currentBatch.length;
+            
+            const progress = 20 + (uploadedCount / totalProducts) * 70; // 20-90% for upload
+            updateUploadProgress(progress, `Uploaded ${uploadedCount}/${totalProducts} products`);
+            addUploadLog(`📤 Batch ${Math.ceil((i + batchSize) / batchSize)} complete: ${uploadedCount}/${totalProducts} products uploaded`, 'success');
+            
+            // Small delay between batches
+            await new Promise(resolve => setTimeout(resolve, 200));
+        }
+        
+        updateUploadProgress(95, 'Updating category filters...');
+        
+        // Step 3: Update category filters
+        addUploadLog('🔄 Updating category filters...', 'info');
+        updateProductCategoryFilters();
+        
+        updateUploadProgress(100, 'Upload complete!');
+        
+        // Step 4: Success!
+        addUploadLog(`🎉 SUCCESS! All ${totalProducts} products uploaded to Firebase!`, 'success');
+        
+        // Show category breakdown
+        const categoryBreakdown = {};
+        products.forEach(product => {
+            categoryBreakdown[product.category] = (categoryBreakdown[product.category] || 0) + 1;
+        });
+        
+        addUploadLog('📊 Category Breakdown:', 'info');
+        Object.entries(categoryBreakdown).forEach(([category, count]) => {
+            addUploadLog(`• ${category}: ${count} products`, 'info');
+        });
+        
+        addUploadLog('🌐 Products are now live on your website!', 'success');
+        addUploadLog('🔥 Firebase database updated successfully!', 'success');
+        
+        // Refresh data
+        loadProducts();
+        loadDashboardData();
+        
+        showToast('🎯 All 65 products uploaded successfully!', 'success');
+        
+    } catch (error) {
+        console.error('Auto upload error:', error);
+        addUploadLog(`❌ Upload failed: ${error.message}`, 'error');
+        showToast('Upload failed: ' + error.message, 'error');
+        updateUploadProgress(0, 'Upload failed');
+    } finally {
+        // Reset button
+        uploadBtn.innerHTML = '<span class="action-icon">🚀</span><span class="action-text">Upload 65 Products</span>';
+        uploadBtn.disabled = false;
+    }
+}
+
+function updateUploadProgress(percentage, statusText) {
+    const progressBar = document.getElementById('uploadProgressBar');
+    const progressText = document.getElementById('uploadProgressText');
+    
+    progressBar.style.width = percentage + '%';
+    progressText.textContent = `${Math.round(percentage)}% - ${statusText}`;
+}
+
+function addUploadLog(message, type = 'info') {
+    const statusLog = document.getElementById('uploadStatusLog');
+    const logItem = document.createElement('div');
+    logItem.className = `upload-log-item ${type}`;
+    logItem.textContent = message;
+    statusLog.appendChild(logItem);
+    statusLog.scrollTop = statusLog.scrollHeight;
 }

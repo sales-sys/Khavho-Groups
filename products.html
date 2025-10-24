@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products & Services - Khavho Groups | Professional Construction & Industrial Solutions</title>
+    <link rel="icon" type="image/png" href="images/logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
+    <!-- Firebase Configuration -->
+    <script src="firebase-config.js"></script>
+    
+    <link rel="stylesheet" href="styles.css">
+    
+    <style>
+        /* Products Page Specific Styles */
+        .products-hero {
+            background: linear-gradient(135deg, var(--primary-navy) 0%, #2c5282 100%);
+            color: white;
+            padding: 120px 0 80px;
+            text-align: center;
+        }
+        
+        .products-hero h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            color: white;
+        }
+        
+        .products-hero p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+            opacity: 0.9;
+        }
+        
+        .products-controls {
+            background: white;
+            padding: 30px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .controls-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .search-bar {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .search-bar input {
+            width: 100%;
+            padding: 12px 20px;
+            border: 2px solid var(--border-gray);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .search-bar input:focus {
+            border-color: var(--primary-orange);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(243, 112, 33, 0.1);
+        }
+        
+        .category-filter {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 10px 20px;
+            border: 2px solid var(--border-gray);
+            background: white;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        
+        .filter-btn:hover {
+            border-color: var(--primary-orange);
+            color: var(--primary-orange);
+        }
+        
+        .filter-btn.active {
+            background: var(--primary-orange);
+            border-color: var(--primary-orange);
+            color: white;
+        }
+        
+        .products-section {
+            padding: 60px 0;
+            min-height: 60vh;
+        }
+        
+        .category-section {
+            margin-bottom: 80px;
+        }
+        
+        .category-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .category-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-navy);
+            margin-bottom: 15px;
+        }
+        
+        .category-description {
+            font-size: 1.1rem;
+            color: var(--medium-gray);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .product-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-gray);
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+        
+        .product-image {
+            height: 200px;
+            background: linear-gradient(135deg, var(--light-gray) 0%, #f8f9fa 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .product-placeholder {
+            font-size: 3rem;
+            color: var(--medium-gray);
+        }
+        
+        .product-code {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .product-info {
+            padding: 25px;
+        }
+        
+        .product-category {
+            color: var(--primary-orange);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        
+        .product-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary-navy);
+            margin-bottom: 10px;
+            line-height: 1.3;
+        }
+        
+        .product-unit {
+            color: var(--medium-gray);
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+        }
+        
+        .product-price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-orange);
+            margin-bottom: 20px;
+        }
+        
+        .product-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-inquire {
+            flex: 1;
+            padding: 12px;
+            background: transparent;
+            border: 2px solid var(--primary-orange);
+            color: var(--primary-orange);
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-inquire:hover {
+            background: var(--primary-orange);
+            color: white;
+        }
+        
+        .btn-cart {
+            flex: 1;
+            padding: 12px;
+            background: var(--primary-orange);
+            border: 2px solid var(--primary-orange);
+            color: white;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-cart:hover {
+            background: var(--accent-orange-light);
+            border-color: var(--accent-orange-light);
+        }
+        
+        .loading-state {
+            text-align: center;
+            padding: 60px 0;
+        }
+        
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border-gray);
+            border-top: 4px solid var(--primary-orange);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        .no-products {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--medium-gray);
+        }
+        
+        .no-products h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .products-hero h1 {
+                font-size: 2rem;
+            }
+            
+            .controls-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-bar {
+                min-width: 100%;
+            }
+            
+            .category-filter {
+                justify-content: center;
+            }
+            
+            .products-grid {
+                grid-template-columns: 1fr;
+                padding: 0 15px;
+            }
+            
+            .category-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="main-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="images/logo.png" alt="Khavho Groups">
+                    <span>Khavho Groups</span>
+                </div>
+                
+                <nav class="main-nav">
+                    <a href="index.html">Home</a>
+                    <a href="products.html" class="active">Products</a>
+                    <a href="khavho-capital.html">Capital</a>
+                    <a href="khavho-holdings.html">Holdings</a>
+                    <a href="khavho-inter-africa.html">Inter Africa</a>
+                    <a href="#contact">Contact</a>
+                </nav>
+                
+                <div class="header-actions">
+                    <button class="cart-btn" onclick="toggleCart()">
+                        <i data-lucide="shopping-cart"></i>
+                        <span class="cart-count" id="cartCount">0</span>
+                    </button>
+                    <div class="auth-section" id="authSection">
+                        <button class="auth-btn login-btn" onclick="showModal('loginModal')">Login</button>
+                        <button class="auth-btn register-btn" onclick="showModal('registerModal')">Register</button>
+                    </div>
+                    <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                        <i data-lucide="menu"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Products Hero Section -->
+    <section class="products-hero">
+        <div class="container">
+            <h1>Products & Services</h1>
+            <p>Comprehensive solutions for construction, electrical, mechanical, and general procurement needs across South Africa</p>
+        </div>
+    </section>
+
+    <!-- Products Controls -->
+    <div class="products-controls">
+        <div class="controls-container">
+            <div class="search-bar">
+                <input type="text" id="productSearch" placeholder="Search products..." oninput="filterProducts()">
+            </div>
+            <div class="category-filter">
+                <button class="filter-btn active" data-category="all" onclick="filterByCategory('all', this)">All Products</button>
+                <button class="filter-btn" data-category="civil-works" onclick="filterByCategory('civil-works', this)">Civil Works</button>
+                <button class="filter-btn" data-category="general-building" onclick="filterByCategory('general-building', this)">Building</button>
+                <button class="filter-btn" data-category="electrical" onclick="filterByCategory('electrical', this)">Electrical</button>
+                <button class="filter-btn" data-category="mechanical" onclick="filterByCategory('mechanical', this)">Mechanical</button>
+                <button class="filter-btn" data-category="general-procurement" onclick="filterByCategory('general-procurement', this)">Office</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Products Section -->
+    <section class="products-section">
+        <div class="container">
+            <!-- Loading State -->
+            <div id="productsLoading" class="loading-state">
+                <div class="loading-spinner"></div>
+                <p>Loading products...</p>
+            </div>
+
+            <!-- Products Container -->
+            <div id="productsContainer">
+                <!-- Products will be dynamically loaded here -->
+            </div>
+
+            <!-- No Products State -->
+            <div id="noProducts" class="no-products" style="display: none;">
+                <h3>No products found</h3>
+                <p>Try adjusting your search or category filter</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cart Sidebar -->
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h3>Shopping Cart</h3>
+            <button class="cart-close" onclick="toggleCart()">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        <div class="cart-content" id="cartContent">
+            <div class="empty-cart">
+                <i data-lucide="shopping-cart"></i>
+                <p>Your cart is empty</p>
+            </div>
+        </div>
+        <div class="cart-footer" id="cartFooter">
+            <div class="cart-total">
+                <span>Total: R<span id="cartTotal">0.00</span></span>
+            </div>
+            <button class="checkout-btn" onclick="checkout()">Proceed to Checkout</button>
+        </div>
+    </div>
+
+    <!-- Cart Overlay -->
+    <div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+
+    <!-- Include shared components -->
+    <div id="shared-modals">
+        <!-- Auth modals and checkout modal will be loaded here -->
+    </div>
+
+    <!-- External JavaScript -->
+    <script src="scripts.js"></script>
+    <script src="shared-products-firebase.js"></script>
+    <script src="contact-integration.js"></script>
+    
+    <!-- Products Page Script -->
+    <script>
+        let allProducts = [];
+        let filteredProducts = [];
+        let currentCategory = 'all';
+        let currentSearchTerm = '';
+
+        // Initialize products page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Lucide icons
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+            
+            // Wait for Firebase to initialize
+            setTimeout(() => {
+                loadProducts();
+            }, 500);
+        });
+
+        // Load products from Firebase
+        async function loadProducts() {
+            const loadingElement = document.getElementById('productsLoading');
+            const productsContainer = document.getElementById('productsContainer');
+            const noProductsElement = document.getElementById('noProducts');
+
+            loadingElement.style.display = 'block';
+            productsContainer.style.display = 'none';
+            noProductsElement.style.display = 'none';
+
+            try {
+                if (!window.db) {
+                    throw new Error('Firebase not initialized');
+                }
+
+                const snapshot = await window.db.collection('products')
+                    .where('isAvailable', '==', true)
+                    .orderBy('category')
+                    .orderBy('name')
+                    .get();
+
+                allProducts = [];
+                snapshot.forEach(doc => {
+                    allProducts.push({ id: doc.id, ...doc.data() });
+                });
+
+                console.log('✅ Loaded products:', allProducts.length);
+                
+                filteredProducts = [...allProducts];
+                displayProducts();
+
+                loadingElement.style.display = 'none';
+                productsContainer.style.display = 'block';
+
+            } catch (error) {
+                console.error('Error loading products:', error);
+                loadingElement.style.display = 'none';
+                noProductsElement.style.display = 'block';
+                noProductsElement.innerHTML = `
+                    <h3>Error loading products</h3>
+                    <p>Please refresh the page or try again later</p>
+                `;
+            }
+        }
+
+        // Display products by category
+        function displayProducts() {
+            const container = document.getElementById('productsContainer');
+            const noProductsElement = document.getElementById('noProducts');
+
+            if (filteredProducts.length === 0) {
+                container.style.display = 'none';
+                noProductsElement.style.display = 'block';
+                return;
+            }
+
+            container.style.display = 'block';
+            noProductsElement.style.display = 'none';
+
+            // Group products by category
+            const productsByCategory = {};
+            filteredProducts.forEach(product => {
+                if (!productsByCategory[product.category]) {
+                    productsByCategory[product.category] = [];
+                }
+                productsByCategory[product.category].push(product);
+            });
+
+            let html = '';
+
+            // Category information
+            const categoryInfo = {
+                'civil-works': {
+                    title: 'Civil Works',
+                    description: 'Essential materials for construction projects including cement, bricks, sand, stone, steel reinforcement and mesh.'
+                },
+                'general-building': {
+                    title: 'General Building',
+                    description: 'Building materials and components including drywall, timber, insulation, paint, roofing and doors.'
+                },
+                'electrical': {
+                    title: 'Electrical',
+                    description: 'Complete electrical solutions from generators and cables to lighting, breakers and distribution equipment.'
+                },
+                'mechanical': {
+                    title: 'Mechanical',
+                    description: 'HVAC systems, pumps, water storage tanks, pipes and valves for all mechanical installations.'
+                },
+                'general-procurement': {
+                    title: 'General Procurement',
+                    description: 'Office equipment and furniture including computers, printers, networking equipment and ergonomic furniture.'
+                }
+            };
+
+            // Display each category
+            Object.keys(productsByCategory).forEach(category => {
+                const categoryProducts = productsByCategory[category];
+                const info = categoryInfo[category] || { title: category, description: '' };
+
+                html += `
+                    <div class="category-section" data-category="${category}">
+                        <div class="category-header">
+                            <h2 class="category-title">${info.title}</h2>
+                            <p class="category-description">${info.description}</p>
+                        </div>
+                        <div class="products-grid">
+                            ${categoryProducts.map(product => createProductCard(product)).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+
+            // Re-initialize Lucide icons
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        }
+
+        // Create product card HTML
+        function createProductCard(product) {
+            return `
+                <div class="product-card" data-product-id="${product.id}">
+                    <div class="product-image">
+                        ${product.imageUrl ? 
+                            `<img src="${product.imageUrl}" alt="${product.name}" onerror="this.parentElement.innerHTML='<div class=\\"product-placeholder\\"><i data-lucide=\\"package\\"></i></div>'">` :
+                            `<div class="product-placeholder"><i data-lucide="package"></i></div>`
+                        }
+                        <div class="product-code">${product.productCode}</div>
+                    </div>
+                    <div class="product-info">
+                        <div class="product-category">${getCategoryDisplayName(product.category)}</div>
+                        <h3 class="product-name">${product.name}</h3>
+                        <div class="product-unit">${product.unit}</div>
+                        <div class="product-price">R${parseFloat(product.price || 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</div>
+                        <div class="product-actions">
+                            <button class="btn-inquire" onclick="contactAboutProduct('${product.id}', '${product.name}')">
+                                Inquire
+                            </button>
+                            <button class="btn-cart" onclick="addToCart('${product.id}')">
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Get category display name
+        function getCategoryDisplayName(category) {
+            const names = {
+                'civil-works': 'Civil Works',
+                'general-building': 'General Building',
+                'electrical': 'Electrical',
+                'mechanical': 'Mechanical',
+                'general-procurement': 'General Procurement'
+            };
+            return names[category] || category;
+        }
+
+        // Filter products by category
+        function filterByCategory(category, button) {
+            currentCategory = category;
+
+            // Update active button
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+
+            // Apply filters
+            applyFilters();
+        }
+
+        // Filter products by search term
+        function filterProducts() {
+            currentSearchTerm = document.getElementById('productSearch').value.toLowerCase();
+            applyFilters();
+        }
+
+        // Apply all filters
+        function applyFilters() {
+            filteredProducts = allProducts.filter(product => {
+                // Category filter
+                const categoryMatch = currentCategory === 'all' || product.category === currentCategory;
+
+                // Search filter
+                const searchMatch = currentSearchTerm === '' || 
+                    product.name.toLowerCase().includes(currentSearchTerm) ||
+                    product.productCode.toLowerCase().includes(currentSearchTerm) ||
+                    product.description?.toLowerCase().includes(currentSearchTerm);
+
+                return categoryMatch && searchMatch;
+            });
+
+            displayProducts();
+        }
+
+        // Contact about product
+        function contactAboutProduct(productId, productName) {
+            const message = `Hi! I'm interested in learning more about "${productName}" (Product ID: ${productId}). Could you please provide more details about pricing, availability, and specifications?`;
+            const whatsappURL = `https://wa.me/27123456789?text=${encodeURIComponent(message)}`;
+            window.open(whatsappURL, '_blank');
+        }
+    </script>
+</body>
+</html>

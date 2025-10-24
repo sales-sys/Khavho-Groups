@@ -111,10 +111,6 @@
                     <span class="nav-icon">⚙️</span>
                     <span class="nav-text">Settings</span>
                 </button>
-                <button class="nav-btn" onclick="showSection('floating-ad')" data-section="floating-ad">
-                    <span class="nav-icon">📢</span>
-                    <span class="nav-text">Floating Ad</span>
-                </button>
             </div>
         </nav>
 
@@ -158,6 +154,10 @@
                                     <span class="action-icon">📩</span>
                                     <span class="action-text">View Messages</span>
                                 </button>
+                                <button class="quick-action-btn upload-products-btn" onclick="autoUploadAllProducts()" id="uploadProductsBtn">
+                                    <span class="action-icon">🚀</span>
+                                    <span class="action-text">Upload 65 Products</span>
+                                </button>
                                 <button class="quick-action-btn" onclick="showSection('products')">
                                     <span class="action-icon">➕</span>
                                     <span class="action-text">Add Product</span>
@@ -187,6 +187,23 @@
                                 <div class="status-item">
                                     <span class="status-indicator active"></span>
                                     <span class="status-text">Database Online</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-card" id="uploadStatusCard" style="display: none;">
+                        <div class="card-header">
+                            <h3>🚀 Product Upload Status</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="upload-progress">
+                                <div class="progress-bar-container">
+                                    <div class="progress-bar" id="uploadProgressBar"></div>
+                                    <div class="progress-text" id="uploadProgressText">0%</div>
+                                </div>
+                                <div class="upload-status-log" id="uploadStatusLog">
+                                    <!-- Upload status messages will appear here -->
                                 </div>
                             </div>
                         </div>
@@ -336,6 +353,7 @@
                     <p>Add, edit, and manage your products and services</p>
                     <div class="section-actions">
                         <button class="add-btn" onclick="showAddProductModal()">Add New Product</button>
+                        <button class="import-btn" onclick="showImportProductsModal()" style="background: #28a745;">Import Khavho Products</button>
                         <button class="refresh-btn" onclick="loadProducts()">Refresh</button>
                     </div>
                 </div>
@@ -480,51 +498,6 @@
                 <div class="settings-actions">
                     <button class="save-btn" onclick="saveSettings()">Save Settings</button>
                     <button class="reset-btn" onclick="resetSettings()">Reset to Default</button>
-                </div>
-            </section>
-
-            <!-- Floating Ad Management Section -->
-            <section id="floating-ad-section" class="admin-section">
-                <div class="section-header">
-                    <h2>Floating Ad Management</h2>
-                    <p>Manage the floating advertisement displayed on the main website</p>
-                    <div class="section-actions">
-                        <button class="add-btn" onclick="showAddAdModal()">Create New Ad</button>
-                        <button class="refresh-btn" onclick="loadFloatingAds()">Refresh</button>
-                    </div>
-                </div>
-                
-                <div class="floating-ad-controls">
-                    <div class="ad-status">
-                        <h3>Current Ad Status</h3>
-                        <div class="status-display">
-                            <span id="adStatusBadge" class="status-badge inactive">Inactive</span>
-                            <span id="adLastUpdated" class="status-text">Last updated: Never</span>
-                        </div>
-                        <div class="ad-actions">
-                            <button id="toggleAdBtn" class="btn-primary" onclick="toggleFloatingAd()">Activate Ad</button>
-                            <button class="btn-secondary" onclick="previewAd()">Preview Ad</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div id="adLoading" class="loading-state" style="display: none;">
-                    <div class="loading-spinner"></div>
-                    <p>Loading ad data...</p>
-                </div>
-                
-                <div class="current-ad-display" id="currentAdDisplay">
-                    <h3>Current Advertisement</h3>
-                    <div class="ad-preview-card" id="adPreviewCard">
-                        <!-- Current ad will be displayed here -->
-                    </div>
-                </div>
-                
-                <div id="adEmpty" class="empty-state" style="display: none;">
-                    <div class="empty-icon">📢</div>
-                    <h3>No Active Advertisement</h3>
-                    <p>Create your first floating ad to display on the website.</p>
-                    <button class="empty-action-btn" onclick="showAddAdModal()">Create Ad</button>
                 </div>
             </section>
         </main>
@@ -734,60 +707,45 @@
         </div>
     </div>
 
-    <!-- Floating Ad Modal -->
-    <div id="floatingAdModal" class="modal">
+    <!-- Import Products Modal -->
+    <div id="importProductsModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 id="adModalTitle">Create Floating Advertisement</h3>
-                <button class="modal-close" onclick="closeModal('floatingAdModal')">&times;</button>
+                <h3>Import Khavho Products</h3>
+                <button class="modal-close" onclick="closeModal('importProductsModal')">&times;</button>
             </div>
             <div class="modal-body">
-                <form id="floatingAdForm">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="adTitle">Ad Title *</label>
-                            <input type="text" id="adTitle" name="title" required placeholder="Enter ad title">
-                        </div>
-                        <div class="form-group">
-                            <label for="adButtonText">Button Text *</label>
-                            <input type="text" id="adButtonText" name="buttonText" required placeholder="e.g., Learn More">
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="adDescription">Description *</label>
-                        <textarea id="adDescription" name="description" required placeholder="Enter ad description..." rows="3"></textarea>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="adImageUrl">Image URL</label>
-                            <input type="url" id="adImageUrl" name="imageUrl" placeholder="https://example.com/image.jpg">
-                        </div>
-                        <div class="form-group">
-                            <label for="adButtonUrl">Button Link *</label>
-                            <input type="url" id="adButtonUrl" name="buttonUrl" required placeholder="https://example.com">
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="adDisplayDuration">Display Duration (seconds)</label>
-                            <input type="number" id="adDisplayDuration" name="duration" value="10" min="5" max="60">
-                        </div>
-                        <div class="form-group checkbox-group">
-                            <label class="checkbox-label">
-                                <input type="checkbox" id="adActive" name="active" checked>
-                                <span class="checkmark"></span>
-                                Activate immediately
-                            </label>
-                        </div>
-                    </div>
-                </form>
+                <div class="import-warning" style="background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    <h4 style="color: #856404; margin: 0 0 10px 0;">⚠️ Important Notice</h4>
+                    <p style="color: #856404; margin: 0;">This will replace all existing products with the official Khavho Groups catalog. This action cannot be undone.</p>
+                </div>
+                
+                <div class="import-preview">
+                    <h4>What will be imported:</h4>
+                    <ul style="margin: 10px 0;">
+                        <li><strong>65 Products</strong> across 5 categories</li>
+                        <li><strong>Civil Works:</strong> 15 products (Cement, Bricks, Sand, Stone, Steel, Mesh)</li>
+                        <li><strong>General Building:</strong> 11 products (Boards, Timber, Insulation, Paint, Roofing, Doors)</li>
+                        <li><strong>Electrical:</strong> 12 products (Generators, Cables, Wire, Lighting, Breakers, Distribution)</li>
+                        <li><strong>Mechanical:</strong> 11 products (HVAC, Pumps, Tanks, Pipes, Valves)</li>
+                        <li><strong>General Procurement:</strong> 6 products (IT Equipment, Office Furniture)</li>
+                    </ul>
+                </div>
+                
+                <div class="import-options" style="margin: 20px 0;">
+                    <label style="display: block; margin-bottom: 10px;">
+                        <input type="checkbox" id="clearExistingProducts" checked> 
+                        Clear existing products before import
+                    </label>
+                    <label style="display: block;">
+                        <input type="checkbox" id="updateCategoryFilters" checked> 
+                        Update category filters to match new categories
+                    </label>
+                </div>
             </div>
             <div class="modal-footer">
-                <button class="btn-secondary" onclick="closeModal('floatingAdModal')">Cancel</button>
-                <button class="btn-primary" onclick="saveFloatingAd()">Save Advertisement</button>
+                <button class="btn-secondary" onclick="closeModal('importProductsModal')">Cancel</button>
+                <button class="btn-danger" onclick="importKhavhoProducts()" id="importConfirmBtn">Import Products</button>
             </div>
         </div>
     </div>
@@ -795,6 +753,8 @@
     <!-- Success/Error Messages -->
     <div id="message-container"></div>
 
+    <!-- Import Product Data Script -->
+    <script src="product-data-import.js"></script>
     <script src="admin.js"></script>
 </body>
 </html>
