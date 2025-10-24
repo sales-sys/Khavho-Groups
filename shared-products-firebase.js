@@ -289,9 +289,25 @@ function displayProducts(products, retryCount = 0) {
     // Create product cards
     console.log('🎯 Creating product cards...');
     filteredProducts.forEach((product, index) => {
-        const productCard = createProductCard(product, index);
-        productsGrid.appendChild(productCard);
-        console.log('✅ Added card for:', product.name);
+        try {
+            // Validate product data before creating card
+            if (!product || !product.name) {
+                console.log('⚠️ Invalid product data:', product);
+                return;
+            }
+            
+            const productCard = createProductCard(product, index);
+            
+            // Validate that productCard is a valid DOM element
+            if (productCard && productCard instanceof HTMLElement && productCard.nodeType === Node.ELEMENT_NODE) {
+                productsGrid.appendChild(productCard);
+                console.log('✅ Added card for:', product.name);
+            } else {
+                console.log('❌ Invalid product card created for:', product.name, 'Card:', productCard);
+            }
+        } catch (error) {
+            console.log('❌ Error creating card for product:', product.name, error);
+        }
     });
 
     // Initialize Lucide icons if they exist
@@ -307,52 +323,77 @@ function displayProducts(products, retryCount = 0) {
 
 // Create individual product card with ECOMMERCE features
 function createProductCard(product, index) {
-    const card = document.createElement('div');
-    card.className = 'product-card';
-    card.style.animationDelay = `${index * 0.1}s`;
-    
-    // Determine availability
-    const isAvailable = product.available !== false && product.stock !== 0;
-    const price = product.price || 'Contact for Quote';
-    
-    // Handle undefined or null category
-    const category = product.category || 'other';
-    const description = product.description || 'No description available';
-    
-    card.innerHTML = `
-        <div class="product-image">
-            ${product.imageUrl ? 
-                `<img src="${getImageUrl(product.imageUrl)}" alt="${product.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-                <div class="product-icon" style="display: none;">
-                    <i data-lucide="${getProductIcon(category)}"></i>
-                </div>` :
-                `<div class="product-icon">
-                    <i data-lucide="${getProductIcon(category)}"></i>
-                </div>`
-            }
-            ${!isAvailable ? '<div class="product-badge out-of-stock">Out of Stock</div>' : ''}
-        </div>
-        <div class="product-content">
-            <div class="product-category">${getCategoryDisplayName(category)}</div>
-            <h3 class="product-title">${product.name}</h3>
-            <p class="product-description">${description}</p>
-            <div class="product-price">R${typeof price === 'number' ? price.toLocaleString() : price}</div>
-            <div class="product-actions">
-                <button class="add-to-cart-btn ${isAvailable ? 'available' : 'unavailable'}" 
-                        onclick="${isAvailable ? `addToCart('${product.id}')` : 'showOutOfStockMessage()'}"
-                        ${!isAvailable ? 'disabled' : ''}>
-                    <i data-lucide="${isAvailable ? 'shopping-cart' : 'x-circle'}"></i>
-                    ${isAvailable ? 'Add to Cart' : 'Out of Stock'}
-                </button>
-                <button class="contact-whatsapp-btn" onclick="contactViaWhatsApp('${product.name}')">
-                    <i data-lucide="message-circle"></i>
-                    WhatsApp
-                </button>
+    try {
+        // Validate product data
+        if (!product) {
+            console.log('❌ No product data provided to createProductCard');
+            return null;
+        }
+        
+        if (!product.name) {
+            console.log('❌ Product missing required name field:', product);
+            return null;
+        }
+        
+        const card = document.createElement('div');
+        if (!card) {
+            console.log('❌ Failed to create div element');
+            return null;
+        }
+        
+        card.className = 'product-card';
+        card.style.animationDelay = `${index * 0.1}s`;
+        
+        // Determine availability
+        const isAvailable = product.available !== false && product.stock !== 0;
+        const price = product.price || 'Contact for Quote';
+        
+        // Handle undefined or null category
+        const category = product.category || 'other';
+        const description = product.description || 'No description available';
+        
+        // Sanitize product name and ID for HTML
+        const productName = String(product.name || '').replace(/'/g, '&#39;').replace(/"/g, '&quot;');
+        const productId = product.id || `product-${index}`;
+        
+        card.innerHTML = `
+            <div class="product-image">
+                ${product.imageUrl ? 
+                    `<img src="${getImageUrl(product.imageUrl)}" alt="${productName}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                    <div class="product-icon" style="display: none;">
+                        <i data-lucide="${getProductIcon(category)}"></i>
+                    </div>` :
+                    `<div class="product-icon">
+                        <i data-lucide="${getProductIcon(category)}"></i>
+                    </div>`
+                }
+                ${!isAvailable ? '<div class="product-badge out-of-stock">Out of Stock</div>' : ''}
             </div>
-        </div>
-    `;
-    
-    return card;
+            <div class="product-content">
+                <div class="product-category">${getCategoryDisplayName(category)}</div>
+                <h3 class="product-title">${productName}</h3>
+                <p class="product-description">${description}</p>
+                <div class="product-price">R${typeof price === 'number' ? price.toLocaleString() : price}</div>
+                <div class="product-actions">
+                    <button class="add-to-cart-btn ${isAvailable ? 'available' : 'unavailable'}" 
+                            onclick="${isAvailable ? `addToCart('${productId}')` : 'showOutOfStockMessage()'}"
+                            ${!isAvailable ? 'disabled' : ''}>
+                        <i data-lucide="${isAvailable ? 'shopping-cart' : 'x-circle'}"></i>
+                        ${isAvailable ? 'Add to Cart' : 'Out of Stock'}
+                    </button>
+                    <button class="contact-whatsapp-btn" onclick="contactViaWhatsApp('${productName}')">
+                        <i data-lucide="message-circle"></i>
+                        WhatsApp
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        return card;
+    } catch (error) {
+        console.log('❌ Error in createProductCard:', error, 'Product:', product);
+        return null;
+    }
 }
 
 // Filter products by category
@@ -373,7 +414,14 @@ function getProductIcon(category) {
         'mechanical': 'settings',
         'electrical': 'zap',
         'civil-work': 'hard-hat',
+        'civil-works': 'hard-hat',
         'general-building': 'building',
+        'general-procurement': 'briefcase',
+        'Civil Works': 'hard-hat',
+        'General Building': 'building',
+        'Electrical': 'zap',
+        'Mechanical': 'settings',
+        'General Procurement': 'briefcase',
         'other': 'briefcase'
     };
     return icons[category] || 'package';
@@ -389,10 +437,17 @@ function getCategoryDisplayName(category) {
         'mechanical': 'Mechanical',
         'electrical': 'Electrical',
         'civil-work': 'Civil Work',
+        'civil-works': 'Civil Works',
         'general-building': 'General Building',
+        'general-procurement': 'General Procurement',
+        'Civil Works': 'Civil Works',
+        'General Building': 'General Building',
+        'Electrical': 'Electrical',
+        'Mechanical': 'Mechanical',
+        'General Procurement': 'General Procurement',
         'other': 'Other'
     };
-    return names[category] || 'Product';
+    return names[category] || category || 'Product';
 }
 
 // Convert Google Drive share URL to direct image URL
