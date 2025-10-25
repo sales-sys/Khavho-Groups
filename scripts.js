@@ -959,6 +959,10 @@ function checkout() {
     
     document.body.appendChild(checkoutModal);
     
+    // Add event listeners for closing modal
+    document.addEventListener('keydown', handleCheckoutEscape);
+    checkoutModal.addEventListener('click', handleCheckoutClickOutside);
+    
     // Add payment method change handlers
     document.querySelectorAll('input[name="paymentMethod"]').forEach(radio => {
         radio.addEventListener('change', handlePaymentMethodChange);
@@ -1299,6 +1303,22 @@ function closeCheckout() {
         modal.remove();
     }
     currentCheckoutStep = 1;
+    // Remove event listeners
+    document.removeEventListener('keydown', handleCheckoutEscape);
+}
+
+// Handle escape key to close checkout
+function handleCheckoutEscape(event) {
+    if (event.key === 'Escape') {
+        closeCheckout();
+    }
+}
+
+// Handle click outside modal to close
+function handleCheckoutClickOutside(event) {
+    if (event.target.classList.contains('checkout-modal')) {
+        closeCheckout();
+    }
 }
 
 // Make cart functions available globally

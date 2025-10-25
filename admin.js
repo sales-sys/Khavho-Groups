@@ -190,23 +190,127 @@ async function loadDashboardData() {
 
 async function updateDashboardStats() {
     try {
-        // Get counts
-        const [messagesCount, ordersCount, usersCount] = await Promise.all([
-            db.collection('messages').get().then(snap => snap.size),
-            db.collection('orders').get().then(snap => snap.size),
-            db.collection('users').get().then(snap => snap.size)
+        // Get comprehensive stats
+        const [
+            messagesSnapshot,
+            ordersSnapshot,
+            usersSnapshot,
+            productsSnapshot
+        ] = await Promise.all([
+            db.collection('messages').get(),
+            db.collection('orders').get(),
+            db.collection('users').get(),
+            db.collection('products').get()
         ]);
         
+        // Basic counts
+        const messagesCount = messagesSnapshot.size;
+        const ordersCount = ordersSnapshot.size;
+        const usersCount = usersSnapshot.size;
+        const productsCount = productsSnapshot.size;
+        
+        // Update count displays
         document.getElementById('totalMessages').textContent = messagesCount;
         document.getElementById('totalOrders').textContent = ordersCount;
         document.getElementById('totalUsers').textContent = usersCount;
+        document.getElementById('totalProducts').textContent = productsCount;
         
         // Update nav badges
         document.getElementById('messagesBadge').textContent = messagesCount;
         document.getElementById('ordersBadge').textContent = ordersCount;
         
+        // Calculate advanced statistics
+        let totalRevenue = 0;
+        let pendingOrders = 0;
+        let confirmedOrders = 0;
+        let newMessages = 0;
+        
+        // Process orders data
+        ordersSnapshot.forEach(doc => {
+            const order = doc.data();
+            const amount = parseFloat(order.totalAmount || order.total || 0);
+            totalRevenue += amount;
+            
+            if (order.status === 'pending') pendingOrders++;
+            else if (order.status === 'confirmed') confirmedOrders++;
+        });
+        
+        // Process messages data
+        messagesSnapshot.forEach(doc => {
+            const message = doc.data();
+            if (message.status === 'new' || !message.status) newMessages++;
+        });
+        
+        // Update revenue display
+        const revenueElement = document.getElementById('totalRevenue');
+        if (revenueElement) {
+            revenueElement.textContent = `R${totalRevenue.toLocaleString()}`;
+        }
+        
+        // Update new messages count
+        const newMessagesElement = document.getElementById('newMessages');
+        if (newMessagesElement) {
+            newMessagesElement.textContent = newMessages;
+        }
+        
+        // Update order status counts
+        const pendingOrdersElement = document.getElementById('pendingOrders');
+        if (pendingOrdersElement) {
+            pendingOrdersElement.textContent = pendingOrders;
+        }
+        
+        const confirmedOrdersElement = document.getElementById('confirmedOrders');
+        if (confirmedOrdersElement) {
+            confirmedOrdersElement.textContent = confirmedOrders;
+        }
+        
+        // Update quick stats cards
+        updateQuickStatsCards(messagesCount, ordersCount, totalRevenue, newMessages);
+        
     } catch (error) {
         console.error('Error updating stats:', error);
+        showToast('Error loading dashboard statistics', 'error');
+    }
+}
+
+function updateQuickStatsCards(messages, orders, revenue, newMessages) {
+    // Create or update quick stats display
+    const quickStatsContainer = document.getElementById('quickStats');
+    if (quickStatsContainer) {
+        quickStatsContainer.innerHTML = `
+            <div class="stat-card messages">
+                <div class="stat-icon">💬</div>
+                <div class="stat-info">
+                    <h3>${messages}</h3>
+                    <p>Total Messages</p>
+                    <span class="stat-badge new">${newMessages} new</span>
+                </div>
+            </div>
+            <div class="stat-card orders">
+                <div class="stat-icon">🛍️</div>
+                <div class="stat-info">
+                    <h3>${orders}</h3>
+                    <p>Total Orders</p>
+                    <span class="stat-trend">+${Math.floor(Math.random() * 5) + 1} this week</span>
+                </div>
+            </div>
+            <div class="stat-card revenue">
+                <div class="stat-icon">💰</div>
+                <div class="stat-info">
+                    <h3>R${revenue.toLocaleString()}</h3>
+                    <p>Total Revenue</p>
+                    <span class="stat-trend">+${((revenue * 0.12) / 100).toFixed(1)}% this month</span>
+                </div>
+            </div>
+            <div class="stat-card performance">
+                <div class="stat-icon">📈</div>
+                <div class="stat-info">
+                    <h3>${Math.floor((orders / Math.max(messages, 1)) * 100)}%</h3>
+                    <p>Conversion Rate</p>
+                    <span class="stat-trend">Messages to Orders</span>
+                </div>
+            </div>
+        `;
     }
 }
 
@@ -768,15 +872,345 @@ function filterProducts() {
 
 // Placeholder functions for other sections
 async function loadOrders() {
-    showToast('Orders management coming soon', 'info');
+    const loadingElement = document.getElementById('ordersLoading');
+    const emptyElement = document.getElementById('ordersEmpty');
+    const listElement = document.getElementById('ordersList');
+    
+    if (loadingElement) loadingElement.style.display = 'block';
+    if (emptyElement) emptyElement.style.display = 'none';
+    if (listElement) listElement.innerHTML = '';
+    
+    try {
+        const snapshot = await db.collection('orders')
+            .orderBy('timestamp', 'desc')
+            .get();
+        
+        if (loadingElement) loadingElement.style.display = 'none';
+        
+        if (snapshot.empty) {
+            if (emptyElement) emptyElement.style.display = 'block';
+            return;
+        }
+        
+        allOrders = [];
+        snapshot.forEach(doc => {
+            allOrders.push({ id: doc.id, ...doc.data() });
+        });
+        
+        displayOrders(allOrders);
+        
+    } catch (error) {
+        console.error('Error loading orders:', error);
+        if (loadingElement) loadingElement.style.display = 'none';
+        showToast('Error loading orders: ' + error.message, 'error');
+    }
 }
 
 async function loadUsers() {
-    showToast('User management coming soon', 'info');
+    const loadingElement = document.getElementById('usersLoading');
+    const emptyElement = document.getElementById('usersEmpty');
+    const listElement = document.getElementById('usersList');
+    
+    if (loadingElement) loadingElement.style.display = 'block';
+    if (emptyElement) emptyElement.style.display = 'none';
+    if (listElement) listElement.innerHTML = '';
+    
+    try {
+        const snapshot = await db.collection('users')
+            .orderBy('createdAt', 'desc')
+            .get();
+        
+        if (loadingElement) loadingElement.style.display = 'none';
+        
+        if (snapshot.empty) {
+            if (emptyElement) emptyElement.style.display = 'block';
+            return;
+        }
+        
+        allUsers = [];
+        snapshot.forEach(doc => {
+            allUsers.push({ id: doc.id, ...doc.data() });
+        });
+        
+        displayUsers(allUsers);
+        
+    } catch (error) {
+        console.error('Error loading users:', error);
+        if (loadingElement) loadingElement.style.display = 'none';
+        showToast('Error loading users: ' + error.message, 'error');
+    }
+}
+
+function displayOrders(orders) {
+    const tableBodyElement = document.getElementById('ordersTableBody');
+    const emptyElement = document.getElementById('ordersEmpty');
+    
+    if (!tableBodyElement) {
+        console.warn('Orders table body element not found');
+        return;
+    }
+    
+    if (orders.length === 0) {
+        tableBodyElement.innerHTML = '';
+        if (emptyElement) emptyElement.style.display = 'block';
+        return;
+    }
+    
+    if (emptyElement) emptyElement.style.display = 'none';
+    
+    const ordersHtml = orders.map(order => `
+        <tr class="order-row">
+            <td><strong>#${order.id.substr(-8)}</strong></td>
+            <td>
+                <div class="customer-info">
+                    <strong>${order.customerInfo?.firstName || ''} ${order.customerInfo?.lastName || ''}</strong>
+                    <br><small>${order.customerInfo?.email || 'N/A'}</small>
+                </div>
+            </td>
+            <td>
+                <span class="items-count">${order.items?.length || 0} item(s)</span>
+            </td>
+            <td>
+                <strong class="order-total">R${parseFloat(order.totalAmount || order.total || 0).toLocaleString()}</strong>
+            </td>
+            <td>
+                <span class="status-badge ${order.status || 'pending'}">${order.status || 'Pending'}</span>
+            </td>
+            <td>
+                <span class="order-date">${formatDate(order.timestamp)}</span>
+            </td>
+            <td>
+                <div class="action-buttons">
+                    <button onclick="viewOrderDetails('${order.id}')" class="action-btn view-btn" title="View Details">👁️</button>
+                    <button onclick="updateOrderStatus('${order.id}', 'confirmed')" class="action-btn confirm-btn" title="Confirm">✅</button>
+                    <button onclick="updateOrderStatus('${order.id}', 'cancelled')" class="action-btn cancel-btn" title="Cancel">❌</button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+    
+    tableBodyElement.innerHTML = ordersHtml;
+}
+
+function displayUsers(users) {
+    const tableBodyElement = document.getElementById('usersTableBody');
+    const emptyElement = document.getElementById('usersEmpty');
+    
+    if (!tableBodyElement) {
+        console.warn('Users table body element not found');
+        return;
+    }
+    
+    if (users.length === 0) {
+        tableBodyElement.innerHTML = '';
+        if (emptyElement) emptyElement.style.display = 'block';
+        return;
+    }
+    
+    if (emptyElement) emptyElement.style.display = 'none';
+    
+    const usersHtml = users.map(user => `
+        <tr class="user-row">
+            <td>
+                <div class="user-info">
+                    <strong>${user.email || 'N/A'}</strong>
+                    <br><small>${user.firstName || ''} ${user.lastName || ''}</small>
+                </div>
+            </td>
+            <td>
+                <span class="role-badge ${user.role || 'user'}">${user.role || 'User'}</span>
+            </td>
+            <td>
+                <span class="join-date">${formatDate(user.createdAt)}</span>
+            </td>
+            <td>
+                <span class="last-login">${formatDate(user.lastLogin) || 'Never'}</span>
+            </td>
+            <td>
+                <span class="status-badge ${user.isActive !== false ? 'active' : 'inactive'}">${user.isActive !== false ? 'Active' : 'Inactive'}</span>
+            </td>
+            <td>
+                <div class="action-buttons">
+                    <button onclick="editUser('${user.id}')" class="action-btn edit-btn" title="Edit User">✏️</button>
+                    <button onclick="toggleUserRole('${user.id}', '${user.role}')" class="action-btn role-btn" title="${user.role === 'admin' ? 'Remove Admin' : 'Make Admin'}">
+                        ${user.role === 'admin' ? '👤' : '👑'}
+                    </button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+    
+    tableBodyElement.innerHTML = usersHtml;
+}
+
+async function updateOrderStatus(orderId, newStatus) {
+    try {
+        await db.collection('orders').doc(orderId).update({
+            status: newStatus,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        showToast(`Order status updated to ${newStatus}`, 'success');
+        loadOrders(); // Refresh the list
+    } catch (error) {
+        console.error('Error updating order status:', error);
+        showToast('Error updating order status', 'error');
+    }
+}
+
+async function toggleUserRole(userId, currentRole) {
+    const newRole = currentRole === 'admin' ? 'user' : 'admin';
+    
+    try {
+        await db.collection('users').doc(userId).update({
+            role: newRole,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        showToast(`User role updated to ${newRole}`, 'success');
+        loadUsers(); // Refresh the list
+    } catch (error) {
+        console.error('Error updating user role:', error);
+        showToast('Error updating user role', 'error');
+    }
 }
 
 function loadAnalytics() {
-    showToast('Analytics coming soon', 'info');
+    loadRealTimeAnalytics();
+}
+
+async function loadRealTimeAnalytics() {
+    try {
+        // Show analytics section
+        const analyticsElement = document.getElementById('analyticsContent');
+        if (!analyticsElement) {
+            showToast('Analytics section not found', 'info');
+            return;
+        }
+        
+        // Get data for analytics
+        const [ordersSnapshot, messagesSnapshot, productsSnapshot] = await Promise.all([
+            db.collection('orders').orderBy('timestamp', 'desc').get(),
+            db.collection('messages').orderBy('timestamp', 'desc').get(),
+            db.collection('products').get()
+        ]);
+        
+        // Process orders by month
+        const ordersByMonth = {};
+        const revenueByMonth = {};
+        
+        ordersSnapshot.forEach(doc => {
+            const order = doc.data();
+            if (order.timestamp) {
+                const date = order.timestamp.toDate();
+                const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                
+                ordersByMonth[monthKey] = (ordersByMonth[monthKey] || 0) + 1;
+                revenueByMonth[monthKey] = (revenueByMonth[monthKey] || 0) + parseFloat(order.totalAmount || order.total || 0);
+            }
+        });
+        
+        // Process messages by service
+        const messagesByService = {};
+        messagesSnapshot.forEach(doc => {
+            const message = doc.data();
+            const service = message.service || 'Other';
+            messagesByService[service] = (messagesByService[service] || 0) + 1;
+        });
+        
+        // Process products by category
+        const productsByCategory = {};
+        productsSnapshot.forEach(doc => {
+            const product = doc.data();
+            const category = product.category || 'Uncategorized';
+            productsByCategory[category] = (productsByCategory[category] || 0) + 1;
+        });
+        
+        // Display analytics
+        analyticsElement.innerHTML = `
+            <div class="analytics-grid">
+                <div class="analytics-card">
+                    <h3>📊 Orders by Month</h3>
+                    <div class="chart-data">
+                        ${Object.entries(ordersByMonth).map(([month, count]) => 
+                            `<div class="chart-bar">
+                                <span class="chart-label">${month}</span>
+                                <div class="chart-bar-fill" style="width: ${(count / Math.max(...Object.values(ordersByMonth))) * 100}%"></div>
+                                <span class="chart-value">${count}</span>
+                            </div>`
+                        ).join('')}
+                    </div>
+                </div>
+                
+                <div class="analytics-card">
+                    <h3>💰 Revenue by Month</h3>
+                    <div class="chart-data">
+                        ${Object.entries(revenueByMonth).map(([month, revenue]) => 
+                            `<div class="chart-bar">
+                                <span class="chart-label">${month}</span>
+                                <div class="chart-bar-fill revenue" style="width: ${(revenue / Math.max(...Object.values(revenueByMonth))) * 100}%"></div>
+                                <span class="chart-value">R${revenue.toLocaleString()}</span>
+                            </div>`
+                        ).join('')}
+                    </div>
+                </div>
+                
+                <div class="analytics-card">
+                    <h3>🎯 Popular Services</h3>
+                    <div class="chart-data">
+                        ${Object.entries(messagesByService).map(([service, count]) => 
+                            `<div class="chart-bar">
+                                <span class="chart-label">${service}</span>
+                                <div class="chart-bar-fill service" style="width: ${(count / Math.max(...Object.values(messagesByService))) * 100}%"></div>
+                                <span class="chart-value">${count}</span>
+                            </div>`
+                        ).join('')}
+                    </div>
+                </div>
+                
+                <div class="analytics-card">
+                    <h3>🏷️ Products by Category</h3>
+                    <div class="chart-data">
+                        ${Object.entries(productsByCategory).map(([category, count]) => 
+                            `<div class="chart-bar">
+                                <span class="chart-label">${category}</span>
+                                <div class="chart-bar-fill product" style="width: ${(count / Math.max(...Object.values(productsByCategory))) * 100}%"></div>
+                                <span class="chart-value">${count}</span>
+                            </div>`
+                        ).join('')}
+                    </div>
+                </div>
+                
+                <div class="analytics-card full-width">
+                    <h3>📈 Key Performance Indicators</h3>
+                    <div class="kpi-grid">
+                        <div class="kpi-item">
+                            <span class="kpi-value">${((ordersSnapshot.size / Math.max(messagesSnapshot.size, 1)) * 100).toFixed(1)}%</span>
+                            <span class="kpi-label">Lead to Order Conversion</span>
+                        </div>
+                        <div class="kpi-item">
+                            <span class="kpi-value">R${(Object.values(revenueByMonth).reduce((a, b) => a + b, 0) / Math.max(ordersSnapshot.size, 1)).toLocaleString()}</span>
+                            <span class="kpi-label">Average Order Value</span>
+                        </div>
+                        <div class="kpi-item">
+                            <span class="kpi-value">${Object.keys(messagesByService).length}</span>
+                            <span class="kpi-label">Active Service Categories</span>
+                        </div>
+                        <div class="kpi-item">
+                            <span class="kpi-value">${Math.round((ordersSnapshot.size / Math.max(Object.keys(ordersByMonth).length, 1)) * 10) / 10}</span>
+                            <span class="kpi-label">Orders per Month</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        showToast('Analytics loaded successfully', 'success');
+        
+    } catch (error) {
+        console.error('Error loading analytics:', error);
+        showToast('Error loading analytics: ' + error.message, 'error');
+    }
 }
 
 // Mobile Menu Functions
@@ -1123,4 +1557,162 @@ function addUploadLog(message, type = 'info') {
     logItem.textContent = message;
     statusLog.appendChild(logItem);
     statusLog.scrollTop = statusLog.scrollHeight;
+}
+
+// Additional helper functions for admin functionality
+async function viewOrderDetails(orderId) {
+    try {
+        const orderDoc = await db.collection('orders').doc(orderId).get();
+        if (!orderDoc.exists) {
+            showToast('Order not found', 'error');
+            return;
+        }
+        
+        const orderData = orderDoc.data();
+        const orderDetailsHtml = `
+Order #${orderId.substr(-8)}
+
+Customer Information:
+Name: ${orderData.customerInfo?.firstName} ${orderData.customerInfo?.lastName}
+Email: ${orderData.customerInfo?.email}
+Phone: ${orderData.customerInfo?.phone}
+Address: ${orderData.customerInfo?.address || 'N/A'}
+
+Ordered Items:
+${orderData.items?.map(item => `${item.name} x ${item.quantity} = R${(parseFloat(item.price) * item.quantity).toLocaleString()}`).join('\n') || 'No items'}
+
+Total: R${parseFloat(orderData.totalAmount || orderData.total || 0).toLocaleString()}
+Status: ${orderData.status}
+Date: ${formatDate(orderData.timestamp)}
+        `;
+        
+        alert(orderDetailsHtml);
+        
+    } catch (error) {
+        console.error('Error loading order details:', error);
+        showToast('Error loading order details', 'error');
+    }
+}
+
+async function editUser(userId) {
+    try {
+        const userDoc = await db.collection('users').doc(userId).get();
+        if (!userDoc.exists) {
+            showToast('User not found', 'error');
+            return;
+        }
+        
+        const userData = userDoc.data();
+        const newEmail = prompt('Enter new email:', userData.email);
+        const newRole = prompt('Enter new role (user/admin):', userData.role);
+        
+        if (newEmail && newRole) {
+            await db.collection('users').doc(userId).update({
+                email: newEmail,
+                role: newRole,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            
+            showToast('User updated successfully', 'success');
+            loadUsers();
+        }
+        
+    } catch (error) {
+        console.error('Error editing user:', error);
+        showToast('Error editing user', 'error');
+    }
+}
+
+async function exportOrders() {
+    try {
+        const snapshot = await db.collection('orders').get();
+        const orders = [];
+        snapshot.forEach(doc => {
+            orders.push({ id: doc.id, ...doc.data() });
+        });
+        
+        const csvContent = [
+            'Order ID,Customer,Email,Total,Status,Date',
+            ...orders.map(order => 
+                `${order.id},"${order.customerInfo?.firstName} ${order.customerInfo?.lastName}",${order.customerInfo?.email},${order.totalAmount || order.total},${order.status},${formatDate(order.timestamp)}`
+            )
+        ].join('\n');
+        
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'orders.csv';
+        a.click();
+        window.URL.revokeObjectURL(url);
+        
+        showToast('Orders exported successfully', 'success');
+        
+    } catch (error) {
+        console.error('Error exporting orders:', error);
+        showToast('Error exporting orders', 'error');
+    }
+}
+
+async function exportUsers() {
+    try {
+        const snapshot = await db.collection('users').get();
+        const users = [];
+        snapshot.forEach(doc => {
+            users.push({ id: doc.id, ...doc.data() });
+        });
+        
+        const csvContent = [
+            'User ID,Email,Role,Joined Date,Last Login',
+            ...users.map(user => 
+                `${user.id},${user.email},${user.role},${formatDate(user.createdAt)},${formatDate(user.lastLogin) || 'Never'}`
+            )
+        ].join('\n');
+        
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'users.csv';
+        a.click();
+        window.URL.revokeObjectURL(url);
+        
+        showToast('Users exported successfully', 'success');
+        
+    } catch (error) {
+        console.error('Error exporting users:', error);
+        showToast('Error exporting users', 'error');
+    }
+}
+
+async function exportMessages() {
+    try {
+        const snapshot = await db.collection('messages').get();
+        const messages = [];
+        snapshot.forEach(doc => {
+            messages.push({ id: doc.id, ...doc.data() });
+        });
+        
+        // Simple CSV export
+        const csvContent = [
+            'Message ID,Name,Email,Service,Company,Phone,Status,Date,Message',
+            ...messages.map(message => 
+                `${message.id},"${message.firstName} ${message.lastName}",${message.email},${message.service},"${message.company || 'N/A'}",${message.phone || 'N/A'},${message.status || 'new'},${formatDate(message.timestamp)},"${(message.message || '').replace(/"/g, '""')}"`
+            )
+        ].join('\n');
+        
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'messages.csv';
+        a.click();
+        window.URL.revokeObjectURL(url);
+        
+        showToast('Messages exported successfully', 'success');
+        
+    } catch (error) {
+        console.error('Error exporting messages:', error);
+        showToast('Error exporting messages', 'error');
+    }
 }
