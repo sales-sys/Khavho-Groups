@@ -134,7 +134,20 @@ function automaticProductLoad() {
             productsData = [];
             snapshot.forEach((doc) => {
                 const product = { id: doc.id, ...doc.data() };
-                console.log('📦 Product loaded:', product.name, '- Category:', product.category);
+                
+                // FORCE auto image generation for ALL products
+                if (product.name) {
+                    const imageName = product.name
+                        .toLowerCase()
+                        .replace(/[^a-z0-9\s-]/g, '')
+                        .replace(/\s+/g, '-')
+                        .replace(/-+/g, '-')
+                        .trim();
+                    product.imageUrl = `images/${imageName}.webp`;
+                    console.log(`🔧 FORCED image path for "${product.name}": ${product.imageUrl}`);
+                }
+                
+                console.log('📦 Product loaded:', product.name, '- Category:', product.category, '- Image:', product.imageUrl);
                 productsData.push(product);
             });
             
@@ -413,7 +426,6 @@ function createProductCard(product, index) {
                 ${!isAvailable ? '<div class="product-badge out-of-stock">Out of Stock</div>' : ''}
             </div>
             <div class="product-content">
-                <div class="product-category">${getCategoryDisplayName(category)}</div>
                 <h3 class="product-title">${productName}</h3>
                 <p class="product-description">${description || 'High-quality product for professional use.'}</p>
                 <div class="product-price">R${typeof price === 'number' ? price.toLocaleString() : price}</div>
@@ -1392,7 +1404,6 @@ function createHomepageProductCard(product, index) {
                 ${!isAvailable ? '<div class="product-badge out-of-stock">Out of Stock</div>' : ''}
             </div>
             <div class="product-info">
-                <div class="product-category">${getCategoryDisplayName(category)}</div>
                 <h3 class="product-title">${productName}</h3>
                 <div class="product-unit">${product.unit || 'per unit'}</div>
                 <div class="product-price">R${typeof price === 'number' ? price.toLocaleString() : price}</div>
