@@ -265,6 +265,10 @@ function displayProducts(products, retryCount = 0) {
     // Try multiple ways to find the products grid element
     let productsGrid = document.getElementById('productsGrid');
     if (!productsGrid) {
+        // Try homepage products showcase
+        productsGrid = document.getElementById('homepage-products-showcase');
+    }
+    if (!productsGrid) {
         // Fallback: try looking for products-grid (in case HTML wasn't updated)
         productsGrid = document.getElementById('products-grid');
     }
@@ -276,6 +280,7 @@ function displayProducts(products, retryCount = 0) {
         console.error('❌ Products grid element not found with any method! Retry count:', retryCount);
         console.log('🔍 Available elements:', {
             byId: document.getElementById('productsGrid'),
+            byHomepage: document.getElementById('homepage-products-showcase'),
             byOldId: document.getElementById('products-grid'),
             byClass: document.querySelector('.products-grid'),
             documentReady: document.readyState,
@@ -294,9 +299,16 @@ function displayProducts(products, retryCount = 0) {
         }
     }
     
-    console.log('✅ Products grid found, clearing content...');
+    console.log('✅ Products grid found:', productsGrid.id);
 
-    // Clear existing content
+    // Check if this is the homepage showcase container
+    if (productsGrid.id === 'homepage-products-showcase') {
+        console.log('🏠 Using homepage display function');
+        displayHomepageProducts(products, productsGrid);
+        return;
+    }
+
+    // Clear existing content for regular products page
     productsGrid.innerHTML = '';
 
     if (products.length === 0) {
