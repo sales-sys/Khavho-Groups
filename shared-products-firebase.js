@@ -531,7 +531,7 @@ function getImageUrl(url) {
 function createOptimizedImage(imageUrl, altText, className = '') {
     if (!imageUrl) {
         return `<div class="product-placeholder ${className}">
-            <i data-lucide="image"></i>
+            <i data-lucide="package"></i>
         </div>`;
     }
     
