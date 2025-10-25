@@ -868,6 +868,26 @@ function checkout() {
                         </div>
                         
                         <div class="payment-option">
+                            <input type="radio" id="payPayFast" name="paymentMethod" value="payfast">
+                            <label for="payPayFast" class="payment-label">
+                                <div class="payment-header">
+                                    <strong>🔐 PayFast</strong>
+                                    <span class="payment-desc">South Africa's leading payment gateway</span>
+                                </div>
+                            </label>
+                        </div>
+                        
+                        <div class="payment-option">
+                            <input type="radio" id="payNetcash" name="paymentMethod" value="netcash">
+                            <label for="payNetcash" class="payment-label">
+                                <div class="payment-header">
+                                    <strong>💰 Netcash</strong>
+                                    <span class="payment-desc">Secure South African payment processing</span>
+                                </div>
+                            </label>
+                        </div>
+                        
+                        <div class="payment-option">
                             <input type="radio" id="payZapper" name="paymentMethod" value="zapper">
                             <label for="payZapper" class="payment-label">
                                 <div class="payment-header">
@@ -1065,6 +1085,36 @@ function handlePaymentMethodChange() {
                 </div>
             `;
             break;
+        case 'payfast':
+            paymentDetails.innerHTML = `
+                <div class="payment-info">
+                    <h4>PayFast Payment</h4>
+                    <p>PayFast is South Africa's most trusted payment gateway.</p>
+                    <ul>
+                        <li>Secure card processing</li>
+                        <li>Instant EFT payments</li>
+                        <li>SiD Secure EFT</li>
+                        <li>eBucks and FNB Pay</li>
+                    </ul>
+                    <p><strong>You'll be redirected to PayFast to complete payment.</strong></p>
+                </div>
+            `;
+            break;
+        case 'netcash':
+            paymentDetails.innerHTML = `
+                <div class="payment-info">
+                    <h4>Netcash Payment</h4>
+                    <p>Netcash provides secure payment processing solutions.</p>
+                    <ul>
+                        <li>Credit and debit cards</li>
+                        <li>Bank transfers</li>
+                        <li>Mobile payments</li>
+                        <li>Digital wallets</li>
+                    </ul>
+                    <p><strong>You'll be redirected to Netcash to complete payment.</strong></p>
+                </div>
+            `;
+            break;
         case 'zapper':
             paymentDetails.innerHTML = `
                 <div class="payment-info">
@@ -1211,6 +1261,8 @@ function getPaymentMethodName(method) {
     const methods = {
         'eft': 'EFT Bank Transfer',
         'card': 'Credit/Debit Card',
+        'payfast': 'PayFast Payment Gateway',
+        'netcash': 'Netcash Payment Gateway',
         'zapper': 'Instant Payment (Zapper/SnapScan)',
         'cod': 'Cash on Delivery',
         'terms': '30-Day Account Terms',
@@ -1224,6 +1276,8 @@ function getPaymentInstructions(method) {
     const instructions = {
         'eft': 'Banking details will be sent to your email',
         'card': 'Payment link will be sent to your email',
+        'payfast': 'You will be redirected to PayFast to complete payment',
+        'netcash': 'You will be redirected to Netcash to complete payment',
         'zapper': 'QR code will be sent for instant payment',
         'cod': 'Pay cash/card on delivery (+5% fee)',
         'terms': 'Invoice will be sent for 30-day payment',
@@ -1246,7 +1300,6 @@ function closeCheckout() {
     }
     currentCheckoutStep = 1;
 }
-}
 
 // Make cart functions available globally
 window.updateCartQuantity = updateCartQuantity;
@@ -1254,6 +1307,11 @@ window.removeFromCart = removeFromCart;
 window.toggleCart = toggleCart;
 window.checkout = checkout;
 window.updateCartDisplay = updateCartDisplay;
+window.nextCheckoutStep = nextCheckoutStep;
+window.prevCheckoutStep = prevCheckoutStep;
+window.toggleDeliveryAddress = toggleDeliveryAddress;
+window.closeCheckout = closeCheckout;
+window.sendOrderWhatsApp = sendOrderWhatsApp;
 
 // Initialize cart display on page load
 document.addEventListener('DOMContentLoaded', function() {
