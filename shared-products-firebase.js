@@ -1509,29 +1509,39 @@ function displayAllProducts(products, container) {
 }
 
 function createProductCard(product) {
+    // Auto-generate image path if not set
+    let imageUrl = product.imageUrl;
+    if (!imageUrl && product.name) {
+        // Generate image path from product name
+        const imageName = product.name
+            .toLowerCase()
+            .replace(/[^a-z0-9\s-]/g, '')
+            .replace(/\s+/g, '-')
+            .replace(/-+/g, '-')
+            .trim();
+        imageUrl = `/images/${imageName}.webp`;
+    }
+    
     return `
         <div class="product-card" data-category="${(product.category || '').toLowerCase().replace(/\s+/g, '-')}">
             <div class="product-image">
-                ${product.imageUrl ? 
-                    createOptimizedImage(product.imageUrl, product.name, 'product-img') :
+                ${imageUrl ? 
+                    createOptimizedImage(imageUrl, product.name, 'product-img') :
                     `<div class="product-placeholder"><i data-lucide="package"></i></div>`
                 }
                 ${product.productCode ? `<div class="product-code">${product.productCode}</div>` : ''}
             </div>
             
-            <div class="product-info">
-                <h3>${product.name}</h3>
-                <span class="product-category">${getCategoryDisplayName(product.category)}</span>
-                ${product.unit ? `<div class="product-unit">${product.unit}</div>` : ''}
+            <div class="product-content">
+                <div class="product-category">${getCategoryDisplayName(product.category)}</div>
+                <h3 class="product-title">${product.name}</h3>
                 <p class="product-description">${product.description || 'High-quality product for professional use.'}</p>
                 
                 <div class="product-footer">
-                    <span class="product-price">R${parseFloat(product.price || 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
+                    <div class="product-price">R${parseFloat(product.price || 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</div>
                     <div class="product-actions">
-                        <button class="btn-secondary" onclick="contactAboutProduct('${product.id}', '${product.name}')">
-                            Inquire
-                        </button>
-                        <button class="btn-primary" onclick="addToCart('${product.id}')">
+                        <button class="add-to-cart-btn" onclick="addToCart('${product.id}')">
+                            <i data-lucide="shopping-cart"></i>
                             Add to Cart
                         </button>
                     </div>
