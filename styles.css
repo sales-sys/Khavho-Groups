@@ -1068,6 +1068,13 @@ h1, h2, h3, h4, h5, h6 {
     border-left: 4px solid var(--primary-orange);
     display: inline-block;
     letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+}
+
+.product-price:hover {
+    background: rgba(243, 112, 33, 0.15);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(243, 112, 33, 0.2);
 }
 
 .product-actions {
@@ -2111,25 +2118,6 @@ h1, h2, h3, h4, h5, h6 {
 .floating-btn.whatsapp:hover {
     background: #20b858;
     transform: scale(1.1);
-}
-
-/* Creative Price Badge */
-.product-price {
-    background: var(--primary-orange);
-    color: white;
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-weight: 700;
-    font-size: 16px;
-    display: inline-block;
-    margin: 10px 0;
-    box-shadow: 0 3px 10px rgba(243, 112, 33, 0.3);
-    transform: rotate(-2deg);
-    transition: all 0.3s ease;
-}
-
-.product-price:hover {
-    transform: rotate(0deg) scale(1.05);
 }
 
 /* ===== FOOTER ===== */
@@ -3638,12 +3626,6 @@ h1, h2, h3, h4, h5, h6 {
     margin-top: 20px;
     padding-top: 20px;
     border-top: 1px solid var(--border-gray);
-}
-
-.product-price {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--primary-orange);
 }
 
 .product-actions {
