@@ -213,13 +213,7 @@
             padding: 25px;
         }
         
-        .product-category {
-            color: var(--primary-orange);
-            font-weight: 600;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            margin-bottom: 8px;
-        }
+
         
         .product-name {
             font-size: 1.4rem;
@@ -1055,8 +1049,8 @@
                         <div class="product-code">${product.productCode}</div>
                     </div>
                     <div class="product-info">
-                        <div class="product-category">${getCategoryDisplayName(product.category)}</div>
                         <h3 class="product-name">${product.name}</h3>
+                        <p class="product-description">${product.description || 'Professional grade product for construction and industrial use.'}</p>
                         <div class="product-unit">${product.unit}</div>
                         <div class="product-price">R${parseFloat(product.price || 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</div>
                         <div class="product-actions">

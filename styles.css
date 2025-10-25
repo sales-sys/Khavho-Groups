@@ -4119,13 +4119,7 @@ h1, h2, h3, h4, h5, h6 {
     line-height: 1.3;
 }
 
-.category-showcase .product-category {
-    color: var(--primary-orange);
-    font-weight: 600;
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
+
 
 .category-showcase .product-price {
     font-size: 1.3rem;
@@ -4325,14 +4319,7 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: 600;
 }
 
-.product-category-display {
-    background: var(--light-gray);
-    color: var(--primary-navy);
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    font-weight: 600;
-}
+
 
 .product-description {
     margin-bottom: 25px;
