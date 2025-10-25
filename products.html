@@ -1043,7 +1043,8 @@
                 <div class="product-card" data-product-id="${product.id}">
                     <div class="product-image">
                         ${product.imageUrl ? 
-                            `<img src="${product.imageUrl}" alt="${product.name}" onerror="this.parentElement.innerHTML='<div class=\\"product-placeholder\\"><i data-lucide=\\"package\\"></i></div>'">` :
+                            `<img src="${product.imageUrl}" alt="${product.name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                             <div class="product-placeholder" style="display:none;"><i data-lucide="package"></i></div>` :
                             `<div class="product-placeholder"><i data-lucide="package"></i></div>`
                         }
                         <div class="product-code">${product.productCode}</div>
