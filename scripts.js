@@ -731,48 +731,521 @@ function checkout() {
         return;
     }
     
-    // Calculate total
-    const total = cart.reduce((sum, item) => sum + (parseFloat(item.price || 0) * item.quantity), 0);
+    // Calculate totals
+    const subtotal = cart.reduce((sum, item) => sum + (parseFloat(item.price || 0) * item.quantity), 0);
+    const vat = subtotal * 0.15;
+    const total = subtotal + vat;
     
-    // Simple checkout process for demo
-    const customerName = prompt('Enter your full name:');
-    if (!customerName) return;
+    // Create enhanced checkout modal
+    const checkoutModal = document.createElement('div');
+    checkoutModal.className = 'checkout-modal';
+    checkoutModal.innerHTML = `
+        <div class="checkout-modal-content">
+            <div class="checkout-header">
+                <h2>Complete Your Order</h2>
+                <button class="modal-close" onclick="closeCheckout()">&times;</button>
+            </div>
+            
+            <div class="checkout-progress">
+                <div class="progress-step active">1. Review Order</div>
+                <div class="progress-step">2. Customer Info</div>
+                <div class="progress-step">3. Payment</div>
+                <div class="progress-step">4. Confirmation</div>
+            </div>
+            
+            <div class="checkout-steps">
+                <!-- Step 1: Order Review -->
+                <div class="checkout-step active" id="step1">
+                    <h3>Order Summary</h3>
+                    <div class="order-items">
+                        ${cart.map(item => `
+                            <div class="order-item">
+                                <div class="item-details">
+                                    <span class="item-name">${item.name}</span>
+                                    <span class="item-category">${item.category}</span>
+                                </div>
+                                <div class="item-quantity">Qty: ${item.quantity}</div>
+                                <div class="item-price">R${(parseFloat(item.price || 0) * item.quantity).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="order-totals">
+                        <div class="total-row">
+                            <span>Subtotal:</span>
+                            <span>R${subtotal.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
+                        </div>
+                        <div class="total-row">
+                            <span>VAT (15%):</span>
+                            <span>R${vat.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
+                        </div>
+                        <div class="total-row total-final">
+                            <strong>Total: R${total.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</strong>
+                        </div>
+                    </div>
+                    <button class="checkout-next-btn" onclick="nextCheckoutStep()">Continue to Customer Info</button>
+                </div>
+                
+                <!-- Step 2: Customer Information -->
+                <div class="checkout-step" id="step2">
+                    <h3>Customer Information</h3>
+                    <div class="checkout-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>First Name *</label>
+                                <input type="text" id="firstName" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Last Name *</label>
+                                <input type="text" id="lastName" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Company Name (Optional)</label>
+                            <input type="text" id="companyName">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Email Address *</label>
+                                <input type="email" id="customerEmail" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Phone Number *</label>
+                                <input type="tel" id="customerPhone" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>VAT Number (For VAT Exemption)</label>
+                            <input type="text" id="vatNumber" placeholder="4123456789">
+                        </div>
+                        
+                        <h4>Delivery Information</h4>
+                        <div class="form-group">
+                            <label>Delivery Method *</label>
+                            <select id="deliveryMethod" required onchange="toggleDeliveryAddress()">
+                                <option value="">Select Delivery Method</option>
+                                <option value="delivery">Delivery to Address</option>
+                                <option value="collection">Collection from Warehouse</option>
+                                <option value="site-delivery">Site Delivery (Construction Projects)</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="deliveryAddressGroup" style="display: none;">
+                            <label>Delivery Address *</label>
+                            <textarea id="deliveryAddress" rows="3" placeholder="Street address, suburb, city, postal code"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Special Instructions</label>
+                            <textarea id="specialInstructions" rows="2" placeholder="Any special delivery instructions or requirements"></textarea>
+                        </div>
+                    </div>
+                    <div class="checkout-nav">
+                        <button class="checkout-back-btn" onclick="prevCheckoutStep()">Back</button>
+                        <button class="checkout-next-btn" onclick="nextCheckoutStep()">Continue to Payment</button>
+                    </div>
+                </div>
+                
+                <!-- Step 3: Payment Method -->
+                <div class="checkout-step" id="step3">
+                    <h3>Payment Method</h3>
+                    <div class="payment-methods">
+                        <div class="payment-option">
+                            <input type="radio" id="payEFT" name="paymentMethod" value="eft" checked>
+                            <label for="payEFT" class="payment-label">
+                                <div class="payment-header">
+                                    <strong>🏦 EFT Bank Transfer</strong>
+                                    <span class="payment-desc">Most common - Bank details will be provided</span>
+                                </div>
+                            </label>
+                        </div>
+                        
+                        <div class="payment-option">
+                            <input type="radio" id="payCard" name="paymentMethod" value="card">
+                            <label for="payCard" class="payment-label">
+                                <div class="payment-header">
+                                    <strong>💳 Credit/Debit Card</strong>
+                                    <span class="payment-desc">Secure online payment</span>
+                                </div>
+                            </label>
+                        </div>
+                        
+                        <div class="payment-option">
+                            <input type="radio" id="payZapper" name="paymentMethod" value="zapper">
+                            <label for="payZapper" class="payment-label">
+                                <div class="payment-header">
+                                    <strong>⚡ Instant Payment (Zapper/SnapScan)</strong>
+                                    <span class="payment-desc">QR code instant payment</span>
+                                </div>
+                            </label>
+                        </div>
+                        
+                        <div class="payment-option">
+                            <input type="radio" id="payCOD" name="paymentMethod" value="cod">
+                            <label for="payCOD" class="payment-label">
+                                <div class="payment-header">
+                                    <strong>💰 Cash on Delivery</strong>
+                                    <span class="payment-desc">Pay when order arrives (+5% fee)</span>
+                                </div>
+                            </label>
+                        </div>
+                        
+                        <div class="payment-option">
+                            <input type="radio" id="payTerms" name="paymentMethod" value="terms">
+                            <label for="payTerms" class="payment-label">
+                                <div class="payment-header">
+                                    <strong>📋 30-Day Account Terms</strong>
+                                    <span class="payment-desc">For registered business customers</span>
+                                </div>
+                            </label>
+                        </div>
+                        
+                        <div class="payment-option">
+                            <input type="radio" id="payPO" name="paymentMethod" value="purchase-order">
+                            <label for="payPO" class="payment-label">
+                                <div class="payment-header">
+                                    <strong>📄 Purchase Order</strong>
+                                    <span class="payment-desc">Submit PO for approval</span>
+                                </div>
+                            </label>
+                        </div>
+                        
+                        <div class="payment-option">
+                            <input type="radio" id="payQuote" name="paymentMethod" value="quote">
+                            <label for="payQuote" class="payment-label">
+                                <div class="payment-header">
+                                    <strong>📊 Request Quote</strong>
+                                    <span class="payment-desc">For large orders or bulk pricing</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div id="paymentDetails" style="margin-top: 20px;"></div>
+                    
+                    <div class="checkout-nav">
+                        <button class="checkout-back-btn" onclick="prevCheckoutStep()">Back</button>
+                        <button class="checkout-next-btn" onclick="nextCheckoutStep()">Review Order</button>
+                    </div>
+                </div>
+                
+                <!-- Step 4: Final Confirmation -->
+                <div class="checkout-step" id="step4">
+                    <div id="confirmationContent">
+                        <h3>Processing Your Order...</h3>
+                        <div class="processing-spinner"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
     
-    const customerEmail = prompt('Enter your email address:');
-    if (!customerEmail) return;
+    document.body.appendChild(checkoutModal);
     
-    const customerPhone = prompt('Enter your phone number:');
-    if (!customerPhone) return;
+    // Add payment method change handlers
+    document.querySelectorAll('input[name="paymentMethod"]').forEach(radio => {
+        radio.addEventListener('change', handlePaymentMethodChange);
+    });
     
-    const paymentMethod = prompt('Choose payment method:\n1. Credit Card\n2. EFT Transfer\n3. Cash on Delivery\n\nEnter 1, 2, or 3:');
-    
-    let paymentDetails = '';
-    if (paymentMethod === '1') {
-        paymentDetails = 'Credit Card - Payment will be processed securely';
-    } else if (paymentMethod === '2') {
-        paymentDetails = 'EFT Transfer - Banking details will be sent to your email';
-    } else if (paymentMethod === '3') {
-        paymentDetails = 'Cash on Delivery - Pay when your order arrives';
-    } else {
-        alert('Invalid payment method selected');
-        return;
+    // Initialize first payment method
+    handlePaymentMethodChange();
+}
+
+let currentCheckoutStep = 1;
+
+function nextCheckoutStep() {
+    if (currentCheckoutStep === 2) {
+        // Validate customer information
+        if (!validateCustomerInfo()) {
+            alert('Please fill in all required fields');
+            return;
+        }
     }
     
-    // Generate order ID
-    const orderId = 'KH-' + Date.now();
+    if (currentCheckoutStep < 4) {
+        currentCheckoutStep++;
+        showCheckoutStep(currentCheckoutStep);
+        
+        if (currentCheckoutStep === 4) {
+            processOrder();
+        }
+    }
+}
+
+function prevCheckoutStep() {
+    if (currentCheckoutStep > 1) {
+        currentCheckoutStep--;
+        showCheckoutStep(currentCheckoutStep);
+    }
+}
+
+function showCheckoutStep(step) {
+    // Hide all steps
+    document.querySelectorAll('.checkout-step').forEach(stepEl => {
+        stepEl.classList.remove('active');
+    });
     
-    // Show order confirmation
-    alert(`🎉 ORDER CONFIRMED!\n\nOrder ID: ${orderId}\nCustomer: ${customerName}\nEmail: ${customerEmail}\nPhone: ${customerPhone}\nTotal: R${total.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}\nPayment: ${paymentDetails}\n\n✅ We'll contact you within 24 hours to confirm delivery details!\n\nThank you for choosing Khavho Groups!`);
+    // Show current step
+    const currentStepEl = document.getElementById(`step${step}`);
+    if (currentStepEl) {
+        currentStepEl.classList.add('active');
+    }
     
-    // Clear cart
-    localStorage.removeItem('khavho_cart');
-    updateCartDisplay();
+    // Update progress
+    document.querySelectorAll('.progress-step').forEach((stepEl, index) => {
+        if (index < step - 1) {
+            stepEl.classList.add('completed');
+            stepEl.classList.remove('active');
+        } else if (index === step - 1) {
+            stepEl.classList.add('active');
+            stepEl.classList.remove('completed');
+        } else {
+            stepEl.classList.remove('active', 'completed');
+        }
+    });
+}
+
+function validateCustomerInfo() {
+    const requiredFields = ['firstName', 'lastName', 'customerEmail', 'customerPhone', 'deliveryMethod'];
     
-    // Close cart
-    const cartSidebar = document.getElementById('cartSidebar');
-    const cartOverlay = document.getElementById('cartOverlay');
-    if (cartSidebar) cartSidebar.classList.remove('open');
-    if (cartOverlay) cartOverlay.classList.remove('active');
+    for (const fieldId of requiredFields) {
+        const field = document.getElementById(fieldId);
+        if (!field || !field.value.trim()) {
+            field?.focus();
+            return false;
+        }
+    }
+    
+    // Check delivery address if needed
+    const deliveryMethod = document.getElementById('deliveryMethod').value;
+    if ((deliveryMethod === 'delivery' || deliveryMethod === 'site-delivery')) {
+        const deliveryAddress = document.getElementById('deliveryAddress');
+        if (!deliveryAddress || !deliveryAddress.value.trim()) {
+            deliveryAddress?.focus();
+            return false;
+        }
+    }
+    
+    return true;
+}
+
+function toggleDeliveryAddress() {
+    const deliveryMethod = document.getElementById('deliveryMethod').value;
+    const addressGroup = document.getElementById('deliveryAddressGroup');
+    
+    if (deliveryMethod === 'delivery' || deliveryMethod === 'site-delivery') {
+        addressGroup.style.display = 'block';
+        document.getElementById('deliveryAddress').required = true;
+    } else {
+        addressGroup.style.display = 'none';
+        document.getElementById('deliveryAddress').required = false;
+    }
+}
+
+function handlePaymentMethodChange() {
+    const selectedMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+    const paymentDetails = document.getElementById('paymentDetails');
+    
+    switch (selectedMethod) {
+        case 'eft':
+            paymentDetails.innerHTML = `
+                <div class="payment-info">
+                    <h4>EFT Payment Details</h4>
+                    <p>After order confirmation, you'll receive banking details to complete the transfer.</p>
+                    <ul>
+                        <li>Account Name: Khavho Groups (Pty) Ltd</li>
+                        <li>Bank: Standard Bank</li>
+                        <li>Account details will be provided via email</li>
+                    </ul>
+                </div>
+            `;
+            break;
+        case 'card':
+            paymentDetails.innerHTML = `
+                <div class="payment-info">
+                    <h4>Card Payment</h4>
+                    <p>You'll be redirected to a secure payment gateway to complete your card payment.</p>
+                </div>
+            `;
+            break;
+        case 'zapper':
+            paymentDetails.innerHTML = `
+                <div class="payment-info">
+                    <h4>Instant Payment</h4>
+                    <p>A QR code will be generated for instant payment via Zapper, SnapScan, or banking app.</p>
+                </div>
+            `;
+            break;
+        case 'cod':
+            paymentDetails.innerHTML = `
+                <div class="payment-info">
+                    <h4>Cash on Delivery</h4>
+                    <p><strong>Additional 5% fee applies</strong></p>
+                    <p>Pay with cash or card when your order is delivered.</p>
+                </div>
+            `;
+            break;
+        case 'terms':
+            paymentDetails.innerHTML = `
+                <div class="payment-info">
+                    <h4>30-Day Account Terms</h4>
+                    <p>Available for registered business customers with approved credit.</p>
+                    <div class="form-group">
+                        <label>Account Number</label>
+                        <input type="text" id="accountNumber" placeholder="Your account number">
+                    </div>
+                </div>
+            `;
+            break;
+        case 'purchase-order':
+            paymentDetails.innerHTML = `
+                <div class="payment-info">
+                    <h4>Purchase Order</h4>
+                    <div class="form-group">
+                        <label>PO Number</label>
+                        <input type="text" id="poNumber" placeholder="Your purchase order number" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Authorized by</label>
+                        <input type="text" id="authorizedBy" placeholder="Name of authorizing person" required>
+                    </div>
+                </div>
+            `;
+            break;
+        case 'quote':
+            paymentDetails.innerHTML = `
+                <div class="payment-info">
+                    <h4>Request Quote</h4>
+                    <p>Our team will prepare a detailed quote for your consideration.</p>
+                    <div class="form-group">
+                        <label>Additional Requirements</label>
+                        <textarea id="quoteRequirements" rows="3" placeholder="Special requirements, bulk quantities, delivery timeline, etc."></textarea>
+                    </div>
+                </div>
+            `;
+            break;
+    }
+}
+
+function processOrder() {
+    const cart = JSON.parse(localStorage.getItem('khavho_cart') || '[]');
+    const confirmationContent = document.getElementById('confirmationContent');
+    
+    // Collect all order data
+    const orderData = {
+        id: 'KHV-' + Date.now(),
+        customer: {
+            firstName: document.getElementById('firstName').value,
+            lastName: document.getElementById('lastName').value,
+            company: document.getElementById('companyName').value,
+            email: document.getElementById('customerEmail').value,
+            phone: document.getElementById('customerPhone').value,
+            vatNumber: document.getElementById('vatNumber').value
+        },
+        delivery: {
+            method: document.getElementById('deliveryMethod').value,
+            address: document.getElementById('deliveryAddress').value,
+            instructions: document.getElementById('specialInstructions').value
+        },
+        payment: {
+            method: document.querySelector('input[name="paymentMethod"]:checked').value
+        },
+        items: cart,
+        totals: {
+            subtotal: cart.reduce((sum, item) => sum + (parseFloat(item.price || 0) * item.quantity), 0),
+            vat: cart.reduce((sum, item) => sum + (parseFloat(item.price || 0) * item.quantity), 0) * 0.15,
+            total: cart.reduce((sum, item) => sum + (parseFloat(item.price || 0) * item.quantity), 0) * 1.15
+        },
+        createdAt: new Date().toISOString(),
+        status: 'pending'
+    };
+    
+    // Show processing
+    confirmationContent.innerHTML = `
+        <h3>Processing Your Order...</h3>
+        <div class="processing-spinner"></div>
+        <p>Please wait while we process your order.</p>
+    `;
+    
+    // Simulate processing time
+    setTimeout(() => {
+        // Show success
+        confirmationContent.innerHTML = `
+            <div class="order-success">
+                <div class="success-icon">✅</div>
+                <h3>Order Confirmed!</h3>
+                <div class="order-details">
+                    <p><strong>Order ID:</strong> ${orderData.id}</p>
+                    <p><strong>Customer:</strong> ${orderData.customer.firstName} ${orderData.customer.lastName}</p>
+                    <p><strong>Email:</strong> ${orderData.customer.email}</p>
+                    <p><strong>Total:</strong> R${orderData.totals.total.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</p>
+                    <p><strong>Payment:</strong> ${getPaymentMethodName(orderData.payment.method)}</p>
+                </div>
+                <div class="next-steps">
+                    <h4>What happens next?</h4>
+                    <ul>
+                        <li>You'll receive an email confirmation within 5 minutes</li>
+                        <li>Our team will contact you within 24 hours</li>
+                        <li>${getPaymentInstructions(orderData.payment.method)}</li>
+                        <li>Delivery will be arranged as per your selection</li>
+                    </ul>
+                </div>
+                <div class="order-actions">
+                    <button onclick="closeCheckout()" class="btn-primary">Close</button>
+                    <button onclick="sendOrderWhatsApp('${orderData.id}')" class="btn-secondary">Send via WhatsApp</button>
+                </div>
+            </div>
+        `;
+        
+        // Clear cart
+        localStorage.removeItem('khavho_cart');
+        updateCartDisplay();
+        
+        // Close cart sidebar
+        const cartSidebar = document.getElementById('cartSidebar');
+        const cartOverlay = document.getElementById('cartOverlay');
+        if (cartSidebar) cartSidebar.classList.remove('open');
+        if (cartOverlay) cartOverlay.classList.remove('active');
+        
+    }, 3000);
+}
+
+function getPaymentMethodName(method) {
+    const methods = {
+        'eft': 'EFT Bank Transfer',
+        'card': 'Credit/Debit Card',
+        'zapper': 'Instant Payment (Zapper/SnapScan)',
+        'cod': 'Cash on Delivery',
+        'terms': '30-Day Account Terms',
+        'purchase-order': 'Purchase Order',
+        'quote': 'Quote Request'
+    };
+    return methods[method] || method;
+}
+
+function getPaymentInstructions(method) {
+    const instructions = {
+        'eft': 'Banking details will be sent to your email',
+        'card': 'Payment link will be sent to your email',
+        'zapper': 'QR code will be sent for instant payment',
+        'cod': 'Pay cash/card on delivery (+5% fee)',
+        'terms': 'Invoice will be sent for 30-day payment',
+        'purchase-order': 'PO will be processed for approval',
+        'quote': 'Detailed quote will be prepared and sent'
+    };
+    return instructions[method] || 'Payment instructions will be provided';
+}
+
+function sendOrderWhatsApp(orderId) {
+    const message = `Hi! I just placed order ${orderId} on your website. Please confirm receipt and provide any additional details needed.`;
+    const whatsappURL = `https://wa.me/27766927310?text=${encodeURIComponent(message)}`;
+    window.open(whatsappURL, '_blank');
+}
+
+function closeCheckout() {
+    const modal = document.querySelector('.checkout-modal');
+    if (modal) {
+        modal.remove();
+    }
+    currentCheckoutStep = 1;
+}
 }
 
 // Make cart functions available globally
