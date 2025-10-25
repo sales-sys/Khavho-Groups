@@ -1058,10 +1058,16 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .product-price {
-    font-size: 18px;
-    font-weight: 700;
+    font-size: 20px;
+    font-weight: 800;
     color: var(--primary-orange);
-    margin-bottom: 8px;
+    margin-bottom: 12px;
+    padding: 8px 12px;
+    background: rgba(243, 112, 33, 0.1);
+    border-radius: 6px;
+    border-left: 4px solid var(--primary-orange);
+    display: inline-block;
+    letter-spacing: 0.5px;
 }
 
 .product-actions {
@@ -4122,9 +4128,16 @@ h1, h2, h3, h4, h5, h6 {
 
 
 .category-showcase .product-price {
-    font-size: 1.3rem;
-    font-weight: 700;
+    font-size: 22px;
+    font-weight: 800;
     color: var(--primary-orange);
+    padding: 10px 14px;
+    background: rgba(243, 112, 33, 0.1);
+    border-radius: 8px;
+    border-left: 4px solid var(--primary-orange);
+    display: inline-block;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
 }
 
 .category-showcase .product-actions {
