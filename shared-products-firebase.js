@@ -1584,6 +1584,24 @@ function contactAboutProduct(productId, productName) {
     window.open(whatsappURL, '_blank');
 }
 
+function toggleCart() {
+    const cartSidebar = document.getElementById('cartSidebar');
+    const cartOverlay = document.getElementById('cartOverlay');
+    
+    if (cartSidebar && cartOverlay) {
+        const isOpen = cartSidebar.classList.contains('open');
+        
+        if (isOpen) {
+            cartSidebar.classList.remove('open');
+            cartOverlay.classList.remove('active');
+        } else {
+            cartSidebar.classList.add('open');
+            cartOverlay.classList.add('active');
+            updateCartDisplay();
+        }
+    }
+}
+
 // Make functions globally available
 window.filterProducts = filterProducts;
 window.addToCart = addToCart;
@@ -1591,6 +1609,9 @@ window.contactViaWhatsApp = contactViaWhatsApp;
 window.updateCartDisplay = updateCartDisplay;
 window.loadFirebaseProducts = loadFirebaseProducts;
 window.contactAboutProduct = contactAboutProduct;
+window.updateCartItemQuantity = updateCartItemQuantity;
+window.removeCartItem = removeCartItem;
+window.toggleCart = toggleCart;
 
 // Function to fix categories of existing products (admin only)
 async function fixProductCategories() {

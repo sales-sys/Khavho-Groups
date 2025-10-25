@@ -740,15 +740,26 @@
                 <i data-lucide="x"></i>
             </button>
         </div>
-        <div class="cart-content" id="cartContent">
+        <div class="cart-items" id="cartItems">
             <div class="empty-cart">
                 <i data-lucide="shopping-cart"></i>
                 <p>Your cart is empty</p>
             </div>
         </div>
         <div class="cart-footer" id="cartFooter">
-            <div class="cart-total">
-                <span>Total: R<span id="cartTotal">0.00</span></span>
+            <div class="cart-totals">
+                <div class="cart-row">
+                    <span>Subtotal:</span>
+                    <span id="subtotal">R0.00</span>
+                </div>
+                <div class="cart-row">
+                    <span>VAT (15%):</span>
+                    <span id="vat">R0.00</span>
+                </div>
+                <div class="cart-row cart-total">
+                    <strong>Total:</strong>
+                    <strong id="total">R0.00</strong>
+                </div>
             </div>
             <button class="checkout-btn" onclick="checkout()">Proceed to Checkout</button>
         </div>
