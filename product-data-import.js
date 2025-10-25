@@ -682,10 +682,26 @@ function addTimestampFields(product) {
         lowStockAlert: 10, // Default low stock threshold
         status: 'active',
         tags: [],
-        imageUrl: '', // Will be populated later
+        imageUrl: generateImagePath(name), // Auto-generate based on product name
         supplier: 'Khavho Groups',
         region: 'Gauteng/Limpopo'
     };
+}
+
+// Generate image path based on product name
+function generateImagePath(productName) {
+    if (!productName) return '';
+    
+    // Convert product name to URL-friendly format
+    const imageName = productName
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, '') // Remove special characters
+        .replace(/\s+/g, '-') // Replace spaces with hyphens
+        .replace(/-+/g, '-') // Replace multiple hyphens with single
+        .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
+    
+    // Return path for WebP image (will fallback to JPG automatically)
+    return `/images/${imageName}.webp`;
 }
 
 // Export for use in other files

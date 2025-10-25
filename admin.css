@@ -1465,3 +1465,36 @@ body {
         transform: translateY(0);
     }
 }
+
+/* Info Group Styling for Auto-Image Detection */
+.info-group {
+    background: linear-gradient(135deg, #e6f3ff 0%, #f0f8ff 100%);
+    border: 1px solid #bee3f8;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 20px;
+}
+
+.info-group label {
+    color: #2b6cb0;
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: block;
+    font-size: 14px;
+}
+
+.info-text {
+    color: #4a5568;
+    font-size: 13px;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.info-text code {
+    background: rgba(0, 0, 0, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Monaco', 'Consolas', monospace;
+    font-size: 12px;
+    color: #2d3748;
+}

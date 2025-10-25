@@ -639,14 +639,17 @@ async function saveProduct() {
         showToast('Please enter a valid price', 'error');
         return;
     }
-    
+
     try {
+        // Generate image URL automatically based on product name
+        const imageUrl = generateImagePath(name);
+        
         const productData = {
             name: name,
             category: category,
             price: parseFloat(price),
             description: description,
-            imageUrl: formData.get('imageUrl')?.trim() || '',
+            imageUrl: imageUrl,
             isAvailable: formData.get('available') === 'on',
             updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         };
@@ -670,6 +673,23 @@ async function saveProduct() {
         console.error('Error saving product:', error);
         showToast('Error saving product', 'error');
     }
+}
+
+// Generate image path based on product name
+function generateImagePath(productName) {
+    if (!productName) return '';
+    
+    // Convert product name to URL-friendly format
+    // "Office Desk" → "office-desk"
+    const imageName = productName
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, '') // Remove special characters
+        .replace(/\s+/g, '-') // Replace spaces with hyphens
+        .replace(/-+/g, '-') // Replace multiple hyphens with single
+        .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
+    
+    // Return path for WebP image (will fallback to JPG automatically)
+    return `/images/${imageName}.webp`;
 }
 
 async function toggleProductAvailability(productId) {

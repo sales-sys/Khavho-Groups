@@ -621,8 +621,10 @@
                                 <option value="general">General</option>
                             </select>
                         </div>
-                        <div class="form-group">
-                            <input type="url" id="product-image-url" placeholder="Image URL (e.g., https://example.com/image.jpg)" required>
+                        <div class="form-group info-group">
+                            <label>📁 Image Auto-Detection</label>
+                            <p class="info-text">Images are automatically loaded from the <code>/images/</code> folder based on product name.<br>
+                            Example: "Office Desk" → looks for <code>office-desk.webp</code> or <code>office-desk.jpg</code></p>
                         </div>
                         <div class="form-group checkbox-group">
                             <label>
@@ -688,9 +690,9 @@
                             <option value="general">General</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label for="edit-product-image-url">Image URL:</label>
-                        <input type="url" id="edit-product-image-url" required>
+                    <div class="form-group info-group">
+                        <label>📁 Image Auto-Detection</label>
+                        <p class="info-text">Images are automatically loaded from <code>/images/</code> folder based on product name.</p>
                     </div>
                     <div class="form-group checkbox-group">
                         <label>
