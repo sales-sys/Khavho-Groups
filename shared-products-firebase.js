@@ -1521,7 +1521,10 @@ function createProductCard(product) {
             .trim();
         imageUrl = `images/${imageName}.webp`;
         console.log(`🖼️ Auto-generated image path for "${product.name}": ${imageUrl}`);
+        console.log(`🔍 Expected file location: ${window.location.origin}/${imageUrl}`);
     }
+    
+    console.log(`📦 Creating card for: ${product.name}, Image: ${imageUrl || 'NONE'}, Category: ${product.category || 'NONE'}`);
     
     return `
         <div class="product-card" data-category="${(product.category || '').toLowerCase().replace(/\s+/g, '-')}">
