@@ -5096,3 +5096,194 @@ img[loading="lazy"] {
         font-size: 2rem;
     }
 }
+
+/* Additional mobile styles for products page and checkout */
+@media (max-width: 768px) {
+    /* Product cards mobile optimization */
+    .products-grid {
+        grid-template-columns: 1fr !important;
+        gap: 15px !important;
+        padding: 0 10px !important;
+    }
+    
+    .product-card {
+        max-width: 100% !important;
+        margin: 0 auto !important;
+    }
+    
+    /* Cart sidebar mobile */
+    .cart-sidebar {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 100% !important;
+        border-radius: 0 !important;
+    }
+    
+    /* Enhanced checkout modal mobile responsiveness */
+    .checkout-modal {
+        padding: 5px !important;
+        align-items: flex-start !important;
+    }
+    
+    .checkout-modal-content {
+        max-width: 100% !important;
+        width: 100% !important;
+        max-height: 100vh !important;
+        border-radius: 0 !important;
+        margin: 0 !important;
+    }
+    
+    .checkout-header {
+        padding: 15px 20px !important;
+        position: sticky !important;
+        top: 0 !important;
+        background: white !important;
+        z-index: 10 !important;
+        border-bottom: 2px solid var(--border-gray) !important;
+    }
+    
+    .checkout-header h2 {
+        font-size: 18px !important;
+    }
+    
+    .checkout-progress {
+        padding: 10px 15px !important;
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+    }
+    
+    .progress-step {
+        font-size: 11px !important;
+        padding: 8px 6px !important;
+        min-width: 70px !important;
+        flex-shrink: 0 !important;
+    }
+    
+    .checkout-steps {
+        padding: 15px !important;
+    }
+    
+    .checkout-step h3 {
+        font-size: 18px !important;
+        margin-bottom: 15px !important;
+    }
+    
+    .order-item {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 10px !important;
+        padding: 12px !important;
+    }
+    
+    .item-details {
+        width: 100% !important;
+    }
+    
+    .item-name {
+        font-size: 14px !important;
+    }
+    
+    .item-quantity,
+    .item-price {
+        align-self: flex-end !important;
+    }
+    
+    .form-row {
+        flex-direction: column !important;
+        gap: 0 !important;
+    }
+    
+    .form-group {
+        margin-bottom: 12px !important;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        padding: 10px !important;
+        font-size: 16px !important; /* Prevents zoom on iOS */
+    }
+    
+    .payment-option {
+        margin-bottom: 8px !important;
+    }
+    
+    .payment-label {
+        padding: 12px !important;
+    }
+    
+    .payment-header strong {
+        font-size: 14px !important;
+    }
+    
+    .payment-desc {
+        font-size: 11px !important;
+    }
+    
+    .payment-info {
+        padding: 12px !important;
+        margin-top: 8px !important;
+    }
+    
+    .checkout-nav {
+        flex-direction: column !important;
+        gap: 10px !important;
+        margin-top: 20px !important;
+        position: sticky !important;
+        bottom: 0 !important;
+        background: white !important;
+        padding: 15px 0 !important;
+        border-top: 1px solid var(--border-gray) !important;
+    }
+    
+    .checkout-back-btn,
+    .checkout-next-btn {
+        width: 100% !important;
+        padding: 14px !important;
+        font-size: 16px !important;
+    }
+    
+    .order-success {
+        padding: 0 !important;
+    }
+    
+    .order-details {
+        padding: 15px !important;
+        margin: 15px 0 !important;
+    }
+    
+    .order-actions {
+        flex-direction: column !important;
+        gap: 10px !important;
+    }
+    
+    .btn-primary,
+    .btn-secondary {
+        width: 100% !important;
+        padding: 14px !important;
+        font-size: 16px !important;
+    }
+    
+    /* Product filters mobile */
+    .category-filter {
+        flex-wrap: wrap !important;
+        gap: 6px !important;
+        justify-content: center !important;
+    }
+    
+    .filter-btn {
+        padding: 8px 12px !important;
+        font-size: 12px !important;
+        white-space: nowrap !important;
+    }
+    
+    /* Search bar mobile */
+    .search-bar {
+        width: 100% !important;
+    }
+    
+    .search-bar input {
+        padding: 12px !important;
+        font-size: 16px !important; /* Prevents zoom on iOS */
+    }
+}
