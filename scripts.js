@@ -186,7 +186,10 @@ function showPage(pageId) {
     currentPage = pageId;
 
     // Close mobile menu if open
-    document.getElementById('mainNav').classList.remove('active');
+    const mainNav = document.getElementById('mainNav');
+    if (mainNav) {
+        mainNav.classList.remove('active');
+    }
 
     // Scroll to top
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -218,14 +221,17 @@ function toggleMobileMenu() {
     const mainNav = document.getElementById('mainNav');
     const mobileMenuToggle = document.getElementById('mobileMenuToggle');
     
-    mainNav.classList.toggle('active');
-    mobileMenuToggle.classList.toggle('active');
-    
-    // Close any open dropdowns when mobile menu is toggled
-    const dropdowns = document.querySelectorAll('.dropdown');
-    dropdowns.forEach(dropdown => {
-        dropdown.classList.remove('mobile-active');
-    });
+    // Only proceed if both elements exist
+    if (mainNav && mobileMenuToggle) {
+        mainNav.classList.toggle('active');
+        mobileMenuToggle.classList.toggle('active');
+        
+        // Close any open dropdowns when mobile menu is toggled
+        const dropdowns = document.querySelectorAll('.dropdown');
+        dropdowns.forEach(dropdown => {
+            dropdown.classList.remove('mobile-active');
+        });
+    }
 }
 
 // Handle dropdown clicks on mobile
@@ -263,43 +269,61 @@ document.addEventListener('DOMContentLoaded', function() {
         const mainNav = document.getElementById('mainNav');
         const mobileMenuToggle = document.getElementById('mobileMenuToggle');
         
-        if (!mainNav.contains(event.target) && !mobileMenuToggle.contains(event.target)) {
-            mainNav.classList.remove('active');
-            mobileMenuToggle.classList.remove('active');
-            
-            // Close dropdowns too
-            const dropdowns = document.querySelectorAll('.dropdown');
-            dropdowns.forEach(dropdown => {
-                dropdown.classList.remove('mobile-active');
-            });
+        // Only proceed if both elements exist
+        if (mainNav && mobileMenuToggle) {
+            if (!mainNav.contains(event.target) && !mobileMenuToggle.contains(event.target)) {
+                mainNav.classList.remove('active');
+                mobileMenuToggle.classList.remove('active');
+                
+                // Close dropdowns too
+                const dropdowns = document.querySelectorAll('.dropdown');
+                dropdowns.forEach(dropdown => {
+                    dropdown.classList.remove('mobile-active');
+                });
+            }
         }
     });
 });
 
 // Authentication Modal Functions
 function openLoginModal() {
-    document.getElementById('loginModal').style.display = 'flex';
-    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    const modal = document.getElementById('loginModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    }
 }
 
 function openRegisterModal() {
-    document.getElementById('registerModal').style.display = 'flex';
-    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    const modal = document.getElementById('registerModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    }
 }
 
 function showModal(modalId) {
-    document.getElementById(modalId).style.display = 'flex';
-    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    }
 }
 
 function closeModal(modalId) {
-    document.getElementById(modalId).style.display = 'none';
-    document.body.style.overflow = 'auto'; // Re-enable scrolling
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto'; // Re-enable scrolling
+    }
 }
 
 function switchModal(fromModalId, toModalId) {
     closeModal(fromModalId);
-    document.getElementById(toModalId).style.display = 'flex';
+    const toModal = document.getElementById(toModalId);
+    if (toModal) {
+        toModal.style.display = 'flex';
+    }
 }
 
 // Close modals when clicking outside
