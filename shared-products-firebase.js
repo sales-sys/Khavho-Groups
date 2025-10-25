@@ -1405,6 +1405,7 @@ function createHomepageProductCard(product, index) {
             </div>
             <div class="product-info">
                 <h3 class="product-title">${productName}</h3>
+                <p class="product-description">${description}</p>
                 <div class="product-unit">${product.unit || 'per unit'}</div>
                 <div class="product-price">R${typeof price === 'number' ? price.toLocaleString() : price}</div>
                 <div class="product-actions">
