@@ -1,29 +1,32 @@
 // Khavho Groups - Main Website JavaScript
 
-// Initialize Lucide icons
-lucide.createIcons();
-
 // Global variables
 let currentPage = 'home';
 let cart = [];
 let products = [];
 let currentUser = null;
 
-// Firebase is initialized in firebase-config.js
-// Using secure environment variables
-
-// Firebase Authentication State Observer
-auth.onAuthStateChanged(function(user) {
-    if (user) {
-        currentUser = user;
-        updateAuthUI(true);
-        console.log('User signed in:', user.email);
-    } else {
-        currentUser = null;
-        updateAuthUI(false);
-        console.log('User signed out');
+// Wait for Firebase to be ready before setting up auth
+function initializeFirebaseAuth() {
+    if (typeof auth === 'undefined' || !auth) {
+        console.log('Firebase auth not ready, retrying...');
+        setTimeout(initializeFirebaseAuth, 100);
+        return;
     }
-});
+
+    // Firebase Authentication State Observer
+    auth.onAuthStateChanged(function(user) {
+        if (user) {
+            currentUser = user;
+            updateAuthUI(true);
+            console.log('User signed in:', user.email);
+        } else {
+            currentUser = null;
+            updateAuthUI(false);
+            console.log('User signed out');
+        }
+    });
+}
 
 async function updateAuthUI(isSignedIn) {
     const authButtons = document.querySelectorAll('.auth-buttons');
@@ -142,24 +145,6 @@ window.showCartModal = showCartModal;
 window.proceedToCheckout = proceedToCheckout;
 window.clearCart = clearCart;
 
-// Initialize the application
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 Main scripts initializing...');
-    initializeProducts();
-    loadCartFromStorage();
-    updateCartDisplay();
-    animateCounters();
-    setupScrollEffects();
-    
-    // Force product refresh after a short delay
-    setTimeout(() => {
-        console.log('🔄 Forcing product refresh...');
-        if (typeof window.refreshProducts === 'function') {
-            window.refreshProducts();
-        }
-    }, 3000);
-});
-
 // Navigation functions
 function showPage(pageId) {
     // Hide all pages
@@ -256,8 +241,8 @@ function toggleMobileDropdown(event) {
     }
 }
 
-// Add event listeners for mobile dropdown behavior
-document.addEventListener('DOMContentLoaded', function() {
+// Setup mobile dropdown handlers (moved to master init)
+function setupMobileDropdowns() {
     // Add click handlers to dropdown triggers
     const dropdownTriggers = document.querySelectorAll('.dropdown > .nav-link');
     dropdownTriggers.forEach(trigger => {
@@ -283,7 +268,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
-});
+}
 
 // Authentication Modal Functions
 function openLoginModal() {
@@ -459,7 +444,7 @@ function showErrorMessage(message) {
 }
 
 // Authentication Form Handlers with Firebase Integration
-document.addEventListener('DOMContentLoaded', function() {
+function setupAuthForms() {
     // Login form handler
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
@@ -507,7 +492,7 @@ document.addEventListener('DOMContentLoaded', function() {
             signUp(name, email, password);
         });
     }
-});
+}
 
 // Products functionality
 function initializeProducts() {
@@ -1328,11 +1313,6 @@ window.toggleDeliveryAddress = toggleDeliveryAddress;
 window.closeCheckout = closeCheckout;
 window.sendOrderWhatsApp = sendOrderWhatsApp;
 
-// Initialize cart display on page load
-document.addEventListener('DOMContentLoaded', function() {
-    updateCartDisplay();
-});
-
 // Form submission
 function submitContactForm(event) {
     event.preventDefault();
@@ -1527,8 +1507,8 @@ document.querySelectorAll('.btn, .cta-button, .subsidiary-button').forEach(eleme
 });
 
 // Initialize page animations
-document.addEventListener('DOMContentLoaded', () => {
-    // Add fade-in animation to hero content
+// Hero content animation function (called from master initialization)
+function initializeHeroAnimation() {
     const heroContent = document.querySelector('.hero-content');
     if (heroContent) {
         heroContent.style.opacity = '0';
@@ -1540,7 +1520,7 @@ document.addEventListener('DOMContentLoaded', () => {
             heroContent.style.transform = 'translateY(0)';
         }, 300);
     }
-});
+}
 
 // Ensure all clickable cards and buttons are visually clear
 document.querySelectorAll('.subsidiary-card, .service-card, .solution-category').forEach(card => {
@@ -1557,14 +1537,14 @@ document.querySelectorAll('.subsidiary-card, .service-card, .solution-category')
     });
 });
 
-// Load products when page loads and setup real-time updates
-document.addEventListener('DOMContentLoaded', function() {
+// Product loading initialization (called from master initialization)
+function initializeProducts() {
     // Load products from Firebase
     loadProducts();
     
     // Refresh products every 30 seconds to get real-time updates from admin panel
     setInterval(loadProducts, 30000);
-});
+}
 
 // Notification system (ADMIN ONLY)
 function showNotification(message, type = 'info') {
@@ -1700,4 +1680,58 @@ function debugProductCategories() {
     
     console.log('💡 To fix undefined categories, add this field to your Firebase products:');
     console.log('category: "construction" // or "investment", "financial", "consulting"');
+}
+
+// ===============================
+// MASTER INITIALIZATION FUNCTION
+// ===============================
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Khavho Groups - Master Initialization Starting...');
+    
+    // Initialize Firebase Auth
+    initializeFirebaseAuth();
+    
+    // Initialize Lucide icons
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+    
+    // Initialize cart system
+    loadCartFromStorage();
+    updateCartDisplay();
+    
+    // Initialize products if on products page
+    if (window.location.pathname.includes('products.html')) {
+        initializeProducts();
+    }
+    
+    // Initialize UI effects
+    animateCounters();
+    setupScrollEffects();
+    initializeHeroAnimation();
+    
+    // Set up event listeners for navigation and forms
+    setupEventListeners();
+    setupMobileDropdowns();
+    setupAuthForms();
+    
+    console.log('✅ Khavho Groups - Initialization Complete!');
+});
+
+// Consolidated event listeners setup
+function setupEventListeners() {
+    // Setup auth form listeners if they exist
+    const contactForm = document.getElementById('contactForm');
+    if (contactForm) {
+        contactForm.addEventListener('submit', submitContactForm);
+    }
+    
+    // Setup checkout form listeners
+    const checkoutForm = document.getElementById('checkoutForm');
+    if (checkoutForm) {
+        checkoutForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            processOrder();
+        });
+    }
 }
