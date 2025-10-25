@@ -1520,6 +1520,7 @@ function createProductCard(product) {
             .replace(/-+/g, '-')
             .trim();
         imageUrl = `/images/${imageName}.webp`;
+        console.log(`🖼️ Auto-generated image path for "${product.name}": ${imageUrl}`);
     }
     
     return `
