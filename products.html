@@ -847,10 +847,32 @@
             // Initialize header scroll effect
             initializeHeaderScroll();
             
-            // Wait for Firebase to initialize
+            // Listen for products from shared system
+            window.addEventListener('productsUpdated', function(event) {
+                console.log('🔄 Products updated from shared system:', event.detail.products.length);
+                allProducts = [...event.detail.products];
+                filteredProducts = [...allProducts];
+                const loadingElement = document.getElementById('productsLoading');
+                const productsContainer = document.getElementById('productsContainer');
+                if (loadingElement) loadingElement.style.display = 'none';
+                if (productsContainer) {
+                    productsContainer.style.display = 'block';
+                    displayProducts();
+                }
+            });
+            
+            // Try to load products immediately if shared system already loaded
             setTimeout(() => {
                 loadProducts();
-            }, 500);
+            }, 100);
+            
+            // Fallback - try again after shared system has time to initialize
+            setTimeout(() => {
+                if (allProducts.length === 0) {
+                    console.log('🔄 Fallback product loading...');
+                    loadProducts();
+                }
+            }, 1000);
         });
         
         // Header scroll effect
@@ -875,7 +897,7 @@
             }
         }
 
-        // Load products from Firebase
+        // Load products from shared system
         async function loadProducts() {
             const loadingElement = document.getElementById('productsLoading');
             const productsContainer = document.getElementById('productsContainer');
@@ -886,22 +908,45 @@
             noProductsElement.style.display = 'none';
 
             try {
+                // Check if products are already loaded by shared system
+                if (window.getSharedProducts && typeof window.getSharedProducts === 'function') {
+                    const sharedProducts = window.getSharedProducts();
+                    if (sharedProducts && sharedProducts.length > 0) {
+                        console.log('✅ Using shared products:', sharedProducts.length);
+                        allProducts = [...sharedProducts];
+                        filteredProducts = [...allProducts];
+                        displayProducts();
+                        loadingElement.style.display = 'none';
+                        productsContainer.style.display = 'block';
+                        return;
+                    }
+                }
+
+                // If shared system hasn't loaded yet, use simple query without compound index
                 if (!window.db) {
                     throw new Error('Firebase not initialized');
                 }
 
-                const snapshot = await window.db.collection('products')
-                    .where('isAvailable', '==', true)
-                    .orderBy('category')
-                    .orderBy('name')
-                    .get();
+                console.log('🔄 Loading products directly from Firebase...');
+                const snapshot = await window.db.collection('products').get();
 
                 allProducts = [];
                 snapshot.forEach(doc => {
-                    allProducts.push({ id: doc.id, ...doc.data() });
+                    const productData = doc.data();
+                    if (productData.isAvailable !== false) { // Include if true or undefined
+                        allProducts.push({ id: doc.id, ...productData });
+                    }
                 });
 
-                console.log('✅ Loaded products:', allProducts.length);
+                // Sort products manually by category and name
+                allProducts.sort((a, b) => {
+                    if (a.category !== b.category) {
+                        return a.category.localeCompare(b.category);
+                    }
+                    return a.name.localeCompare(b.name);
+                });
+
+                console.log('✅ Loaded products directly:', allProducts.length);
                 
                 filteredProducts = [...allProducts];
                 displayProducts();
