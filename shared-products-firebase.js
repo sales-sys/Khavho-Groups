@@ -400,7 +400,12 @@ function createProductCard(product, index) {
         card.innerHTML = `
             <div class="product-image">
                 ${product.imageUrl ? 
-                    createOptimizedImage(getImageUrl(product.imageUrl), productName, 'product-img') :
+                    `<img src="${getImageUrl(product.imageUrl)}" alt="${productName}" 
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" 
+                         loading="lazy" />
+                    <div class="product-placeholder" style="display: none;">
+                        <i data-lucide="${getProductIcon(category)}"></i>
+                    </div>` :
                     `<div class="product-placeholder">
                         <i data-lucide="${getProductIcon(category)}"></i>
                     </div>`
@@ -410,7 +415,7 @@ function createProductCard(product, index) {
             <div class="product-content">
                 <div class="product-category">${getCategoryDisplayName(category)}</div>
                 <h3 class="product-title">${productName}</h3>
-                <p class="product-description">${description}</p>
+                <p class="product-description">${description || 'High-quality product for professional use.'}</p>
                 <div class="product-price">R${typeof price === 'number' ? price.toLocaleString() : price}</div>
                 <div class="product-actions">
                     <button class="add-to-cart-btn ${isAvailable ? 'available' : 'unavailable'}" 
@@ -1373,7 +1378,12 @@ function createHomepageProductCard(product, index) {
         <div class="product-card homepage-card" onclick="showProductDetails('${productId}', '${productName}', '${category}', '${price}', '${description}', '${productCode}')">
             <div class="product-image">
                 ${product.imageUrl ? 
-                    createOptimizedImage(getImageUrl(product.imageUrl), productName, 'product-img') :
+                    `<img src="${getImageUrl(product.imageUrl)}" alt="${productName}" 
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" 
+                         loading="lazy" />
+                    <div class="product-placeholder" style="display: none;">
+                        <i data-lucide="${getProductIcon(category)}"></i>
+                    </div>` :
                     `<div class="product-placeholder">
                         <i data-lucide="${getProductIcon(category)}"></i>
                     </div>`
