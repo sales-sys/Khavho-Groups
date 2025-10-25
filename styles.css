@@ -4405,6 +4405,115 @@ body.modal-open {
     overflow: hidden;
 }
 
+/* Optimized Image Loading - WebP Support */
+.product-img,
+.product-image picture,
+.product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px 8px 0 0;
+    background-color: var(--light-gray);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.product-image picture {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+/* Image lazy loading optimization */
+.product-img[loading="lazy"] {
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.product-img.loaded {
+    opacity: 1;
+}
+
+/* Enhanced product placeholder styling */
+.product-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--light-gray) 0%, #f1f5f9 100%);
+    color: var(--medium-gray);
+    font-size: 2.5rem;
+    border-radius: 8px 8px 0 0;
+    transition: all 0.3s ease;
+}
+
+.product-placeholder i {
+    opacity: 0.6;
+    transition: all 0.3s ease;
+}
+
+.product-card:hover .product-placeholder i {
+    opacity: 0.8;
+    transform: scale(1.1);
+}
+
+/* Image loading states */
+.product-image {
+    position: relative;
+    overflow: hidden;
+}
+
+.product-image::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255,255,255,0.4), 
+        transparent
+    );
+    transform: translateX(-100%);
+    animation: shimmer 1.5s infinite;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.product-image.loaded::before {
+    display: none;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* WebP image optimization styles */
+picture {
+    display: block;
+}
+
+picture img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Performance optimizations for images */
+img[loading="lazy"] {
+    content-visibility: auto;
+}
+
+.product-card img {
+    will-change: transform;
+}
+
+.product-card:hover img {
+    transform: scale(1.05);
+}
+
 /* Mobile responsive modal */
 @media (max-width: 768px) {
     .product-modal {
@@ -4440,5 +4549,9 @@ body.modal-open {
     
     .price-display {
         font-size: 1.5rem;
+    }
+    
+    .product-placeholder {
+        font-size: 2rem;
     }
 }

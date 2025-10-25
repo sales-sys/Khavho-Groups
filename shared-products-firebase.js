@@ -400,11 +400,8 @@ function createProductCard(product, index) {
         card.innerHTML = `
             <div class="product-image">
                 ${product.imageUrl ? 
-                    `<img src="${getImageUrl(product.imageUrl)}" alt="${productName}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-                    <div class="product-icon" style="display: none;">
-                        <i data-lucide="${getProductIcon(category)}"></i>
-                    </div>` :
-                    `<div class="product-icon">
+                    createOptimizedImage(getImageUrl(product.imageUrl), productName, 'product-img') :
+                    `<div class="product-placeholder">
                         <i data-lucide="${getProductIcon(category)}"></i>
                     </div>`
                 }
@@ -491,15 +488,86 @@ function getCategoryDisplayName(category) {
     return names[category] || category || 'Product';
 }
 
-// Convert Google Drive share URL to direct image URL
+// Enhanced image URL processing with WebP support and performance optimization
 function getImageUrl(url) {
-    if (url && url.includes('drive.google.com')) {
+    if (!url) return '';
+    
+    // Handle Google Drive URLs
+    if (url.includes('drive.google.com')) {
         const fileId = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
         if (fileId) {
             return `https://drive.google.com/uc?export=view&id=${fileId[1]}`;
         }
     }
-    return url || '';
+    
+    // Handle local WebP images and other formats
+    if (url.startsWith('/') || url.startsWith('./') || url.startsWith('../')) {
+        // Local image path - check if it's already WebP or convert if needed
+        return url;
+    }
+    
+    // Handle external URLs - return as is
+    return url;
+}
+
+// Create optimized image element with WebP support and fallbacks
+function createOptimizedImage(imageUrl, altText, className = '') {
+    if (!imageUrl) {
+        return `<div class="product-placeholder ${className}">
+            <i data-lucide="image"></i>
+        </div>`;
+    }
+    
+    // Check if browser supports WebP
+    const supportsWebP = checkWebPSupport();
+    
+    // If it's a local image without extension, try WebP first with fallback
+    if (imageUrl.startsWith('/images/') && !imageUrl.includes('.')) {
+        if (supportsWebP) {
+            return `<picture class="${className}">
+                <source srcset="${imageUrl}.webp" type="image/webp">
+                <source srcset="${imageUrl}.jpg" type="image/jpeg">
+                <img src="${imageUrl}.jpg" alt="${altText}" 
+                     onerror="this.parentElement.innerHTML='<div class=&quot;product-placeholder&quot;><i data-lucide=&quot;image&quot;></i></div>'; lucide.createIcons();" 
+                     loading="lazy">
+            </picture>`;
+        }
+    }
+    
+    // For WebP files, add fallback to JPG
+    if (imageUrl.endsWith('.webp')) {
+        const fallbackUrl = imageUrl.replace('.webp', '.jpg');
+        return `<picture class="${className}">
+            <source srcset="${imageUrl}" type="image/webp">
+            <source srcset="${fallbackUrl}" type="image/jpeg">
+            <img src="${fallbackUrl}" alt="${altText}" 
+                 onerror="this.parentElement.innerHTML='<div class=&quot;product-placeholder&quot;><i data-lucide=&quot;image&quot;></i></div>'; lucide.createIcons();" 
+                 loading="lazy">
+        </picture>`;
+    }
+    
+    // Regular image with lazy loading
+    return `<img src="${imageUrl}" alt="${altText}" class="${className}"
+             onerror="this.parentElement.innerHTML='<div class=&quot;product-placeholder&quot;><i data-lucide=&quot;image&quot;></i></div>'; lucide.createIcons();" 
+             loading="lazy">`;
+}
+
+// Check WebP support
+function checkWebPSupport() {
+    // Check if we've already tested WebP support
+    if (typeof window.webpSupported !== 'undefined') {
+        return window.webpSupported;
+    }
+    
+    // Create a small WebP image to test support
+    const webP = new Image();
+    webP.onload = webP.onerror = function () {
+        window.webpSupported = (webP.height === 2);
+    };
+    webP.src = 'data:image/webp;base64,UklGRjoAAABXRUJQVlA4IC4AAACyAgCdASoCAAIALmk0mk0iIiIiIgBoSygABc6WWgAA/veff/0PP8bA//LwYAAA';
+    
+    // Return false by default, will be updated async
+    return false;
 }
 
 // Shopping cart functions with Firebase integration
@@ -1305,11 +1373,8 @@ function createHomepageProductCard(product, index) {
         <div class="product-card homepage-card" onclick="showProductDetails('${productId}', '${productName}', '${category}', '${price}', '${description}', '${productCode}')">
             <div class="product-image">
                 ${product.imageUrl ? 
-                    `<img src="${getImageUrl(product.imageUrl)}" alt="${productName}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
-                    <div class="product-icon" style="display: none;">
-                        <i data-lucide="${getProductIcon(category)}"></i>
-                    </div>` :
-                    `<div class="product-icon">
+                    createOptimizedImage(getImageUrl(product.imageUrl), productName, 'product-img') :
+                    `<div class="product-placeholder">
                         <i data-lucide="${getProductIcon(category)}"></i>
                     </div>`
                 }
@@ -1438,7 +1503,7 @@ function createProductCard(product) {
         <div class="product-card" data-category="${(product.category || '').toLowerCase().replace(/\s+/g, '-')}">
             <div class="product-image">
                 ${product.imageUrl ? 
-                    `<img src="${product.imageUrl}" alt="${product.name}" onerror="this.src='/images/placeholder-product.jpg'">` :
+                    createOptimizedImage(product.imageUrl, product.name, 'product-img') :
                     `<div class="product-placeholder"><i data-lucide="package"></i></div>`
                 }
                 ${product.productCode ? `<div class="product-code">${product.productCode}</div>` : ''}

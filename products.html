@@ -614,9 +614,15 @@
                                 <i data-lucide="shopping-cart"></i>
                                 <span class="cart-count" id="cartCount">0</span>
                             </button>
-                            <div class="auth-section" id="authSection">
-                                <button class="auth-btn login-btn" onclick="showModal('loginModal')">Login</button>
-                                <button class="auth-btn register-btn" onclick="showModal('registerModal')">Register</button>
+                            <div class="auth-section auth-buttons" id="authSection">
+                                <button class="auth-btn login-btn" onclick="openLoginModal()">
+                                    <i data-lucide="log-in"></i>
+                                    Login
+                                </button>
+                                <button class="auth-btn register-btn" onclick="openRegisterModal()">
+                                    <i data-lucide="user-plus"></i>
+                                    Register
+                                </button>
                             </div>
                             <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
                                 <i data-lucide="menu"></i>
@@ -757,71 +763,68 @@
     <!-- Cart Overlay -->
     <div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
 
-    <!-- Include shared components -->
-    <div id="shared-modals">
-        <!-- Authentication Modals -->
-        <div class="auth-modal" id="loginModal">
-            <div class="auth-modal-content">
-                <span class="modal-close" onclick="closeModal('loginModal')">&times;</span>
-                <div class="auth-header">
-                    <h2>Login to Your Account</h2>
-                    <p>Access your dashboard and manage your products</p>
-                </div>
-                <form id="loginForm" class="auth-form">
-                    <div class="form-group">
-                        <label for="loginEmail">Email Address</label>
-                        <input type="email" id="loginEmail" autocomplete="email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="loginPassword">Password</label>
-                        <input type="password" id="loginPassword" autocomplete="current-password" required>
-                    </div>
-                    <button type="submit" class="auth-form-btn">
-                        <i data-lucide="log-in"></i>
-                        Login
-                    </button>
-                    <p class="auth-switch">
-                        Don't have an account? 
-                        <a href="#" onclick="switchModal('loginModal', 'registerModal')">Register here</a>
-                    </p>
-                </form>
+    <!-- Authentication Modals (Same as index.html) -->
+    <div class="auth-modal" id="loginModal">
+        <div class="auth-modal-content">
+            <span class="modal-close" onclick="closeModal('loginModal')">&times;</span>
+            <div class="auth-header">
+                <h2>Login to Your Account</h2>
+                <p>Access your dashboard and manage your account</p>
             </div>
+            <form id="loginForm" class="auth-form">
+                <div class="form-group">
+                    <label for="loginEmail">Email Address</label>
+                    <input type="email" id="loginEmail" autocomplete="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" autocomplete="current-password" required>
+                </div>
+                <button type="submit" class="auth-form-btn">
+                    <i data-lucide="log-in"></i>
+                    Login
+                </button>
+                <p class="auth-switch">
+                    Don't have an account? 
+                    <a href="#" onclick="switchModal('loginModal', 'registerModal')">Register here</a>
+                </p>
+            </form>
         </div>
+    </div>
 
-        <div class="auth-modal" id="registerModal">
-            <div class="auth-modal-content">
-                <span class="modal-close" onclick="closeModal('registerModal')">&times;</span>
-                <div class="auth-header">
-                    <h2>Create Your Account</h2>
-                    <p>Join Khavho Groups today</p>
-                </div>
-                <form id="registerForm" class="auth-form">
-                    <div class="form-group">
-                        <label for="registerName">Full Name</label>
-                        <input type="text" id="registerName" autocomplete="name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="registerEmail">Email Address</label>
-                        <input type="email" id="registerEmail" autocomplete="email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="registerPassword">Password</label>
-                        <input type="password" id="registerPassword" autocomplete="new-password" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="confirmPassword">Confirm Password</label>
-                        <input type="password" id="confirmPassword" autocomplete="new-password" required>
-                    </div>
-                    <button type="submit" class="auth-form-btn">
-                        <i data-lucide="user-plus"></i>
-                        Register
-                    </button>
-                    <p class="auth-switch">
-                        Already have an account? 
-                        <a href="#" onclick="switchModal('registerModal', 'loginModal')">Login here</a>
-                    </p>
-                </form>
+    <div class="auth-modal" id="registerModal">
+        <div class="auth-modal-content">
+            <span class="modal-close" onclick="closeModal('registerModal')">&times;</span>
+            <div class="auth-header">
+                <h2>Create Your Account</h2>
+                <p>Join Khavho Groups today</p>
             </div>
+            <form id="registerForm" class="auth-form">
+                <div class="form-group">
+                    <label for="registerName">Full Name</label>
+                    <input type="text" id="registerName" autocomplete="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerEmail">Email Address</label>
+                    <input type="email" id="registerEmail" autocomplete="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Password</label>
+                    <input type="password" id="registerPassword" autocomplete="new-password" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" autocomplete="new-password" required>
+                </div>
+                <button type="submit" class="auth-form-btn">
+                    <i data-lucide="user-plus"></i>
+                    Register
+                </button>
+                <p class="auth-switch">
+                    Already have an account? 
+                    <a href="#" onclick="switchModal('registerModal', 'loginModal')">Login here</a>
+                </p>
+            </form>
         </div>
     </div>
 
