@@ -527,7 +527,7 @@ function createOptimizedImage(imageUrl, altText, className = '') {
     const supportsWebP = checkWebPSupport();
     
     // If it's a local image without extension, try WebP first with fallback
-    if (imageUrl.startsWith('/images/') && !imageUrl.includes('.')) {
+    if (imageUrl.startsWith('images/') && !imageUrl.includes('.')) {
         if (supportsWebP) {
             return `<picture class="${className}">
                 <source srcset="${imageUrl}.webp" type="image/webp">
@@ -1519,7 +1519,7 @@ function createProductCard(product) {
             .replace(/\s+/g, '-')
             .replace(/-+/g, '-')
             .trim();
-        imageUrl = `/images/${imageName}.webp`;
+        imageUrl = `images/${imageName}.webp`;
         console.log(`🖼️ Auto-generated image path for "${product.name}": ${imageUrl}`);
     }
     
@@ -1534,7 +1534,6 @@ function createProductCard(product) {
             </div>
             
             <div class="product-content">
-                <div class="product-category">${getCategoryDisplayName(product.category)}</div>
                 <h3 class="product-title">${product.name}</h3>
                 <p class="product-description">${product.description || 'High-quality product for professional use.'}</p>
                 

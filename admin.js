@@ -614,7 +614,6 @@ function editProduct(productId) {
     document.getElementById('productCategory').value = product.category || '';
     document.getElementById('productPrice').value = product.price || '';
     document.getElementById('productDescription').value = product.description || '';
-    document.getElementById('productImageUrl').value = product.imageUrl || '';
     document.getElementById('productAvailable').checked = product.isAvailable || false;
     
     showModal('productModal');
