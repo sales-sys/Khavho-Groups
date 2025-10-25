@@ -630,94 +630,162 @@ function updateQuantity(productId, change) {
 }
 
 function updateCartDisplay() {
+    // Get cart from localStorage 
+    const cart = JSON.parse(localStorage.getItem('khavho_cart') || '[]');
+    
     const cartCount = document.getElementById('cartCount');
-    const cartItems = document.getElementById('cartItems');
-    const subtotalEl = document.getElementById('subtotal');
-    const vatEl = document.getElementById('vat');
-    const totalEl = document.getElementById('total');
+    const cartContent = document.getElementById('cartContent');
+    const cartTotal = document.getElementById('cartTotal');
     
     // Update cart count
     const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
     if (cartCount) cartCount.textContent = totalItems;
     
-    // Update cart items
-    if (cartItems) {
+    // Update cart content
+    if (cartContent) {
         if (cart.length === 0) {
-            cartItems.innerHTML = '<p style="text-align: center; color: #718096; padding: 40px;">Your cart is empty</p>';
+            cartContent.innerHTML = `
+                <div class="empty-cart">
+                    <i data-lucide="shopping-cart"></i>
+                    <p>Your cart is empty</p>
+                </div>
+            `;
         } else {
-            cartItems.innerHTML = cart.map(item => `
+            cartContent.innerHTML = cart.map(item => `
                 <div class="cart-item">
-                    <div class="cart-item-image">
-                        <i data-lucide="${getProductIcon(item.category)}"></i>
+                    <div class="cart-item-info">
+                        <h4>${item.name}</h4>
+                        <p class="cart-item-category">${item.category}</p>
+                        <p class="cart-item-price">R${parseFloat(item.price || 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</p>
                     </div>
-                    <div class="cart-item-details">
-                        <div class="cart-item-title">${item.title}</div>
-                        <div class="cart-item-price">R${item.price.toLocaleString()}</div>
+                    <div class="cart-item-controls">
                         <div class="quantity-controls">
-                            <button class="quantity-btn" onclick="updateQuantity(${item.id}, -1)">-</button>
-                            <span>${item.quantity}</span>
-                            <button class="quantity-btn" onclick="updateQuantity(${item.id}, 1)">+</button>
-                            <button class="quantity-btn" onclick="removeFromCart(${item.id})" style="margin-left: 10px; color: #e53e3e;">
-                                <i data-lucide="trash-2" width="16" height="16"></i>
-                            </button>
+                            <button class="quantity-btn" onclick="updateCartQuantity('${item.id}', -1)">-</button>
+                            <span class="quantity">${item.quantity}</span>
+                            <button class="quantity-btn" onclick="updateCartQuantity('${item.id}', 1)">+</button>
                         </div>
+                        <button class="remove-btn" onclick="removeFromCart('${item.id}')">
+                            <i data-lucide="trash-2"></i>
+                        </button>
                     </div>
                 </div>
             `).join('');
         }
     }
     
-    // Update totals
-    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const vat = subtotal * 0.15;
-    const total = subtotal + vat;
+    // Update total
+    const total = cart.reduce((sum, item) => sum + (parseFloat(item.price || 0) * item.quantity), 0);
+    if (cartTotal) cartTotal.textContent = total.toLocaleString('en-ZA', { minimumFractionDigits: 2 });
     
-    if (subtotalEl) subtotalEl.textContent = `R${subtotal.toLocaleString()}`;
-    if (vatEl) vatEl.textContent = `R${vat.toLocaleString()}`;
-    if (totalEl) totalEl.textContent = `R${total.toLocaleString()}`;
+    // Refresh icons
+    if (typeof lucide !== 'undefined' && lucide.createIcons) {
+        lucide.createIcons();
+    }
+}
+
+// Cart management functions
+function updateCartQuantity(productId, change) {
+    let cart = JSON.parse(localStorage.getItem('khavho_cart') || '[]');
+    const item = cart.find(item => item.id === productId);
     
-    // Reinitialize icons
-    lucide.createIcons();
+    if (item) {
+        item.quantity += change;
+        if (item.quantity <= 0) {
+            cart = cart.filter(item => item.id !== productId);
+        }
+        localStorage.setItem('khavho_cart', JSON.stringify(cart));
+        updateCartDisplay();
+    }
+}
+
+function removeFromCart(productId) {
+    let cart = JSON.parse(localStorage.getItem('khavho_cart') || '[]');
+    cart = cart.filter(item => item.id !== productId);
+    localStorage.setItem('khavho_cart', JSON.stringify(cart));
+    updateCartDisplay();
 }
 
 function toggleCart() {
     const cartSidebar = document.getElementById('cartSidebar');
-    if (cartSidebar) {
-        cartSidebar.classList.toggle('open');
+    const cartOverlay = document.getElementById('cartOverlay');
+    
+    if (cartSidebar && cartOverlay) {
+        const isOpen = cartSidebar.classList.contains('open');
         
-        // Update cart display when opened
-        if (typeof updateCartDisplay === 'function') {
+        if (isOpen) {
+            cartSidebar.classList.remove('open');
+            cartOverlay.classList.remove('active');
+        } else {
+            cartSidebar.classList.add('open');
+            cartOverlay.classList.add('active');
             updateCartDisplay();
         }
     }
 }
 
 function checkout() {
+    const cart = JSON.parse(localStorage.getItem('khavho_cart') || '[]');
+    
     if (cart.length === 0) {
         alert('Your cart is empty!');
         return;
     }
     
-    const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0) * 1.15;
-    alert(`Proceeding to checkout with total: R${total.toLocaleString()}\n\nThis is a demo - no actual payment will be processed.`);
+    // Calculate total
+    const total = cart.reduce((sum, item) => sum + (parseFloat(item.price || 0) * item.quantity), 0);
     
-    // Clear cart after checkout
-    cart = [];
-    updateCartDisplay();
-    saveCartToStorage();
-    toggleCart();
-}
-
-function saveCartToStorage() {
-    localStorage.setItem('khavhoCart', JSON.stringify(cart));
-}
-
-function loadCartFromStorage() {
-    const savedCart = localStorage.getItem('khavhoCart');
-    if (savedCart) {
-        cart = JSON.parse(savedCart);
+    // Simple checkout process for demo
+    const customerName = prompt('Enter your full name:');
+    if (!customerName) return;
+    
+    const customerEmail = prompt('Enter your email address:');
+    if (!customerEmail) return;
+    
+    const customerPhone = prompt('Enter your phone number:');
+    if (!customerPhone) return;
+    
+    const paymentMethod = prompt('Choose payment method:\n1. Credit Card\n2. EFT Transfer\n3. Cash on Delivery\n\nEnter 1, 2, or 3:');
+    
+    let paymentDetails = '';
+    if (paymentMethod === '1') {
+        paymentDetails = 'Credit Card - Payment will be processed securely';
+    } else if (paymentMethod === '2') {
+        paymentDetails = 'EFT Transfer - Banking details will be sent to your email';
+    } else if (paymentMethod === '3') {
+        paymentDetails = 'Cash on Delivery - Pay when your order arrives';
+    } else {
+        alert('Invalid payment method selected');
+        return;
     }
+    
+    // Generate order ID
+    const orderId = 'KH-' + Date.now();
+    
+    // Show order confirmation
+    alert(`🎉 ORDER CONFIRMED!\n\nOrder ID: ${orderId}\nCustomer: ${customerName}\nEmail: ${customerEmail}\nPhone: ${customerPhone}\nTotal: R${total.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}\nPayment: ${paymentDetails}\n\n✅ We'll contact you within 24 hours to confirm delivery details!\n\nThank you for choosing Khavho Groups!`);
+    
+    // Clear cart
+    localStorage.removeItem('khavho_cart');
+    updateCartDisplay();
+    
+    // Close cart
+    const cartSidebar = document.getElementById('cartSidebar');
+    const cartOverlay = document.getElementById('cartOverlay');
+    if (cartSidebar) cartSidebar.classList.remove('open');
+    if (cartOverlay) cartOverlay.classList.remove('active');
 }
+
+// Make cart functions available globally
+window.updateCartQuantity = updateCartQuantity;
+window.removeFromCart = removeFromCart;
+window.toggleCart = toggleCart;
+window.checkout = checkout;
+window.updateCartDisplay = updateCartDisplay;
+
+// Initialize cart display on page load
+document.addEventListener('DOMContentLoaded', function() {
+    updateCartDisplay();
+});
 
 // Form submission
 function submitContactForm(event) {
