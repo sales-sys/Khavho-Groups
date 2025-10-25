@@ -528,105 +528,8 @@
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <header class="header" id="header">
-        <div class="header-top">
-            <div class="container">
-                <div class="header-top-content">
-                    <div>Khathu@khavhogroups.com | +27 766 927 310</div>
-                    <div>Johannesburg | Serving South Africa</div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="header-main">
-            <div class="container">
-                <nav class="nav-container">
-                    <a href="index.html" class="logo">
-                        <div class="logo-icon">
-                            <img src="images/logo.png" alt="Khavho Groups Logo" onerror="this.parentElement.innerHTML='<i data-lucide=\'building-2\'></i>'">
-                        </div>
-                    </a>
-                    
-                    <div class="main-nav" id="mainNav">
-                        <ul class="nav-menu">
-                            <li class="nav-item">
-                                <a href="index.html" class="nav-link">
-                                    <i data-lucide="home"></i>
-                                    Home
-                                </a>
-                            </li>
-                            <li class="nav-item dropdown">
-                                <a href="#" class="nav-link">
-                                    <i data-lucide="building"></i>
-                                    Companies
-                                    <i data-lucide="chevron-down"></i>
-                                </a>
-                                <div class="dropdown-menu">
-                                    <a href="khavho-holdings.html" class="dropdown-item">
-                                        <strong>Khavho Holdings</strong>
-                                        <small>Construction & Development</small>
-                                    </a>
-                                    <a href="khavho-capital.html" class="dropdown-item">
-                                        <strong>Khavho Capital</strong>
-                                        <small>Investment & Asset Management</small>
-                                    </a>
-                                    <a href="khavho-inter-africa.html" class="dropdown-item">
-                                        <strong>Khavho Inter Africa</strong>
-                                        <small>Financial Services</small>
-                                    </a>
-                                </div>
-                            </li>
-                            <li class="nav-item">
-                                <a href="index.html#about" class="nav-link">
-                                    <i data-lucide="users"></i>
-                                    About
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="index.html#services" class="nav-link">
-                                    <i data-lucide="briefcase"></i>
-                                    Services
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="products.html" class="nav-link active">
-                                    <i data-lucide="package"></i>
-                                    Products
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="index.html#contact" class="nav-link">
-                                    <i data-lucide="phone"></i>
-                                    Contact
-                                </a>
-                            </li>
-                        </ul>
-                        
-                        <div class="header-cta">
-                            <button class="cart-btn" onclick="toggleCart()">
-                                <i data-lucide="shopping-cart"></i>
-                                <span class="cart-count" id="cartCount">0</span>
-                            </button>
-                            <div class="auth-section auth-buttons" id="authSection">
-                                <button class="auth-btn login-btn" onclick="openLoginModal()">
-                                    <i data-lucide="log-in"></i>
-                                    Login
-                                </button>
-                                <button class="auth-btn register-btn" onclick="openRegisterModal()">
-                                    <i data-lucide="user-plus"></i>
-                                    Register
-                                </button>
-                            </div>
-                            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
-                                <i data-lucide="menu"></i>
-                            </button>
-                        </div>
-                    </div>
-                </nav>
-            </div>
-        </div>
-    </header>
+    <!-- Unified Navigation Component -->
+    <div id="navigation-container"></div>
 
     <!-- Products Hero Section -->
     <section class="products-hero">
@@ -675,62 +578,8 @@
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>Khavho Groups</h3>
-                    <p>Building excellence across South Africa through diversified business solutions in construction and financial services.</p>
-                    <div class="social-links">
-                        <a href="#" class="social-link">
-                            <i data-lucide="facebook"></i>
-                        </a>
-                        <a href="#" class="social-link">
-                            <i data-lucide="twitter"></i>
-                        </a>
-                        <a href="#" class="social-link">
-                            <i data-lucide="linkedin"></i>
-                        </a>
-                        <a href="#" class="social-link">
-                            <i data-lucide="instagram"></i>
-                        </a>
-                    </div>
-                </div>
-                
-                <div class="footer-section">
-                    <h3>Products</h3>
-                    <ul class="footer-links">
-                        <li><a href="#" onclick="filterByCategory('civil-works', this)">Civil Works</a></li>
-                        <li><a href="#" onclick="filterByCategory('electrical', this)">Electrical</a></li>
-                        <li><a href="#" onclick="filterByCategory('mechanical', this)">Mechanical</a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-section">
-                    <h3>Subsidiaries</h3>
-                    <ul class="footer-links">
-                        <li><a href="khavho-holdings.html">Khavho Holdings</a></li>
-                        <li><a href="khavho-capital.html">Khavho Capital</a></li>
-                        <li><a href="khavho-inter-africa.html">Khavho Inter Africa</a></li>
-                    </ul>
-                </div>
-                
-                <div class="footer-section">
-                    <h3>Contact Info</h3>
-                    <ul class="footer-links">
-                        <li><i data-lucide="map-pin"></i> Johannesburg, South Africa</li>
-                        <li><i data-lucide="phone"></i> +27 766 927 310</li>
-                        <li><i data-lucide="mail"></i> Khathu@khavhogroups.com</li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="footer-bottom">
-                <p>&copy; 2018 Khavho Groups. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
+    <!-- Unified Footer Component -->
+    <div id="footer-container"></div>
 
     <!-- Cart Sidebar -->
     <div class="cart-sidebar" id="cartSidebar">
@@ -834,6 +683,7 @@
     </div>
 
     <!-- External JavaScript -->
+    <script src="components/navigation.js"></script>
     <script src="scripts.js"></script>
     <script src="shared-products-firebase.js"></script>
     <script src="contact-integration.js"></script>
@@ -897,14 +747,6 @@
             }
         }
         
-        // Mobile menu toggle
-        function toggleMobileMenu() {
-            const mainNav = document.getElementById('mainNav');
-            if (mainNav) {
-                mainNav.classList.toggle('mobile-active');
-            }
-        }
-
         // Load products from shared system
         async function loadProducts() {
             const loadingElement = document.getElementById('productsLoading');

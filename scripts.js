@@ -609,12 +609,6 @@ function getCategoryDisplayName(category) {
 // addToCart function is now in shared-products-firebase.js
 // Cart functionality handled by Firebase system
 
-function removeFromCart(productId) {
-    cart = cart.filter(item => item.id !== productId);
-    updateCartDisplay();
-    saveCartToStorage();
-}
-
 function updateQuantity(productId, change) {
     const item = cart.find(item => item.id === productId);
     if (!item) return;
@@ -622,6 +616,7 @@ function updateQuantity(productId, change) {
     item.quantity += change;
     
     if (item.quantity <= 0) {
+        // Use the main removeFromCart function
         removeFromCart(productId);
     } else {
         updateCartDisplay();
@@ -1682,23 +1677,6 @@ function showNotification(message, type = 'info') {
         notification.classList.remove('show');
         setTimeout(() => document.body.removeChild(notification), 300);
     }, 4000);
-}
-
-// Mobile dropdown toggle function
-function toggleMobileDropdown(event) {
-    event.preventDefault();
-    event.stopPropagation();
-    
-    const dropdown = document.getElementById('mobileDropdown');
-    const arrow = event.target.querySelector('.dropdown-arrow') || event.target.closest('.nav-link').querySelector('.dropdown-arrow');
-    
-    if (dropdown.style.display === 'block') {
-        dropdown.style.display = 'none';
-        arrow.style.transform = 'rotate(0deg)';
-    } else {
-        dropdown.style.display = 'block';
-        arrow.style.transform = 'rotate(180deg)';
-    }
 }
 
 // Debug function for product categories (call this in console)

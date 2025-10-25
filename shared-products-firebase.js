@@ -1703,3 +1703,9 @@ setTimeout(() => {
 */
 
 console.log('Firebase Products System loaded successfully!');
+
+// Global function exports for HTML onclick handlers
+window.addToCart = addToCart;
+window.contactAboutProduct = contactAboutProduct;
+window.closeCheckoutModal = closeCheckoutModal;
+window.toggleCart = toggleCart;
