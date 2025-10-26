@@ -31,7 +31,7 @@ class NavigationComponent {
                 <div class="header-main">
                     <div class="container">
                         <nav class="nav-container">
-                            <a href="${this.currentPage === 'home' ? '#' : 'index.html'}" class="logo" ${this.currentPage === 'home' ? "onclick=\"showPage('home')\"" : ''}>
+                            <a href="#" class="logo" onclick="showPage('home')">
                                 <div class="logo-icon">
                                     <img src="images/logo.png" alt="Khavho Groups Logo" onerror="this.parentElement.innerHTML='<i data-lucide=\\'building-2\\'></i>'">
                                 </div>
@@ -40,7 +40,7 @@ class NavigationComponent {
                             <div class="main-nav" id="mainNav">
                                 <ul class="nav-menu">
                                     <li class="nav-item">
-                                        <a href="${this.currentPage === 'home' ? '#' : 'index.html'}" class="nav-link ${this.currentPage === 'home' ? 'active' : ''}" ${this.currentPage === 'home' ? "onclick=\"showPage('home')\"" : ''}>
+                                        <a href="#" class="nav-link ${this.currentPage === 'home' ? 'active' : ''}" onclick="showPage('home')">
                                             <i data-lucide="home"></i>
                                             Home
                                         </a>
@@ -52,28 +52,28 @@ class NavigationComponent {
                                             <i data-lucide="chevron-down"></i>
                                         </a>
                                         <div class="dropdown-menu">
-                                            <a href="${this.currentPage === 'home' ? '#' : 'index.html'}" class="dropdown-item" ${this.currentPage === 'home' ? "onclick=\"showSubsidiary('holdings')\"" : ''}>
+                                            <a href="#" class="dropdown-item" onclick="showSubsidiary('holdings')">
                                                 <strong>Khavho Holdings</strong>
                                                 <small>Construction & Development</small>
                                             </a>
-                                            <a href="${this.currentPage === 'home' ? '#' : 'index.html'}" class="dropdown-item" ${this.currentPage === 'home' ? "onclick=\"showSubsidiary('capital')\"" : ''}>
+                                            <a href="#" class="dropdown-item" onclick="showSubsidiary('capital')">
                                                 <strong>Khavho Capital</strong>
                                                 <small>Investment & Asset Management</small>
                                             </a>
-                                            <a href="${this.currentPage === 'home' ? '#' : 'index.html'}" class="dropdown-item" ${this.currentPage === 'home' ? "onclick=\"showSubsidiary('inter-africa')\"" : ''}>
+                                            <a href="#" class="dropdown-item" onclick="showSubsidiary('inter-africa')">
                                                 <strong>Khavho Inter Africa</strong>
                                                 <small>Financial Services</small>
                                             </a>
                                         </div>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="${this.currentPage === 'home' ? '#' : 'index.html'}" class="nav-link" ${this.currentPage === 'home' ? "onclick=\"showPage('about')\"" : ''}>
+                                        <a href="#" class="nav-link ${this.currentPage === 'about' ? 'active' : ''}" onclick="showPage('about')">
                                             <i data-lucide="users"></i>
                                             About
                                         </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="${this.currentPage === 'home' ? '#' : 'index.html'}" class="nav-link" ${this.currentPage === 'home' ? "onclick=\"showPage('services')\"" : ''}>
+                                        <a href="#" class="nav-link ${this.currentPage === 'services' ? 'active' : ''}" onclick="showPage('services')">
                                             <i data-lucide="briefcase"></i>
                                             Services
                                         </a>
@@ -85,9 +85,12 @@ class NavigationComponent {
                                         </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="${this.currentPage === 'home' ? '#' : 'index.html'}" class="nav-link" ${this.currentPage === 'home' ? "onclick=\"showPage('contact')\"" : ''}>
+                                        <a href="#" class="nav-link ${this.currentPage === 'contact' ? 'active' : ''}" onclick="showPage('contact')">
                                             <i data-lucide="phone"></i>
                                             Contact
+                                        </a>
+                                    </li>
+                                </ul>
                                         </a>
                                     </li>
                                 </ul>
@@ -223,6 +226,11 @@ class FooterComponent {
         const container = document.getElementById(containerId);
         if (container) {
             container.innerHTML = this.render();
+            this.initializeEventListeners();
+            // Initialize Lucide icons after mounting
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
         }
     }
 }

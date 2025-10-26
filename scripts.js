@@ -158,6 +158,8 @@ window.clearCart = clearCart;
 
 // Navigation functions
 function showPage(pageId) {
+    console.log(`🔄 Navigating to page: ${pageId}`);
+    
     // Hide all pages
     document.querySelectorAll('.page-content').forEach(page => {
         page.classList.remove('active');
@@ -167,6 +169,9 @@ function showPage(pageId) {
     const pageEl = document.getElementById(pageId + 'Page');
     if (pageEl) {
         pageEl.classList.add('active');
+        console.log(`✅ Page ${pageId} is now active`);
+    } else {
+        console.error(`❌ Page element ${pageId}Page not found`);
     }
 
     // Update navigation
@@ -186,6 +191,12 @@ function showPage(pageId) {
     if (mainNav) {
         mainNav.classList.remove('active');
     }
+    
+    // Close hamburger menu if open
+    const mobileToggle = document.getElementById('mobileMenuToggle');
+    if (mobileToggle) {
+        mobileToggle.classList.remove('active');
+    }
 
     // Scroll to top
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -197,7 +208,12 @@ function showPage(pageId) {
     }
 }
 
+// Make showPage globally available
+window.showPage = showPage;
+
 function showSubsidiary(subsidiary) {
+    console.log(`🔗 Opening subsidiary: ${subsidiary}`);
+    
     // Navigate to subsidiary website
     const subsidiaryUrls = {
         'holdings': 'khavho-holdings.html',
@@ -212,8 +228,12 @@ function showSubsidiary(subsidiary) {
     }
 }
 
+// Make showSubsidiary globally available
+window.showSubsidiary = showSubsidiary;
+
 // Mobile menu toggle
 function toggleMobileMenu() {
+    console.log('🍔 Toggling mobile menu...');
     const mainNav = document.getElementById('mainNav');
     const mobileMenuToggle = document.getElementById('mobileMenuToggle');
     
@@ -222,13 +242,20 @@ function toggleMobileMenu() {
         mainNav.classList.toggle('active');
         mobileMenuToggle.classList.toggle('active');
         
+        console.log(`📱 Mobile menu is now ${mainNav.classList.contains('active') ? 'open' : 'closed'}`);
+        
         // Close any open dropdowns when mobile menu is toggled
         const dropdowns = document.querySelectorAll('.dropdown');
         dropdowns.forEach(dropdown => {
             dropdown.classList.remove('mobile-active');
         });
+    } else {
+        console.error('❌ Mobile menu elements not found');
     }
 }
+
+// Make toggleMobileMenu globally available
+window.toggleMobileMenu = toggleMobileMenu;
 
 // Handle dropdown clicks on mobile
 function toggleMobileDropdown(event) {
@@ -283,20 +310,30 @@ function setupMobileDropdowns() {
 
 // Authentication Modal Functions
 function openLoginModal() {
+    console.log('🔑 Opening login modal...');
     const modal = document.getElementById('loginModal');
     if (modal) {
         modal.style.display = 'flex';
         document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    } else {
+        console.error('❌ Login modal not found');
     }
 }
 
 function openRegisterModal() {
+    console.log('📝 Opening register modal...');
     const modal = document.getElementById('registerModal');
     if (modal) {
         modal.style.display = 'flex';
         document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    } else {
+        console.error('❌ Register modal not found');
     }
 }
+
+// Make auth functions globally available
+window.openLoginModal = openLoginModal;
+window.openRegisterModal = openRegisterModal;
 
 function showModal(modalId) {
     const modal = document.getElementById(modalId);
@@ -1756,10 +1793,26 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeFirebaseAuth();
     
     // Wait for navigation to be mounted, then update auth UI
-    setTimeout(() => {
-        console.log('Updating auth UI after navigation mount...');
-        updateAuthUI(currentUser !== null);
-    }, 100);
+    // Use multiple retries to ensure auth buttons are populated
+    let retryCount = 0;
+    const maxRetries = 10;
+    
+    function initializeAuthUI() {
+        const authButtons = document.querySelectorAll('.auth-buttons');
+        if (authButtons.length > 0) {
+            console.log('✅ Auth buttons found, updating auth UI...');
+            updateAuthUI(currentUser !== null);
+        } else if (retryCount < maxRetries) {
+            retryCount++;
+            console.log(`⏳ Auth buttons not ready, retry ${retryCount}/${maxRetries}...`);
+            setTimeout(initializeAuthUI, 100);
+        } else {
+            console.error('❌ Failed to find auth buttons after maximum retries');
+        }
+    }
+    
+    // Start auth UI initialization
+    setTimeout(initializeAuthUI, 50);
     
     // Initialize Lucide icons
     if (typeof lucide !== 'undefined') {
