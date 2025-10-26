@@ -1,0 +1,140 @@
+<header class="header" id="header">
+    <div class="header-top">
+        <div class="container">
+            <div class="header-top-content">
+                <div>Khathu@khavhogroups.com | +27 766 927 310</div>
+                <div>Johannesburg | Serving South Africa</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="header-main">
+        <div class="container">
+            <nav class="nav-container">
+                <a href="/" class="logo">
+                    <div class="logo-icon">
+                        <img src="/images/logo.png" alt="Khavho Groups Logo" onerror="this.parentElement.innerHTML='<i data-lucide=\'building-2\'></i>'">
+                    </div>
+                </a>
+                
+                <div class="main-nav" id="mainNav">
+                    <ul class="nav-menu">
+                        <li class="nav-item">
+                            <a href="/" class="nav-link <%= currentPage === 'home' ? 'active' : '' %>">
+                                <i data-lucide="home"></i>
+                                Home
+                            </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a href="#" class="nav-link">
+                                <i data-lucide="building"></i>
+                                Companies
+                                <i data-lucide="chevron-down"></i>
+                            </a>
+                            <div class="dropdown-menu">
+                                <a href="/khavho-holdings" class="dropdown-item">
+                                    <strong>Khavho Holdings</strong>
+                                    <small>Construction & Development</small>
+                                </a>
+                                <a href="/khavho-capital" class="dropdown-item">
+                                    <strong>Khavho Capital</strong>
+                                    <small>Investment & Asset Management</small>
+                                </a>
+                                <a href="/khavho-inter-africa" class="dropdown-item">
+                                    <strong>Khavho Inter Africa</strong>
+                                    <small>Financial Services</small>
+                                </a>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/about" class="nav-link <%= currentPage === 'about' ? 'active' : '' %>">
+                                <i data-lucide="users"></i>
+                                About
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/services" class="nav-link <%= currentPage === 'services' ? 'active' : '' %>">
+                                <i data-lucide="briefcase"></i>
+                                Services
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/products" class="nav-link <%= currentPage === 'products' ? 'active' : '' %>">
+                                <i data-lucide="package"></i>
+                                Products
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/contact" class="nav-link <%= currentPage === 'contact' ? 'active' : '' %>">
+                                <i data-lucide="phone"></i>
+                                Contact
+                            </a>
+                        </li>
+                    </ul>
+                    
+                    <div class="header-cta">
+                        <div class="auth-buttons">
+                            <% if (user) { %>
+                                <!-- Logged in user -->
+                                <div class="user-menu">
+                                    <div class="user-info">
+                                        <span class="user-email"><%= user.email %></span>
+                                        <% if (user.role === 'admin') { %>
+                                            <span class="admin-badge">ADMIN</span>
+                                        <% } %>
+                                    </div>
+                                    <% if (user.role === 'admin') { %>
+                                        <div class="admin-controls">
+                                            <a href="/admin" class="admin-btn">
+                                                <i data-lucide="settings"></i>
+                                                Admin Panel
+                                            </a>
+                                        </div>
+                                    <% } %>
+                                    <button class="auth-btn logout-btn" onclick="signOut()">
+                                        <i data-lucide="log-out"></i>
+                                        Logout
+                                    </button>
+                                </div>
+                            <% } else { %>
+                                <!-- Not logged in -->
+                                <a href="/login" class="auth-btn login-btn">
+                                    <i data-lucide="log-in"></i>
+                                    Login
+                                </a>
+                                <a href="/register" class="auth-btn register-btn">
+                                    <i data-lucide="user-plus"></i>
+                                    Register
+                                </a>
+                            <% } %>
+                        </div>
+                        
+                        <div class="cart-icon" onclick="toggleCart()" style="position: relative; cursor: pointer; padding: 8px;">
+                            <i data-lucide="shopping-cart"></i>
+                            <span class="cart-count" id="cartCount" style="display: none; position: absolute; top: 0; right: 0; background: #F37021; color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; line-height: 20px; text-align: center; font-weight: bold;">0</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Mobile auth buttons -->
+                    <div class="mobile-auth auth-buttons">
+                        <% if (user) { %>
+                            <div class="user-menu">
+                                <span class="user-email"><%= user.email %></span>
+                                <button class="auth-btn logout-btn" onclick="signOut()">Logout</button>
+                            </div>
+                        <% } else { %>
+                            <a href="/login" class="auth-btn login-btn">Login</a>
+                            <a href="/register" class="auth-btn register-btn">Register</a>
+                        <% } %>
+                    </div>
+                </div>
+                
+                <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                </button>
+            </nav>
+        </div>
+    </div>
+</header>
