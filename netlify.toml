@@ -1,10 +1,21 @@
 # Netlify Build Configuration
-# Simplified version without complex build process
+# Optimized for static site with separate auth pages
 
 [build]
   publish = "."
+  command = "echo 'Static site - no build required'"
 
-# Redirect rules for single page application
+# Redirect rules for clean URLs and separate auth pages
+[[redirects]]
+  from = "/login"
+  to = "/login.html"
+  status = 200
+
+[[redirects]]
+  from = "/register" 
+  to = "/register.html"
+  status = 200
+
 [[redirects]]
   from = "/admin"
   to = "/admin-panel.html"
@@ -13,6 +24,12 @@
 [[redirects]]
   from = "/admin/*"
   to = "/admin-panel.html"
+  status = 200
+
+# Fallback for any other routes to main page
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
   status = 200
 
 # Security headers
@@ -24,3 +41,14 @@
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
     Content-Security-Policy = "default-src 'self' https: 'unsafe-inline' 'unsafe-eval'; img-src 'self' https: data:; font-src 'self' https: data:;"
+
+# Performance headers
+[[headers]]
+  for = "*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"
+
+[[headers]]
+  for = "*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"

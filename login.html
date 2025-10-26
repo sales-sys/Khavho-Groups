@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Khavho Groups</title>
+    <link rel="icon" type="image/png" href="images/logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
+    <!-- Firebase Configuration -->
+    <script src="firebase-config.js"></script>
+    
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+    
+    <style>
+    .auth-page {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #F37021 0%, #FFB366 100%);
+        padding: 20px;
+    }
+
+    .auth-container {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        padding: 60px;
+        max-width: 500px;
+        width: 100%;
+        text-align: center;
+        margin-top: 100px;
+    }
+
+    .auth-logo {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 30px;
+        border-radius: 50%;
+        background: #F37021;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 24px;
+    }
+
+    .auth-title {
+        font-size: 32px;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin-bottom: 10px;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .auth-subtitle {
+        color: #666;
+        margin-bottom: 40px;
+        font-size: 16px;
+    }
+
+    .auth-form-group {
+        margin-bottom: 25px;
+        text-align: left;
+    }
+
+    .auth-form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #333;
+        font-size: 14px;
+    }
+
+    .auth-form-group input {
+        width: 100%;
+        padding: 15px 20px;
+        border: 2px solid #e1e5e9;
+        border-radius: 12px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+    }
+
+    .auth-form-group input:focus {
+        outline: none;
+        border-color: #F37021;
+        box-shadow: 0 0 0 3px rgba(243, 112, 33, 0.1);
+    }
+
+    .auth-submit-btn {
+        width: 100%;
+        background: linear-gradient(135deg, #F37021 0%, #FFB366 100%);
+        color: white;
+        border: none;
+        padding: 18px;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-bottom: 20px;
+    }
+
+    .auth-submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(243, 112, 33, 0.3);
+    }
+
+    .auth-switch {
+        color: #666;
+        font-size: 14px;
+    }
+
+    .auth-switch a {
+        color: #F37021;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .auth-switch a:hover {
+        text-decoration: underline;
+    }
+
+    .error-message {
+        background: #ffe6e6;
+        color: #d63384;
+        padding: 12px 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        text-align: center;
+        font-size: 14px;
+    }
+
+    .success-message {
+        background: #e6ffe6;
+        color: #198754;
+        padding: 12px 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        text-align: center;
+        font-size: 14px;
+    }
+
+    @media (max-width: 768px) {
+        .auth-container {
+            padding: 40px 30px;
+            margin-top: 80px;
+        }
+        
+        .auth-title {
+            font-size: 28px;
+        }
+    }
+    </style>
+</head>
+<body>
+    <!-- Simple Navigation -->
+    <header class="header" style="position: fixed; top: 0; width: 100%; background: white; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+        <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+            <nav style="display: flex; justify-content: space-between; align-items: center; padding: 15px 0;">
+                <a href="index.html" style="text-decoration: none; display: flex; align-items: center; color: #F37021; font-weight: 700; font-size: 24px;">
+                    <img src="images/logo.png" alt="Khavho Groups" style="width: 40px; height: 40px; margin-right: 10px;" onerror="this.style.display='none'">
+                    Khavho Groups
+                </a>
+                <div style="display: flex; gap: 15px; align-items: center;">
+                    <a href="index.html" style="text-decoration: none; color: #666; padding: 8px 16px;">Home</a>
+                    <a href="register.html" style="text-decoration: none; color: #F37021; padding: 8px 16px; border: 2px solid #F37021; border-radius: 8px;">Register</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="auth-page">
+            <div class="auth-container">
+                <div class="auth-logo">
+                    <i data-lucide="building-2"></i>
+                </div>
+                
+                <h1 class="auth-title">Welcome Back</h1>
+                <p class="auth-subtitle">Sign in to your Khavho Groups account</p>
+                
+                <form id="loginForm" class="auth-form">
+                    <div class="auth-form-group">
+                        <label for="loginEmail">Email Address</label>
+                        <input type="email" id="loginEmail" name="email" autocomplete="email" required>
+                    </div>
+                    
+                    <div class="auth-form-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" name="password" autocomplete="current-password" required>
+                    </div>
+                    
+                    <button type="submit" class="auth-submit-btn">
+                        <i data-lucide="log-in"></i>
+                        Sign In
+                    </button>
+                </form>
+                
+                <p class="auth-switch">
+                    Don't have an account? 
+                    <a href="register.html">Create one here</a>
+                </p>
+                
+                <p class="auth-switch">
+                    <a href="index.html">← Back to Home</a>
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Core JavaScript -->
+    <script src="shared-products-firebase.js"></script>
+    
+    <!-- Login-specific JavaScript -->
+    <script>
+    // Login Page JavaScript for Netlify
+    console.log('🔐 Login page loaded');
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const loginForm = document.getElementById('loginForm');
+        
+        if (loginForm) {
+            loginForm.addEventListener('submit', handleLogin);
+        }
+        
+        // Initialize Lucide icons
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+        
+        // Check if user is already logged in
+        if (typeof auth !== 'undefined') {
+            auth.onAuthStateChanged(function(user) {
+                if (user) {
+                    console.log('User already logged in, redirecting...');
+                    window.location.href = 'index.html';
+                }
+            });
+        }
+    });
+
+    async function handleLogin(e) {
+        e.preventDefault();
+        
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
+        const submitBtn = document.querySelector('.auth-submit-btn');
+        
+        if (!email || !password) {
+            showError('Please fill in all fields');
+            return;
+        }
+        
+        // Show loading state
+        submitBtn.innerHTML = '<i data-lucide="loader-2"></i> Signing In...';
+        submitBtn.disabled = true;
+        
+        try {
+            // Wait for Firebase to be ready
+            if (typeof auth === 'undefined') {
+                throw new Error('Firebase is not loaded');
+            }
+            
+            // Sign in with Firebase
+            const userCredential = await auth.signInWithEmailAndPassword(email, password);
+            const user = userCredential.user;
+            
+            console.log('✅ Login successful:', user.email);
+            
+            showSuccess('Login successful! Redirecting...');
+            
+            // Redirect after short delay
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 1500);
+            
+        } catch (error) {
+            console.error('❌ Login error:', error);
+            
+            let errorMessage = 'Login failed. Please try again.';
+            
+            switch (error.code) {
+                case 'auth/user-not-found':
+                    errorMessage = 'No account found with this email address.';
+                    break;
+                case 'auth/wrong-password':
+                    errorMessage = 'Incorrect password. Please try again.';
+                    break;
+                case 'auth/invalid-email':
+                    errorMessage = 'Please enter a valid email address.';
+                    break;
+                case 'auth/too-many-requests':
+                    errorMessage = 'Too many failed attempts. Please try again later.';
+                    break;
+                default:
+                    errorMessage = error.message || 'An error occurred during login.';
+            }
+            
+            showError(errorMessage);
+            
+            // Reset button
+            submitBtn.innerHTML = '<i data-lucide="log-in"></i> Sign In';
+            submitBtn.disabled = false;
+            
+            // Re-initialize icons
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        }
+    }
+
+    function showError(message) {
+        // Remove existing messages
+        const existingMessages = document.querySelectorAll('.error-message, .success-message');
+        existingMessages.forEach(msg => msg.remove());
+        
+        // Create error message
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-message';
+        errorDiv.textContent = message;
+        
+        // Insert before form
+        const form = document.getElementById('loginForm');
+        form.parentNode.insertBefore(errorDiv, form);
+    }
+
+    function showSuccess(message) {
+        // Remove existing messages
+        const existingMessages = document.querySelectorAll('.error-message, .success-message');
+        existingMessages.forEach(msg => msg.remove());
+        
+        // Create success message
+        const successDiv = document.createElement('div');
+        successDiv.className = 'success-message';
+        successDiv.textContent = message;
+        
+        // Insert before form
+        const form = document.getElementById('loginForm');
+        form.parentNode.insertBefore(successDiv, form);
+    }
+    </script>
+</body>
+</html>

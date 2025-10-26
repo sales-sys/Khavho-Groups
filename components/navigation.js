@@ -94,7 +94,14 @@ class NavigationComponent {
                                 
                                 <div class="header-cta">
                                     <div class="auth-buttons">
-                                        <!-- Auth buttons will be populated by JavaScript -->
+                                        <a href="login.html" class="auth-btn login-btn">
+                                            <i data-lucide="log-in"></i>
+                                            Login
+                                        </a>
+                                        <a href="register.html" class="auth-btn register-btn">
+                                            <i data-lucide="user-plus"></i>
+                                            Register
+                                        </a>
                                     </div>
                                     
                                     <div class="cart-icon" onclick="toggleCart()" style="position: relative; cursor: pointer; padding: 8px;">
@@ -105,7 +112,8 @@ class NavigationComponent {
                                 
                                 <!-- Mobile auth buttons -->
                                 <div class="mobile-auth auth-buttons">
-                                    <!-- Mobile auth buttons will be populated by JavaScript -->
+                                    <a href="login.html" class="auth-btn login-btn">Login</a>
+                                    <a href="register.html" class="auth-btn register-btn">Register</a>
                                 </div>
                             </div>
                             
