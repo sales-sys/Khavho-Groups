@@ -53,9 +53,21 @@
         }
 
         .about-content .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 40px;
+            max-width: 1200px !important;
+            margin: 0 auto !important;
+            padding: 0 40px !important;
+        }
+        
+        /* Force all sections to center their flex children */
+        .about-stats,
+        .mission-vision-section,
+        .values-grid,
+        .divisions-grid,
+        .leadership-grid,
+        .achievements-grid {
+            justify-content: center !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
         }
         
         /* Story Section */
