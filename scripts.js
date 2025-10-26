@@ -31,6 +31,13 @@ function initializeFirebaseAuth() {
 async function updateAuthUI(isSignedIn) {
     const authButtons = document.querySelectorAll('.auth-buttons');
     
+    // If auth buttons don't exist yet, wait and try again
+    if (authButtons.length === 0) {
+        console.log('Auth buttons not found, retrying...');
+        setTimeout(() => updateAuthUI(isSignedIn), 100);
+        return;
+    }
+    
     if (isSignedIn) {
         // Check if user is admin
         let isAdmin = false;
@@ -81,11 +88,15 @@ async function updateAuthUI(isSignedIn) {
                     Register
                 </button>
             `;
+            console.log('Login/Register buttons added to auth container');
         });
     }
     
     // Reinitialize icons
-    lucide.createIcons();
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+        console.log('Auth UI updated, icons reinitialized');
+    }
 }
 
 // Admin Panel Function
@@ -1743,6 +1754,12 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize Firebase Auth
     initializeFirebaseAuth();
+    
+    // Wait for navigation to be mounted, then update auth UI
+    setTimeout(() => {
+        console.log('Updating auth UI after navigation mount...');
+        updateAuthUI(currentUser !== null);
+    }, 100);
     
     // Initialize Lucide icons
     if (typeof lucide !== 'undefined') {
