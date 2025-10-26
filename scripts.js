@@ -79,14 +79,18 @@ function showSubsidiary(subsidiary) {
 function toggleMobileMenu() {
     console.log('🍔 Toggling mobile menu...');
     const mainNav = document.getElementById('mainNav');
+    const navMenu = mainNav ? mainNav.querySelector('.nav-menu') : null;
     const mobileMenuToggle = document.getElementById('mobileMenuToggle');
     
-    if (mainNav && mobileMenuToggle) {
-        mainNav.classList.toggle('active');
+    if (navMenu && mobileMenuToggle) {
+        navMenu.classList.toggle('active');
         mobileMenuToggle.classList.toggle('active');
-        console.log(`📱 Mobile menu is now ${mainNav.classList.contains('active') ? 'OPEN' : 'CLOSED'}`);
+        console.log(`📱 Mobile menu is now ${navMenu.classList.contains('active') ? 'OPEN' : 'CLOSED'}`);
     } else {
         console.error('❌ Mobile menu elements not found');
+        console.log('mainNav:', mainNav);
+        console.log('navMenu:', navMenu);
+        console.log('mobileMenuToggle:', mobileMenuToggle);
     }
 }
 
