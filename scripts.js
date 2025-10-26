@@ -101,9 +101,13 @@ async function updateAuthUI(isSignedIn) {
 
 // Admin Panel Function
 function openAdminPanel() {
+    console.log('🔧 Opening admin panel...');
     // Open admin panel in new tab
     window.open('admin.html', '_blank');
 }
+
+// Make admin function globally available
+window.openAdminPanel = openAdminPanel;
 
 // Shopping Cart Functions
 // toggleCart function is defined later in the file for sidebar functionality
@@ -344,6 +348,7 @@ function showModal(modalId) {
 }
 
 function closeModal(modalId) {
+    console.log(`❌ Closing modal: ${modalId}`);
     const modal = document.getElementById(modalId);
     if (modal) {
         modal.style.display = 'none';
@@ -352,12 +357,17 @@ function closeModal(modalId) {
 }
 
 function switchModal(fromModalId, toModalId) {
+    console.log(`🔄 Switching from ${fromModalId} to ${toModalId}`);
     closeModal(fromModalId);
     const toModal = document.getElementById(toModalId);
     if (toModal) {
         toModal.style.display = 'flex';
     }
 }
+
+// Make modal functions globally available
+window.closeModal = closeModal;
+window.switchModal = switchModal;
 
 // Close modals when clicking outside
 window.onclick = function(event) {
@@ -436,14 +446,26 @@ function signUp(name, email, password) {
 }
 
 function signOut() {
+    console.log('🚪 Signing out user...');
     auth.signOut().then(() => {
         console.log('User signed out successfully');
         showSuccessMessage('You have been signed out successfully.');
+        
+        // Clear any user-specific data
+        localStorage.removeItem('userRole');
+        
+        // Update UI to show signed out state
+        updateAuthUI(false);
     }).catch((error) => {
         console.error('Sign out error:', error);
         showErrorMessage('Error signing out. Please try again.');
     });
 }
+
+// Make auth functions globally available
+window.signIn = signIn;
+window.signUp = signUp;
+window.signOut = signOut;
 
 function getFirebaseErrorMessage(errorCode) {
     switch (errorCode) {
