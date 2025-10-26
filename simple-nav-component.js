@@ -88,22 +88,74 @@ class SimpleNavigation {
         const container = document.getElementById(containerId);
         if (container) {
             container.innerHTML = this.render();
+            
+            // Add event listeners as backup for onclick attributes
+            setTimeout(() => {
+                this.addEventListeners();
+            }, 100);
+            
             // Initialize Lucide icons after mounting
             if (typeof lucide !== 'undefined') {
                 lucide.createIcons();
             }
         }
     }
+
+    addEventListeners() {
+        // Add click listeners to navigation links as backup
+        const navLinks = document.querySelectorAll('.nav-link[onclick]');
+        navLinks.forEach(link => {
+            const onclickAttr = link.getAttribute('onclick');
+            if (onclickAttr && onclickAttr.includes('showPage')) {
+                const pageMatch = onclickAttr.match(/showPage\('([^']+)'\)/);
+                if (pageMatch) {
+                    const pageId = pageMatch[1];
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        if (typeof window.showPage === 'function') {
+                            window.showPage(pageId);
+                        } else {
+                            console.error('showPage function not available');
+                        }
+                    });
+                    console.log(`✅ Added backup event listener for ${pageId}`);
+                }
+            }
+        });
+
+        // Add hamburger menu listener
+        const hamburger = document.getElementById('mobileMenuToggle');
+        if (hamburger) {
+            hamburger.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (typeof window.toggleMobileMenu === 'function') {
+                    window.toggleMobileMenu();
+                } else {
+                    console.error('toggleMobileMenu function not available');
+                }
+            });
+            console.log('✅ Added backup event listener for hamburger menu');
+        }
+    }
 }
 
 // Auto-initialize navigation when DOM loads
 document.addEventListener('DOMContentLoaded', function() {
-    const navContainer = document.getElementById('navigation-container');
-    if (navContainer) {
-        const navigation = new SimpleNavigation();
-        navigation.mount('navigation-container');
-        console.log('✅ Simple navigation mounted');
-    }
+    // Wait for the navigation functions to be available
+    const waitForFunctions = setInterval(() => {
+        if (typeof window.showPage === 'function' && typeof window.toggleMobileMenu === 'function') {
+            clearInterval(waitForFunctions);
+            
+            const navContainer = document.getElementById('navigation-container');
+            if (navContainer) {
+                const navigation = new SimpleNavigation();
+                navigation.mount('navigation-container');
+                console.log('✅ Simple navigation mounted with functions available');
+            }
+        } else {
+            console.log('⏳ Waiting for navigation functions to load...');
+        }
+    }, 50);
 });
 
 window.SimpleNavigation = SimpleNavigation;
