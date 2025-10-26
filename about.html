@@ -43,43 +43,99 @@
         }
         
         /* Container Styling */
+        .about-content {
+            padding: 60px 0;
+        }
+        
         .about-content .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
         }
         
-        /* About Grid Layout */
-        .about-grid {
+        /* Story Section */
+        .story-section {
+            text-align: center;
+            max-width: 900px;
+            margin: 0 auto 60px;
+        }
+        
+        .story-section h2 {
+            font-size: 2.8rem;
+            margin: 0 0 2rem 0;
+            color: #333;
+            font-weight: 700;
+        }
+        
+        .story-section p {
+            font-size: 1.15rem;
+            line-height: 1.9;
+            color: #666;
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+        
+        /* Mission & Vision Section */
+        .mission-vision-section {
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
             gap: 3rem;
-            margin-bottom: 4rem;
+            margin: 60px 0;
         }
         
-        .about-text {
-            max-width: 100%;
+        .mission-box, .vision-box {
+            background: #f8f9fa;
+            padding: 3rem;
+            border-radius: 16px;
+            border-left: 5px solid #F37021;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
         }
         
-        .about-text h2 {
-            font-size: 2.5rem;
+        .mission-box:hover, .vision-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .mission-box h3, .vision-box h3 {
+            font-size: 1.8rem;
             margin: 0 0 1.5rem 0;
             color: #333;
             font-weight: 700;
         }
         
-        .about-text h3 {
-            font-size: 1.8rem;
-            margin: 2.5rem 0 1rem 0;
-            color: #444;
-            font-weight: 600;
-        }
-        
-        .about-text p {
+        .mission-box p, .vision-box p {
             font-size: 1.1rem;
             line-height: 1.8;
             color: #666;
-            margin-bottom: 1.5rem;
+            margin: 0;
+        }
+        
+        /* Values Section */
+        .values-section {
+            margin: 80px 0;
+        }
+        
+        .values-section h2 {
+            text-align: center;
+            font-size: 2.8rem;
+            margin: 0 0 3rem 0;
+            color: #333;
+            font-weight: 700;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+        
+        .values-section h2:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(135deg, #F37021 0%, #FF8C42 100%);
+            border-radius: 2px;
         }
         
         /* Values Grid */
@@ -139,10 +195,10 @@
         /* About Stats */
         .about-stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-            padding: 3rem 0;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 2.5rem;
+            margin: 60px 0;
+            padding: 0;
         }
         
         .stat-item {
@@ -423,16 +479,29 @@
                 font-size: 1.1rem;
             }
             
-            .about-text h2 {
+            .story-section h2 {
                 font-size: 2rem;
             }
             
-            .about-text h3 {
+            .story-section p {
+                font-size: 1rem;
+            }
+            
+            .mission-vision-section {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .mission-box, .vision-box {
+                padding: 2rem;
+            }
+            
+            .mission-box h3, .vision-box h3 {
                 font-size: 1.5rem;
             }
             
-            .about-text p {
-                font-size: 1rem;
+            .values-section h2 {
+                font-size: 2rem;
             }
             
             .divisions-grid {
@@ -453,6 +522,15 @@
             
             .about-stats {
                 grid-template-columns: repeat(2, 1fr);
+                gap: 1.5rem;
+            }
+            
+            .stat-item {
+                padding: 2rem 1rem;
+            }
+            
+            .value-item {
+                padding: 2rem;
             }
             
             .division-card {
@@ -477,16 +555,29 @@
                 font-size: 1rem;
             }
             
-            .about-stats {
+            .story-section h2 {
+                font-size: 1.75rem;
+            }
+            
+            .mission-vision-section {
                 grid-template-columns: 1fr;
             }
             
+            .mission-box, .vision-box {
+                padding: 1.5rem;
+            }
+            
+            .about-stats {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
             .stat-item {
-                padding: 2rem 1rem;
+                padding: 1.5rem 1rem;
             }
             
             .value-item {
-                padding: 2rem;
+                padding: 1.5rem;
             }
             
             .division-card {
@@ -606,76 +697,86 @@
 
         <section class="about-content">
             <div class="container">
-                <div class="about-grid">
-                    <div class="about-text">
-                        <h2>Our Story</h2>
-                        <p>Khavho Groups is a leading diversified business conglomerate with over a decade of excellence in driving economic growth across Africa. Established in 2012, we have evolved from a single construction company into a multi-faceted organization with three core divisions: Khavho Capital, Khavho Holdings, and Khavho Inter-Africa.</p>
-                        
-                        <p>Our journey began with a simple vision: to build not just structures, but sustainable businesses that create lasting value for our communities. Today, we are proud to be recognized as one of Africa's most trusted business partners, with a portfolio spanning construction, investment management, financial services, and international trade.</p>
-                        
+                <!-- Company Story Section -->
+                <div class="story-section">
+                    <h2>Our Story</h2>
+                    <p>Khavho Groups is a leading diversified business conglomerate with over a decade of excellence in driving economic growth across Africa. Established in 2012, we have evolved from a single construction company into a multi-faceted organization with three core divisions: Khavho Capital, Khavho Holdings, and Khavho Inter-Africa.</p>
+                    
+                    <p>Our journey began with a simple vision: to build not just structures, but sustainable businesses that create lasting value for our communities. Today, we are proud to be recognized as one of Africa's most trusted business partners, with a portfolio spanning construction, investment management, financial services, and international trade.</p>
+                </div>
+
+                <!-- Statistics Section -->
+                <div class="about-stats">
+                    <div class="stat-item">
+                        <h3>12+</h3>
+                        <p>Years of Excellence</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>3</h3>
+                        <p>Business Divisions</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>500+</h3>
+                        <p>Successful Projects</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>150+</h3>
+                        <p>Expert Team Members</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>25+</h3>
+                        <p>Countries Served</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>$500M+</h3>
+                        <p>Assets Under Management</p>
+                    </div>
+                </div>
+
+                <!-- Mission & Vision Section -->
+                <div class="mission-vision-section">
+                    <div class="mission-box">
                         <h3>Our Mission</h3>
                         <p>To provide exceptional services across multiple industries while maintaining the highest standards of integrity, innovation, and customer satisfaction. We are committed to building lasting partnerships that drive sustainable growth and create positive impact across Africa.</p>
-                        
-                        <h3>Our Vision</h3>
-                        <p>To be Africa's premier business conglomerate, recognized for excellence, innovation, and sustainable growth across all our business sectors. We envision a future where African businesses thrive through strategic partnerships, innovative solutions, and unwavering commitment to quality.</p>
-
-                        <h3>Our Core Values</h3>
-                        <div class="values-grid">
-                            <div class="value-item">
-                                <div class="value-icon">
-                                    <i data-lucide="award"></i>
-                                </div>
-                                <h4>Excellence</h4>
-                                <p>We pursue the highest standards in everything we do, delivering quality that exceeds expectations.</p>
-                            </div>
-                            <div class="value-item">
-                                <div class="value-icon">
-                                    <i data-lucide="shield-check"></i>
-                                </div>
-                                <h4>Integrity</h4>
-                                <p>We conduct business with honesty, transparency, and ethical practices in all our relationships.</p>
-                            </div>
-                            <div class="value-item">
-                                <div class="value-icon">
-                                    <i data-lucide="lightbulb"></i>
-                                </div>
-                                <h4>Innovation</h4>
-                                <p>We embrace new technologies and creative solutions to solve complex business challenges.</p>
-                            </div>
-                            <div class="value-item">
-                                <div class="value-icon">
-                                    <i data-lucide="users"></i>
-                                </div>
-                                <h4>Partnership</h4>
-                                <p>We believe in building long-term relationships based on mutual trust and shared success.</p>
-                            </div>
-                        </div>
                     </div>
                     
-                    <div class="about-stats">
-                        <div class="stat-item">
-                            <h3>12+</h3>
-                            <p>Years of Excellence</p>
+                    <div class="vision-box">
+                        <h3>Our Vision</h3>
+                        <p>To be Africa's premier business conglomerate, recognized for excellence, innovation, and sustainable growth across all our business sectors. We envision a future where African businesses thrive through strategic partnerships, innovative solutions, and unwavering commitment to quality.</p>
+                    </div>
+                </div>
+
+                <!-- Core Values Section -->
+                <div class="values-section">
+                    <h2>Our Core Values</h2>
+                    <div class="values-grid">
+                        <div class="value-item">
+                            <div class="value-icon">
+                                <i data-lucide="award"></i>
+                            </div>
+                            <h4>Excellence</h4>
+                            <p>We pursue the highest standards in everything we do, delivering quality that exceeds expectations.</p>
                         </div>
-                        <div class="stat-item">
-                            <h3>3</h3>
-                            <p>Business Divisions</p>
+                        <div class="value-item">
+                            <div class="value-icon">
+                                <i data-lucide="shield-check"></i>
+                            </div>
+                            <h4>Integrity</h4>
+                            <p>We conduct business with honesty, transparency, and ethical practices in all our relationships.</p>
                         </div>
-                        <div class="stat-item">
-                            <h3>500+</h3>
-                            <p>Successful Projects</p>
+                        <div class="value-item">
+                            <div class="value-icon">
+                                <i data-lucide="lightbulb"></i>
+                            </div>
+                            <h4>Innovation</h4>
+                            <p>We embrace new technologies and creative solutions to solve complex business challenges.</p>
                         </div>
-                        <div class="stat-item">
-                            <h3>150+</h3>
-                            <p>Expert Team Members</p>
-                        </div>
-                        <div class="stat-item">
-                            <h3>25+</h3>
-                            <p>Countries Served</p>
-                        </div>
-                        <div class="stat-item">
-                            <h3>$500M+</h3>
-                            <p>Assets Under Management</p>
+                        <div class="value-item">
+                            <div class="value-icon">
+                                <i data-lucide="users"></i>
+                            </div>
+                            <h4>Partnership</h4>
+                            <p>We believe in building long-term relationships based on mutual trust and shared success.</p>
                         </div>
                     </div>
                 </div>
