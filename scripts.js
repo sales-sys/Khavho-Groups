@@ -1752,11 +1752,17 @@ document.addEventListener('DOMContentLoaded', function() {
     // Ensure cart is closed on page load
     const cartSidebar = document.getElementById('cartSidebar');
     const cartOverlay = document.getElementById('cartOverlay');
+    const checkoutModal = document.getElementById('checkoutModal');
+    
     if (cartSidebar) {
         cartSidebar.classList.remove('open');
     }
     if (cartOverlay) {
         cartOverlay.classList.remove('active');
+    }
+    if (checkoutModal) {
+        checkoutModal.style.display = 'none';
+        checkoutModal.classList.remove('show');
     }
     
     // Initialize cart system

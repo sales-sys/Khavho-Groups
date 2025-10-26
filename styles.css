@@ -2431,10 +2431,14 @@ h1, h2, h3, h4, h5, h6 {
     bottom: 0;
     background: rgba(0, 0, 0, 0.7);
     z-index: 10000;
-    display: flex;
+    display: none; /* HIDDEN BY DEFAULT */
     align-items: center;
     justify-content: center;
     padding: 20px;
+}
+
+.checkout-modal.show {
+    display: flex; /* ONLY SHOW WHEN .show CLASS IS ADDED */
 }
 
 .checkout-modal-content {
