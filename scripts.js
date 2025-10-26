@@ -9,60 +9,60 @@ let currentUser = null;
 // ===== CRITICAL NAVIGATION FUNCTIONS - MUST BE AVAILABLE IMMEDIATELY =====
 
 function showPage(pageId) {
-    console.log(`🔄 Navigating to page: ${pageId}`);
+    console.log(`🔄 ATTEMPTING TO NAVIGATE TO: ${pageId}`);
+    
+    // First, let's see what pages exist
+    const allPages = document.querySelectorAll('.page-content');
+    console.log(`📄 Found ${allPages.length} total pages:`, Array.from(allPages).map(p => p.id));
     
     // Hide all pages
-    document.querySelectorAll('.page-content').forEach(page => {
+    allPages.forEach(page => {
         page.classList.remove('active');
+        console.log(`❌ Hiding page: ${page.id}`);
     });
 
     // Show selected page
-    const pageEl = document.getElementById(pageId + 'Page');
+    const targetPageId = pageId + 'Page';
+    const pageEl = document.getElementById(targetPageId);
+    
     if (pageEl) {
         pageEl.classList.add('active');
-        console.log(`✅ Page ${pageId} is now active`);
+        console.log(`✅ SUCCESS: Page ${targetPageId} is now ACTIVE and VISIBLE`);
+        
+        // Force scroll to top
+        window.scrollTo(0, 0);
+        
+        // Update global variable
+        currentPage = pageId;
+        
+        // Update navigation highlighting
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.classList.remove('active');
+        });
+        
+        // Try to highlight the correct nav link
+        document.querySelectorAll('.nav-link').forEach(link => {
+            const linkText = link.textContent.trim().toLowerCase();
+            if (linkText.includes(pageId.toLowerCase())) {
+                link.classList.add('active');
+                console.log(`🎯 Highlighted nav link: ${linkText}`);
+            }
+        });
+        
+        // Close mobile menu
+        const mainNav = document.getElementById('mainNav');
+        const mobileToggle = document.getElementById('mobileMenuToggle');
+        if (mainNav) mainNav.classList.remove('active');
+        if (mobileToggle) mobileToggle.classList.remove('active');
+        
     } else {
-        console.error(`❌ Page element ${pageId}Page not found`);
-    }
-
-    // Update navigation
-    document.querySelectorAll('.nav-link').forEach(link => {
-        link.classList.remove('active');
-    });
-    // Highlight the correct nav link
-    document.querySelectorAll('.nav-link').forEach(link => {
-        if (link.textContent.trim().toLowerCase().includes(pageId)) {
-            link.classList.add('active');
-        }
-    });
-    currentPage = pageId;
-
-    // Close mobile menu if open
-    const mainNav = document.getElementById('mainNav');
-    if (mainNav) {
-        mainNav.classList.remove('active');
-    }
-    
-    // Close hamburger menu if open
-    const mobileToggle = document.getElementById('mobileMenuToggle');
-    if (mobileToggle) {
-        mobileToggle.classList.remove('active');
-    }
-
-    // Scroll to top
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-
-    // Load page-specific content
-    if (pageId === 'home') {
-        loadProducts();
-        setTimeout(animateCounters, 500);
+        console.error(`❌ CRITICAL ERROR: Page element '${targetPageId}' NOT FOUND!`);
+        console.log('Available page elements:', Array.from(document.querySelectorAll('[id$="Page"]')).map(p => p.id));
     }
 }
 
 function showSubsidiary(subsidiary) {
     console.log(`🔗 Opening subsidiary: ${subsidiary}`);
-    
-    // Navigate to subsidiary website
     const subsidiaryUrls = {
         'holdings': 'khavho-holdings.html',
         'capital': 'khavho-capital.html',
@@ -81,18 +81,10 @@ function toggleMobileMenu() {
     const mainNav = document.getElementById('mainNav');
     const mobileMenuToggle = document.getElementById('mobileMenuToggle');
     
-    // Only proceed if both elements exist
     if (mainNav && mobileMenuToggle) {
         mainNav.classList.toggle('active');
         mobileMenuToggle.classList.toggle('active');
-        
-        console.log(`📱 Mobile menu is now ${mainNav.classList.contains('active') ? 'open' : 'closed'}`);
-        
-        // Close any open dropdowns when mobile menu is toggled
-        const dropdowns = document.querySelectorAll('.dropdown');
-        dropdowns.forEach(dropdown => {
-            dropdown.classList.remove('mobile-active');
-        });
+        console.log(`📱 Mobile menu is now ${mainNav.classList.contains('active') ? 'OPEN' : 'CLOSED'}`);
     } else {
         console.error('❌ Mobile menu elements not found');
     }
@@ -102,6 +94,12 @@ function toggleMobileMenu() {
 window.showPage = showPage;
 window.showSubsidiary = showSubsidiary;
 window.toggleMobileMenu = toggleMobileMenu;
+
+// Test that functions are available
+console.log('🚀 NAVIGATION FUNCTIONS LOADED:');
+console.log('- showPage available:', typeof window.showPage);
+console.log('- showSubsidiary available:', typeof window.showSubsidiary);
+console.log('- toggleMobileMenu available:', typeof window.toggleMobileMenu);
 
 // ===== CRITICAL AUTH MODAL FUNCTIONS - MUST BE AVAILABLE IMMEDIATELY =====
 

@@ -31,7 +31,7 @@ class NavigationComponent {
                 <div class="header-main">
                     <div class="container">
                         <nav class="nav-container">
-                            <a href="#" class="logo" onclick="showPage('home')">
+                            <a href="#" class="logo" data-page="home">
                                 <div class="logo-icon">
                                     <img src="images/logo.png" alt="Khavho Groups Logo" onerror="this.parentElement.innerHTML='<i data-lucide=\\'building-2\\'></i>'">
                                 </div>
@@ -40,7 +40,7 @@ class NavigationComponent {
                             <div class="main-nav" id="mainNav">
                                 <ul class="nav-menu">
                                     <li class="nav-item">
-                                        <a href="#" class="nav-link ${this.currentPage === 'home' ? 'active' : ''}" onclick="showPage('home')">
+                                        <a href="#" class="nav-link ${this.currentPage === 'home' ? 'active' : ''}" data-page="home">
                                             <i data-lucide="home"></i>
                                             Home
                                         </a>
@@ -52,28 +52,28 @@ class NavigationComponent {
                                             <i data-lucide="chevron-down"></i>
                                         </a>
                                         <div class="dropdown-menu">
-                                            <a href="#" class="dropdown-item" onclick="showSubsidiary('holdings')">
+                                            <a href="#" class="dropdown-item" data-subsidiary="holdings">
                                                 <strong>Khavho Holdings</strong>
                                                 <small>Construction & Development</small>
                                             </a>
-                                            <a href="#" class="dropdown-item" onclick="showSubsidiary('capital')">
+                                            <a href="#" class="dropdown-item" data-subsidiary="capital">
                                                 <strong>Khavho Capital</strong>
                                                 <small>Investment & Asset Management</small>
                                             </a>
-                                            <a href="#" class="dropdown-item" onclick="showSubsidiary('inter-africa')">
+                                            <a href="#" class="dropdown-item" data-subsidiary="inter-africa">
                                                 <strong>Khavho Inter Africa</strong>
                                                 <small>Financial Services</small>
                                             </a>
                                         </div>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="#" class="nav-link ${this.currentPage === 'about' ? 'active' : ''}" onclick="showPage('about')">
+                                        <a href="#" class="nav-link ${this.currentPage === 'about' ? 'active' : ''}" data-page="about">
                                             <i data-lucide="users"></i>
                                             About
                                         </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="#" class="nav-link ${this.currentPage === 'services' ? 'active' : ''}" onclick="showPage('services')">
+                                        <a href="#" class="nav-link ${this.currentPage === 'services' ? 'active' : ''}" data-page="services">
                                             <i data-lucide="briefcase"></i>
                                             Services
                                         </a>
@@ -85,9 +85,12 @@ class NavigationComponent {
                                         </a>
                                     </li>
                                     <li class="nav-item">
-                                        <a href="#" class="nav-link ${this.currentPage === 'contact' ? 'active' : ''}" onclick="showPage('contact')">
+                                        <a href="#" class="nav-link ${this.currentPage === 'contact' ? 'active' : ''}" data-page="contact">
                                             <i data-lucide="phone"></i>
                                             Contact
+                                        </a>
+                                    </li>
+                                </ul>
                                         </a>
                                     </li>
                                 </ul>
@@ -112,7 +115,7 @@ class NavigationComponent {
                                 </div>
                             </div>
                             
-                            <button class="mobile-menu-toggle" id="mobileMenuToggle" onclick="toggleMobileMenu()">
+                            <button class="mobile-menu-toggle" id="mobileMenuToggle">
                                 <span class="hamburger-line"></span>
                                 <span class="hamburger-line"></span>
                                 <span class="hamburger-line"></span>
@@ -137,32 +140,68 @@ class NavigationComponent {
     }
 
     initializeEventListeners() {
-        // Mobile menu toggle - bind to this instance
-        const mobileToggle = document.getElementById('mobileMenuToggle');
-        if (mobileToggle) {
-            mobileToggle.addEventListener('click', () => this.toggleMobileMenu());
-        }
-
-        // Dropdown handling for mobile
-        const dropdowns = document.querySelectorAll('.nav-item.dropdown');
-        dropdowns.forEach(dropdown => {
-            dropdown.addEventListener('click', (e) => {
-                if (window.innerWidth <= 768) {
-                    e.preventDefault();
-                    dropdown.classList.toggle('mobile-active');
+        console.log('🔧 Initializing navigation event listeners...');
+        
+        // Navigation links with data-page attribute
+        const pageLinks = document.querySelectorAll('a[data-page]');
+        console.log(`📄 Found ${pageLinks.length} page navigation links`);
+        
+        pageLinks.forEach(link => {
+            const pageId = link.getAttribute('data-page');
+            console.log(`🔗 Setting up navigation for: ${pageId}`);
+            
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log(`🎯 CLICKED: Navigation to ${pageId}`);
+                
+                // Check if showPage function exists
+                if (typeof window.showPage === 'function') {
+                    window.showPage(pageId);
+                } else {
+                    console.error('❌ showPage function not available!');
+                    alert(`Navigation Error: Cannot navigate to ${pageId}`);
                 }
             });
         });
-    }
-
-    toggleMobileMenu() {
-        const mainNav = document.getElementById('mainNav');
-        const mobileToggle = document.getElementById('mobileMenuToggle');
         
-        if (mainNav && mobileToggle) {
-            mainNav.classList.toggle('active');
-            mobileToggle.classList.toggle('active');
+        // Subsidiary links with data-subsidiary attribute
+        const subsidiaryLinks = document.querySelectorAll('a[data-subsidiary]');
+        console.log(`🏢 Found ${subsidiaryLinks.length} subsidiary links`);
+        
+        subsidiaryLinks.forEach(link => {
+            const subsidiary = link.getAttribute('data-subsidiary');
+            console.log(`🔗 Setting up subsidiary link for: ${subsidiary}`);
+            
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log(`🎯 CLICKED: Subsidiary ${subsidiary}`);
+                
+                if (typeof window.showSubsidiary === 'function') {
+                    window.showSubsidiary(subsidiary);
+                } else {
+                    console.error('❌ showSubsidiary function not available!');
+                }
+            });
+        });
+        
+        // Mobile menu toggle
+        const mobileToggle = document.getElementById('mobileMenuToggle');
+        if (mobileToggle) {
+            console.log('📱 Setting up mobile menu toggle');
+            mobileToggle.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log('🎯 CLICKED: Mobile menu toggle');
+                
+                if (typeof window.toggleMobileMenu === 'function') {
+                    window.toggleMobileMenu();
+                } else {
+                    console.error('❌ toggleMobileMenu function not available!');
+                }
+            });
         }
+        
+        // Auth buttons event listeners will be set up by updateAuthUI function
+        console.log('✅ Navigation event listeners initialized');
     }
 }
 
