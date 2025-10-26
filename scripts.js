@@ -1869,6 +1869,25 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize cart system
     updateCartDisplay();
     
+    // Handle URL hash for navigation (e.g., index.html#services, index.html#contact)
+    const hash = window.location.hash.substring(1); // Remove the # character
+    if (hash) {
+        // Map hash values to page names
+        const pageMap = {
+            'services': 'services',
+            'contact': 'contact',
+            'about': 'about',
+            'home': 'home'
+        };
+        
+        if (pageMap[hash]) {
+            // Small delay to ensure page is fully loaded
+            setTimeout(() => {
+                showPage(pageMap[hash]);
+            }, 100);
+        }
+    }
+    
     // Initialize products if on products page
     if (window.location.pathname.includes('products.html')) {
         initializeProducts();
