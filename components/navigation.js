@@ -109,7 +109,7 @@ class NavigationComponent {
                                 </div>
                             </div>
                             
-                            <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                            <button class="mobile-menu-toggle" id="mobileMenuToggle" onclick="toggleMobileMenu()">
                                 <span class="hamburger-line"></span>
                                 <span class="hamburger-line"></span>
                                 <span class="hamburger-line"></span>
