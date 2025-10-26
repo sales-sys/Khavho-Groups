@@ -6,6 +6,155 @@ let cart = [];
 let products = [];
 let currentUser = null;
 
+// ===== CRITICAL NAVIGATION FUNCTIONS - MUST BE AVAILABLE IMMEDIATELY =====
+
+function showPage(pageId) {
+    console.log(`🔄 Navigating to page: ${pageId}`);
+    
+    // Hide all pages
+    document.querySelectorAll('.page-content').forEach(page => {
+        page.classList.remove('active');
+    });
+
+    // Show selected page
+    const pageEl = document.getElementById(pageId + 'Page');
+    if (pageEl) {
+        pageEl.classList.add('active');
+        console.log(`✅ Page ${pageId} is now active`);
+    } else {
+        console.error(`❌ Page element ${pageId}Page not found`);
+    }
+
+    // Update navigation
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('active');
+    });
+    // Highlight the correct nav link
+    document.querySelectorAll('.nav-link').forEach(link => {
+        if (link.textContent.trim().toLowerCase().includes(pageId)) {
+            link.classList.add('active');
+        }
+    });
+    currentPage = pageId;
+
+    // Close mobile menu if open
+    const mainNav = document.getElementById('mainNav');
+    if (mainNav) {
+        mainNav.classList.remove('active');
+    }
+    
+    // Close hamburger menu if open
+    const mobileToggle = document.getElementById('mobileMenuToggle');
+    if (mobileToggle) {
+        mobileToggle.classList.remove('active');
+    }
+
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Load page-specific content
+    if (pageId === 'home') {
+        loadProducts();
+        setTimeout(animateCounters, 500);
+    }
+}
+
+function showSubsidiary(subsidiary) {
+    console.log(`🔗 Opening subsidiary: ${subsidiary}`);
+    
+    // Navigate to subsidiary website
+    const subsidiaryUrls = {
+        'holdings': 'khavho-holdings.html',
+        'capital': 'khavho-capital.html',
+        'inter-africa': 'khavho-inter-africa.html'
+    };
+    
+    if (subsidiaryUrls[subsidiary]) {
+        window.open(subsidiaryUrls[subsidiary], '_blank');
+    } else {
+        alert('Subsidiary website coming soon!');
+    }
+}
+
+function toggleMobileMenu() {
+    console.log('🍔 Toggling mobile menu...');
+    const mainNav = document.getElementById('mainNav');
+    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+    
+    // Only proceed if both elements exist
+    if (mainNav && mobileMenuToggle) {
+        mainNav.classList.toggle('active');
+        mobileMenuToggle.classList.toggle('active');
+        
+        console.log(`📱 Mobile menu is now ${mainNav.classList.contains('active') ? 'open' : 'closed'}`);
+        
+        // Close any open dropdowns when mobile menu is toggled
+        const dropdowns = document.querySelectorAll('.dropdown');
+        dropdowns.forEach(dropdown => {
+            dropdown.classList.remove('mobile-active');
+        });
+    } else {
+        console.error('❌ Mobile menu elements not found');
+    }
+}
+
+// Make navigation functions globally available IMMEDIATELY
+window.showPage = showPage;
+window.showSubsidiary = showSubsidiary;
+window.toggleMobileMenu = toggleMobileMenu;
+
+// ===== CRITICAL AUTH MODAL FUNCTIONS - MUST BE AVAILABLE IMMEDIATELY =====
+
+function openLoginModal() {
+    console.log('🔑 Opening login modal...');
+    const modal = document.getElementById('loginModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    } else {
+        console.error('❌ Login modal not found');
+    }
+}
+
+function openRegisterModal() {
+    console.log('📝 Opening register modal...');
+    const modal = document.getElementById('registerModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    } else {
+        console.error('❌ Register modal not found');
+    }
+}
+
+function closeModal(modalId) {
+    console.log(`❌ Closing modal: ${modalId}`);
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto'; // Re-enable scrolling
+    }
+}
+
+function switchModal(fromModalId, toModalId) {
+    console.log(`� Switching from ${fromModalId} to ${toModalId}`);
+    closeModal(fromModalId);
+    const toModal = document.getElementById(toModalId);
+    if (toModal) {
+        toModal.style.display = 'flex';
+    }
+}
+
+// Make auth modal functions globally available IMMEDIATELY
+window.openLoginModal = openLoginModal;
+window.openRegisterModal = openRegisterModal;
+window.closeModal = closeModal;
+window.switchModal = switchModal;
+
+console.log('�🚀 Navigation and auth modal functions loaded and made globally available');
+
+// ===== END CRITICAL NAVIGATION FUNCTIONS =====
+
 // Wait for Firebase to be ready before setting up auth
 function initializeFirebaseAuth() {
     if (typeof auth === 'undefined' || !auth) {
@@ -160,106 +309,9 @@ window.showCartModal = showCartModal;
 window.proceedToCheckout = proceedToCheckout;
 window.clearCart = clearCart;
 
-// Navigation functions
-function showPage(pageId) {
-    console.log(`🔄 Navigating to page: ${pageId}`);
-    
-    // Hide all pages
-    document.querySelectorAll('.page-content').forEach(page => {
-        page.classList.remove('active');
-    });
+// Navigation functions have been moved to the top of the file for immediate availability
 
-    // Show selected page
-    const pageEl = document.getElementById(pageId + 'Page');
-    if (pageEl) {
-        pageEl.classList.add('active');
-        console.log(`✅ Page ${pageId} is now active`);
-    } else {
-        console.error(`❌ Page element ${pageId}Page not found`);
-    }
-
-    // Update navigation
-    document.querySelectorAll('.nav-link').forEach(link => {
-        link.classList.remove('active');
-    });
-    // Highlight the correct nav link
-    document.querySelectorAll('.nav-link').forEach(link => {
-        if (link.textContent.trim().toLowerCase().includes(pageId)) {
-            link.classList.add('active');
-        }
-    });
-    currentPage = pageId;
-
-    // Close mobile menu if open
-    const mainNav = document.getElementById('mainNav');
-    if (mainNav) {
-        mainNav.classList.remove('active');
-    }
-    
-    // Close hamburger menu if open
-    const mobileToggle = document.getElementById('mobileMenuToggle');
-    if (mobileToggle) {
-        mobileToggle.classList.remove('active');
-    }
-
-    // Scroll to top
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-
-    // Load page-specific content
-    if (pageId === 'home') {
-        loadProducts();
-        setTimeout(animateCounters, 500);
-    }
-}
-
-// Make showPage globally available
-window.showPage = showPage;
-
-function showSubsidiary(subsidiary) {
-    console.log(`🔗 Opening subsidiary: ${subsidiary}`);
-    
-    // Navigate to subsidiary website
-    const subsidiaryUrls = {
-        'holdings': 'khavho-holdings.html',
-        'capital': 'khavho-capital.html',
-        'inter-africa': 'khavho-inter-africa.html'
-    };
-    
-    if (subsidiaryUrls[subsidiary]) {
-        window.open(subsidiaryUrls[subsidiary], '_blank');
-    } else {
-        alert('Subsidiary website coming soon!');
-    }
-}
-
-// Make showSubsidiary globally available
-window.showSubsidiary = showSubsidiary;
-
-// Mobile menu toggle
-function toggleMobileMenu() {
-    console.log('🍔 Toggling mobile menu...');
-    const mainNav = document.getElementById('mainNav');
-    const mobileMenuToggle = document.getElementById('mobileMenuToggle');
-    
-    // Only proceed if both elements exist
-    if (mainNav && mobileMenuToggle) {
-        mainNav.classList.toggle('active');
-        mobileMenuToggle.classList.toggle('active');
-        
-        console.log(`📱 Mobile menu is now ${mainNav.classList.contains('active') ? 'open' : 'closed'}`);
-        
-        // Close any open dropdowns when mobile menu is toggled
-        const dropdowns = document.querySelectorAll('.dropdown');
-        dropdowns.forEach(dropdown => {
-            dropdown.classList.remove('mobile-active');
-        });
-    } else {
-        console.error('❌ Mobile menu elements not found');
-    }
-}
-
-// Make toggleMobileMenu globally available
-window.toggleMobileMenu = toggleMobileMenu;
+// Duplicate navigation functions have been moved to the top of the file for immediate availability
 
 // Handle dropdown clicks on mobile
 function toggleMobileDropdown(event) {
@@ -312,32 +364,7 @@ function setupMobileDropdowns() {
     });
 }
 
-// Authentication Modal Functions
-function openLoginModal() {
-    console.log('🔑 Opening login modal...');
-    const modal = document.getElementById('loginModal');
-    if (modal) {
-        modal.style.display = 'flex';
-        document.body.style.overflow = 'hidden'; // Prevent background scrolling
-    } else {
-        console.error('❌ Login modal not found');
-    }
-}
-
-function openRegisterModal() {
-    console.log('📝 Opening register modal...');
-    const modal = document.getElementById('registerModal');
-    if (modal) {
-        modal.style.display = 'flex';
-        document.body.style.overflow = 'hidden'; // Prevent background scrolling
-    } else {
-        console.error('❌ Register modal not found');
-    }
-}
-
-// Make auth functions globally available
-window.openLoginModal = openLoginModal;
-window.openRegisterModal = openRegisterModal;
+// Duplicate auth modal functions have been moved to the top of the file for immediate availability
 
 function showModal(modalId) {
     const modal = document.getElementById(modalId);
@@ -346,26 +373,6 @@ function showModal(modalId) {
         document.body.style.overflow = 'hidden'; // Prevent background scrolling
     }
 }
-
-function closeModal(modalId) {
-    console.log(`❌ Closing modal: ${modalId}`);
-    const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.style.display = 'none';
-        document.body.style.overflow = 'auto'; // Re-enable scrolling
-    }
-}
-
-function switchModal(fromModalId, toModalId) {
-    console.log(`🔄 Switching from ${fromModalId} to ${toModalId}`);
-    closeModal(fromModalId);
-    const toModal = document.getElementById(toModalId);
-    if (toModal) {
-        toModal.style.display = 'flex';
-    }
-}
-
-// Make modal functions globally available
 window.closeModal = closeModal;
 window.switchModal = switchModal;
 
