@@ -1287,6 +1287,57 @@ function closeCheckout() {
     document.removeEventListener('keydown', handleCheckoutEscape);
 }
 
+// Function to handle payment method selection
+function selectPaymentMethod(method) {
+    // Update radio button selection
+    document.querySelectorAll('input[name="payment"]').forEach(radio => {
+        radio.checked = radio.value === method;
+    });
+    
+    // Visual feedback for selected payment option
+    document.querySelectorAll('.payment-option').forEach(option => {
+        option.classList.remove('selected');
+    });
+    
+    const selectedOption = document.querySelector(`input[value="${method}"]`).closest('.payment-option');
+    if (selectedOption) {
+        selectedOption.classList.add('selected');
+    }
+}
+
+// Function to handle completing order  
+function completeOrder() {
+    const selectedPayment = document.querySelector('input[name="payment"]:checked');
+    if (!selectedPayment) {
+        alert('Please select a payment method');
+        return;
+    }
+    
+    // Process based on payment method
+    switch(selectedPayment.value) {
+        case 'card':
+            alert('Credit card payment processing...');
+            break;
+        case 'eft':
+            alert('Bank transfer details will be provided...');
+            break;
+        case 'whatsapp':
+            // Send order via WhatsApp
+            const cart = JSON.parse(localStorage.getItem('khavho_cart') || '[]');
+            const total = cart.reduce((sum, item) => sum + (parseFloat(item.price || 0) * item.quantity), 0);
+            const itemList = cart.map(item => `${item.name} x${item.quantity}`).join(', ');
+            const message = `Hi! I'd like to place an order: ${itemList}. Total: R${total.toFixed(2)}`;
+            window.open(`https://wa.me/27766927310?text=${encodeURIComponent(message)}`, '_blank');
+            closeCheckout();
+            // Clear cart after order
+            localStorage.removeItem('khavho_cart');
+            updateCartDisplay();
+            break;
+        default:
+            alert('Payment method not implemented yet');
+    }
+}
+
 // Handle escape key to close checkout
 function handleCheckoutEscape(event) {
     if (event.key === 'Escape') {
@@ -1312,6 +1363,8 @@ window.prevCheckoutStep = prevCheckoutStep;
 window.toggleDeliveryAddress = toggleDeliveryAddress;
 window.closeCheckout = closeCheckout;
 window.sendOrderWhatsApp = sendOrderWhatsApp;
+window.selectPaymentMethod = selectPaymentMethod;
+window.completeOrder = completeOrder;
 
 // Form submission
 function submitContactForm(event) {
@@ -1697,7 +1750,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Initialize cart system
-    loadCartFromStorage();
     updateCartDisplay();
     
     // Initialize products if on products page
