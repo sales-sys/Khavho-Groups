@@ -55,6 +55,20 @@
             margin: 0 auto !important;
             padding: 0 40px !important;
             display: block !important;
+            text-align: center;
+        }
+        
+        /* Reset text alignment for specific elements that need left alignment */
+        .about-content p,
+        .about-content li {
+            text-align: left;
+        }
+        
+        /* Keep headings centered */
+        .about-content h2,
+        .about-content h3,
+        .about-content h4 {
+            text-align: center;
         }
         
         /* Story Section */
@@ -87,6 +101,7 @@
             gap: 3rem;
             margin: 60px auto;
             max-width: 100%;
+            text-align: left;
         }
         
         .mission-box, .vision-box {
@@ -152,6 +167,7 @@
             gap: 2rem;
             margin-top: 2.5rem;
             max-width: 100%;
+            justify-items: center;
         }
         
         .value-item {
@@ -161,6 +177,8 @@
             text-align: center;
             border: 1px solid #e9ecef;
             transition: all 0.3s ease;
+            width: 100%;
+            max-width: 350px;
         }
         
         .value-item:hover {
@@ -208,6 +226,7 @@
             margin: 60px auto;
             padding: 0;
             max-width: 100%;
+            justify-items: center;
         }
         
         .stat-item {
@@ -218,6 +237,8 @@
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
             border: 2px solid #f0f0f0;
             transition: all 0.3s ease;
+            width: 100%;
+            max-width: 220px;
         }
         
         .stat-item:hover {
@@ -282,6 +303,7 @@
             gap: 3rem;
             margin-top: 3rem;
             max-width: 100%;
+            justify-items: center;
         }
         
         .division-card {
@@ -291,6 +313,9 @@
             box-shadow: 0 6px 30px rgba(0, 0, 0, 0.1);
             border: 2px solid #f0f0f0;
             transition: all 0.4s ease;
+            width: 100%;
+            max-width: 450px;
+            text-align: left;
         }
         
         .division-card:hover {
@@ -390,6 +415,7 @@
             gap: 2.5rem;
             margin-top: 2.5rem;
             max-width: 100%;
+            justify-items: center;
         }
         
         .leader-card {
@@ -399,6 +425,8 @@
             text-align: center;
             border: 2px solid #e9ecef;
             transition: all 0.3s ease;
+            width: 100%;
+            max-width: 400px;
         }
         
         .leader-card:hover {
@@ -428,6 +456,7 @@
             gap: 2.5rem;
             margin-top: 2.5rem;
             max-width: 100%;
+            justify-items: center;
         }
         
         .achievement-item {
@@ -438,6 +467,8 @@
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
             border: 2px solid #f0f0f0;
             transition: all 0.3s ease;
+            width: 100%;
+            max-width: 320px;
         }
         
         .achievement-item:hover {
