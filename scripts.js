@@ -1749,6 +1749,16 @@ document.addEventListener('DOMContentLoaded', function() {
         lucide.createIcons();
     }
     
+    // Ensure cart is closed on page load
+    const cartSidebar = document.getElementById('cartSidebar');
+    const cartOverlay = document.getElementById('cartOverlay');
+    if (cartSidebar) {
+        cartSidebar.classList.remove('open');
+    }
+    if (cartOverlay) {
+        cartOverlay.classList.remove('active');
+    }
+    
     // Initialize cart system
     updateCartDisplay();
     
@@ -1784,6 +1794,14 @@ function setupEventListeners() {
         checkoutForm.addEventListener('submit', function(e) {
             e.preventDefault();
             processOrder();
+        });
+    }
+    
+    // Setup cart overlay close listener
+    const cartOverlay = document.getElementById('cartOverlay');
+    if (cartOverlay) {
+        cartOverlay.addEventListener('click', function() {
+            toggleCart(); // Close cart when clicking overlay
         });
     }
 }
