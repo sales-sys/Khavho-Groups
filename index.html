@@ -79,7 +79,14 @@
                         
                         <div class="header-cta">
                             <div class="auth-buttons">
-                                <!-- Auth buttons will be populated by JavaScript -->
+                                <button class="auth-btn login-btn" onclick="openLoginModal()">
+                                    <i data-lucide="log-in"></i>
+                                    Login
+                                </button>
+                                <button class="auth-btn register-btn" onclick="openRegisterModal()">
+                                    <i data-lucide="user-plus"></i>
+                                    Register
+                                </button>
                             </div>
                             
                             <div class="cart-icon" onclick="toggleCart()" style="position: relative; cursor: pointer; padding: 8px;">
@@ -90,7 +97,14 @@
                         
                         <!-- Mobile auth buttons -->
                         <div class="mobile-auth auth-buttons">
-                            <!-- Mobile auth buttons will be populated by JavaScript -->
+                            <button class="auth-btn login-btn" onclick="openLoginModal()">
+                                <i data-lucide="log-in"></i>
+                                Login
+                            </button>
+                            <button class="auth-btn register-btn" onclick="openRegisterModal()">
+                                <i data-lucide="user-plus"></i>
+                                Register
+                            </button>
                         </div>
                     </div>
                     
