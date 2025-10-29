@@ -159,14 +159,14 @@ console.log('�🚀 Navigation and auth modal functions loaded and made globall
 
 // Wait for Firebase to be ready before setting up auth
 function initializeFirebaseAuth() {
-    if (typeof auth === 'undefined' || !auth) {
+    if (typeof window.auth === 'undefined' || !window.auth) {
         console.log('Firebase auth not ready, retrying...');
         setTimeout(initializeFirebaseAuth, 100);
         return;
     }
 
     // Firebase Authentication State Observer
-    auth.onAuthStateChanged(function(user) {
+    window.auth.onAuthStateChanged(function(user) {
         if (user) {
             currentUser = user;
             updateAuthUI(true);
@@ -193,7 +193,7 @@ async function updateAuthUI(isSignedIn) {
         // Check if user is admin
         let isAdmin = false;
         try {
-            const userDoc = await db.collection('users').doc(currentUser.uid).get();
+            const userDoc = await window.db.collection('users').doc(currentUser.uid).get();
             if (userDoc.exists) {
                 const userData = userDoc.data();
                 isAdmin = userData.role === 'admin';
@@ -399,7 +399,7 @@ function signIn(email, password) {
     loginBtn.innerHTML = '<i data-lucide="loader"></i> Signing in...';
     loginBtn.disabled = true;
     
-    return auth.signInWithEmailAndPassword(email, password)
+    return window.auth.signInWithEmailAndPassword(email, password)
         .then((userCredential) => {
             console.log('User signed in successfully:', userCredential.user.email);
             closeModal('loginModal');
@@ -424,18 +424,18 @@ function signUp(name, email, password) {
     registerBtn.innerHTML = '<i data-lucide="loader"></i> Creating account...';
     registerBtn.disabled = true;
     
-    return auth.createUserWithEmailAndPassword(email, password)
+    return window.auth.createUserWithEmailAndPassword(email, password)
         .then((userCredential) => {
             // Update the user's display name
             return userCredential.user.updateProfile({
                 displayName: name
             }).then(() => {
                 // Store additional user data in Firestore
-                return db.collection('users').doc(userCredential.user.uid).set({
+                return window.db.collection('users').doc(userCredential.user.uid).set({
                     name: name,
                     email: email,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+                    createdAt: window.firebase.firestore.FieldValue.serverTimestamp(),
+                    lastLogin: window.firebase.firestore.FieldValue.serverTimestamp()
                 });
             }).then(() => {
                 console.log('User registered successfully:', userCredential.user.email);
@@ -456,7 +456,7 @@ function signUp(name, email, password) {
 
 function signOut() {
     console.log('🚪 Signing out user...');
-    auth.signOut().then(() => {
+    window.auth.signOut().then(() => {
         console.log('User signed out successfully');
         showSuccessMessage('You have been signed out successfully.');
         
