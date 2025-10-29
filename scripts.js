@@ -1,5 +1,54 @@
 // Khavho Groups - Main Website JavaScript
 
+// ===== IMMEDIATE GLOBAL FUNCTION DEFINITIONS =====
+// These MUST be defined before any HTML that references them
+
+function openLoginModal() {
+    console.log('🔑 Opening login modal...');
+    const modal = document.getElementById('loginModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    } else {
+        console.error('❌ Login modal not found');
+    }
+}
+
+function openRegisterModal() {
+    console.log('📝 Opening register modal...');
+    const modal = document.getElementById('registerModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    } else {
+        console.error('❌ Register modal not found');
+    }
+}
+
+function closeModal(modalId) {
+    console.log(`❌ Closing modal: ${modalId}`);
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+}
+
+function switchModal(fromModalId, toModalId) {
+    console.log(`🔄 Switching from ${fromModalId} to ${toModalId}`);
+    closeModal(fromModalId);
+    const toModal = document.getElementById(toModalId);
+    if (toModal) {
+        toModal.style.display = 'flex';
+    }
+}
+
+// Expose immediately
+window.openLoginModal = openLoginModal;
+window.openRegisterModal = openRegisterModal;
+window.closeModal = closeModal;
+window.switchModal = switchModal;
+
 // Global variables
 let currentPage = 'home';
 let cart = [];
@@ -104,56 +153,6 @@ console.log('🚀 NAVIGATION FUNCTIONS LOADED:');
 console.log('- showPage available:', typeof window.showPage);
 console.log('- showSubsidiary available:', typeof window.showSubsidiary);
 console.log('- toggleMobileMenu available:', typeof window.toggleMobileMenu);
-
-// ===== CRITICAL AUTH MODAL FUNCTIONS - MUST BE AVAILABLE IMMEDIATELY =====
-
-function openLoginModal() {
-    console.log('🔑 Opening login modal...');
-    const modal = document.getElementById('loginModal');
-    if (modal) {
-        modal.style.display = 'flex';
-        document.body.style.overflow = 'hidden'; // Prevent background scrolling
-    } else {
-        console.error('❌ Login modal not found');
-    }
-}
-
-function openRegisterModal() {
-    console.log('📝 Opening register modal...');
-    const modal = document.getElementById('registerModal');
-    if (modal) {
-        modal.style.display = 'flex';
-        document.body.style.overflow = 'hidden'; // Prevent background scrolling
-    } else {
-        console.error('❌ Register modal not found');
-    }
-}
-
-function closeModal(modalId) {
-    console.log(`❌ Closing modal: ${modalId}`);
-    const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.style.display = 'none';
-        document.body.style.overflow = 'auto'; // Re-enable scrolling
-    }
-}
-
-function switchModal(fromModalId, toModalId) {
-    console.log(`� Switching from ${fromModalId} to ${toModalId}`);
-    closeModal(fromModalId);
-    const toModal = document.getElementById(toModalId);
-    if (toModal) {
-        toModal.style.display = 'flex';
-    }
-}
-
-// Make auth modal functions globally available IMMEDIATELY
-window.openLoginModal = openLoginModal;
-window.openRegisterModal = openRegisterModal;
-window.closeModal = closeModal;
-window.switchModal = switchModal;
-
-console.log('�🚀 Navigation and auth modal functions loaded and made globally available');
 
 // ===== END CRITICAL NAVIGATION FUNCTIONS =====
 

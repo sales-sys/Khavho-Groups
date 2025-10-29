@@ -789,7 +789,7 @@ function showOutOfStockMessage() {
 }
 
 // Checkout functionality
-let currentCheckoutStep = 1;
+// Note: currentCheckoutStep is defined in scripts.js
 let selectedPaymentMethod = 'card';
 
 function checkout() {
