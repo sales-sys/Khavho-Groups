@@ -143,7 +143,7 @@ function automaticProductLoad() {
                         .replace(/\s+/g, '-')
                         .replace(/-+/g, '-')
                         .trim();
-                    product.imageUrl = `images/${imageName}.webp`;
+                    product.imageUrl = `/images/${imageName}.webp`;
                     console.log(`🔧 FORCED image path for "${product.name}": ${product.imageUrl}`);
                 }
                 
@@ -589,21 +589,6 @@ function checkWebPSupport() {
 
 // Shopping cart functions with Firebase integration
 function addToCart(productId) {
-    // Check if user is logged in first
-    if (!currentUser) {
-        console.log('🔐 User not logged in, prompting for login...');
-        showNotification('Please login to add items to your cart', 'info');
-        
-        // Show login modal
-        if (typeof openLoginModal === 'function') {
-            openLoginModal();
-        } else {
-            // Fallback - redirect to login
-            showNotification('Please login first to add items to cart', 'error');
-        }
-        return;
-    }
-    
     const product = productsData.find(p => p.id === productId);
     if (!product) {
         console.error('Product not found:', productId);
@@ -643,7 +628,9 @@ function addToCart(productId) {
     localStorage.setItem('khavho_cart', JSON.stringify(cart));
     
     // Save to Firebase if user is logged in
-    saveCartToFirebase(cart);
+    if (currentUser) {
+        saveCartToFirebase(cart);
+    }
     
     // Update cart display with animation
     updateCartDisplay();
