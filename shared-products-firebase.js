@@ -187,40 +187,58 @@ function loadDemoProducts() {
     
     productsData = [
         {
-            id: 'demo-1',
-            name: 'Construction Management Services',
-            category: 'construction',
-            price: 50000,
-            description: 'Professional construction project management and oversight services for large-scale projects.',
+            id: 'real-1',
+            name: 'Air Conditioner (12,000 BTU)',
+            category: 'Mechanical',
+            price: 8500,
+            description: '12,000 BTU air conditioning unit for efficient cooling.',
             available: true,
-            imageUrl: 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=300'
+            imageUrl: 'images/' + encodeURIComponent('Air Conditioner (12,000 BTU)') + '.webp'
         },
         {
-            id: 'demo-2', 
-            name: 'Investment Portfolio Management',
-            category: 'investment',
-            price: 25000,
-            description: 'Comprehensive investment portfolio management and advisory services for optimal returns.',
+            id: 'real-2',
+            name: 'Cement (50kg bag)',
+            category: 'Building',
+            price: 120,
+            description: 'High quality 50kg cement bag for construction.',
             available: true,
-            imageUrl: 'https://images.unsplash.com/photo-1579532537598-459ecdaf39cc?w=300'
+            imageUrl: 'images/' + encodeURIComponent('Cement (50kg bag)') + '.webp'
         },
         {
-            id: 'demo-3',
-            name: 'Financial Consulting Services',
-            category: 'financial',
-            price: 15000,
-            description: 'Expert financial consulting and strategic planning services for business growth.',
+            id: 'real-3',
+            name: 'Computer, Desktop',
+            category: 'Office',
+            price: 12000,
+            description: 'Desktop computer for office use.',
             available: true,
-            imageUrl: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=300'
+            imageUrl: 'images/' + encodeURIComponent('Computer, Desktop') + '.webp'
         },
         {
-            id: 'demo-4',
-            name: 'Business Strategy Consulting',
-            category: 'consulting',
-            price: 20000,
-            description: 'Strategic business consulting and development services for market expansion.',
+            id: 'real-4',
+            name: 'Desk, Office',
+            category: 'Office',
+            price: 2500,
+            description: 'Professional office desk.',
             available: true,
-            imageUrl: 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=300'
+            imageUrl: 'images/' + encodeURIComponent('Desk, Office') + '.webp'
+        },
+        {
+            id: 'real-5',
+            name: 'Electrical Cable (100m)',
+            category: 'Electrical',
+            price: 3500,
+            description: '100m electrical cable roll.',
+            available: true,
+            imageUrl: 'images/' + encodeURIComponent('Electrical Cable (100m)') + '.webp'
+        },
+        {
+            id: 'real-6',
+            name: 'Printer, Multi-function',
+            category: 'Office',
+            price: 4500,
+            description: 'Multi-function printer for office.',
+            available: true,
+            imageUrl: 'images/' + encodeURIComponent('Printer, Multi-function') + '.webp'
         }
     ];
     
