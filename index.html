@@ -19,6 +19,42 @@
     <!-- Firebase Products System -->
     <script src="shared-products-firebase.js"></script>
     
+    <!-- CRITICAL: Define auth functions inline FIRST before any HTML -->
+    <script>
+        // Auth modal functions - MUST be defined before any onclick handlers
+        function openLoginModal() {
+            const modal = document.getElementById('loginModal');
+            if (modal) {
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+        }
+        
+        function openRegisterModal() {
+            const modal = document.getElementById('registerModal');
+            if (modal) {
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+        }
+        
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        }
+        
+        function switchModal(fromModalId, toModalId) {
+            closeModal(fromModalId);
+            const toModal = document.getElementById(toModalId);
+            if (toModal) {
+                toModal.style.display = 'flex';
+            }
+        }
+    </script>
+    
     <!-- Main Scripts - Load early so functions are available -->
     <script src="scripts.js"></script>
     

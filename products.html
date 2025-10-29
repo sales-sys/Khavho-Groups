@@ -16,6 +16,27 @@
     <!-- Firebase Configuration -->
     <script src="firebase-config.js"></script>
     
+    <!-- CRITICAL: Define auth functions inline FIRST -->
+    <script>
+        function openLoginModal() {
+            const modal = document.getElementById('loginModal');
+            if (modal) { modal.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+        }
+        function openRegisterModal() {
+            const modal = document.getElementById('registerModal');
+            if (modal) { modal.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+        }
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) { modal.style.display = 'none'; document.body.style.overflow = 'auto'; }
+        }
+        function switchModal(fromModalId, toModalId) {
+            closeModal(fromModalId);
+            const toModal = document.getElementById(toModalId);
+            if (toModal) { toModal.style.display = 'flex'; }
+        }
+    </script>
+    
     <!-- Main Scripts - Load early -->
     <script src="scripts.js"></script>
     
