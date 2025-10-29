@@ -117,18 +117,38 @@ function automaticProductLoad() {
     
     console.log('✅ Database ready, loading products...');
     
-    // Try to load products from Firebase (security rules allow read: if true)
-    window.db.collection('products').get()
-        .then((snapshot) => {
-            console.log('✅ Firebase query successful! Products found:', snapshot.size);
-            console.log('📊 Firebase snapshot details:', {
-                empty: snapshot.empty,
-                size: snapshot.size,
-                docs: snapshot.docs.length
+    // Try BOTH 'products' and 'Products' collection names (case-sensitive!)
+    const tryLoadProducts = (collectionName) => {
+        return window.db.collection(collectionName).get()
+            .then((snapshot) => {
+                console.log(`✅ Firebase query for "${collectionName}" successful! Products found:`, snapshot.size);
+                console.log('📊 Firebase snapshot details:', {
+                    collection: collectionName,
+                    empty: snapshot.empty,
+                    size: snapshot.size,
+                    docs: snapshot.docs.length
+                });
+                
+                if (snapshot.size > 0) {
+                    console.log(`✅✅✅ FOUND ${snapshot.size} PRODUCTS IN FIREBASE COLLECTION: ${collectionName}`);
+                    return { snapshot, found: true };
+                }
+                return { snapshot, found: false };
             });
-            
-            if (snapshot.size === 0) {
-                console.error('⚠️⚠️⚠️ NO PRODUCTS IN FIREBASE! Loading demos as fallback...');
+    };
+    
+    // Try 'products' first, then 'Products' if that fails
+    tryLoadProducts('products')
+        .then(result => {
+            if (result.found) {
+                return result;
+            }
+            console.log('⚠️ No products in "products" collection, trying "Products"...');
+            return tryLoadProducts('Products');
+        })
+        .then(({ snapshot, found }) => {
+            if (!found || snapshot.size === 0) {
+                console.error('⚠️⚠️⚠️ NO PRODUCTS IN FIREBASE! Tried both "products" and "Products" collections');
                 console.log('🔍 Checking Firebase connection...');
                 console.log('Database path:', window.db);
                 if (productsData.length === 0) {
@@ -138,7 +158,6 @@ function automaticProductLoad() {
             }
 
             // Load real products from Firebase
-            console.log('✅✅✅ FOUND PRODUCTS IN FIREBASE! Loading', snapshot.size, 'products...');
             productsData = [];
             snapshot.forEach((doc) => {
                 const product = { id: doc.id, ...doc.data() };

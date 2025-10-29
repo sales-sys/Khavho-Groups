@@ -51,206 +51,174 @@
     
     <!-- Additional About Page Styles -->
     <style>
-        body {
-            padding-top: 0;
+        /* Reset and Base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
         
-        /* Page Header Styling */
+        body {
+            padding-top: 0;
+            background: #ffffff;
+        }
+        
+        /* Page Header */
         .page-header {
-            background: linear-gradient(135deg, #F37021 0%, #FF8C42 100%);
-            padding: 120px 20px 80px;
+            background: linear-gradient(135deg, #1a365d 0%, #2c5282 100%);
+            padding: 140px 20px 100px;
             text-align: center;
             color: white;
             margin-top: 90px;
         }
         
         .page-header h1 {
-            font-size: 3rem;
+            font-size: 3.5rem;
             margin: 0 0 1rem 0;
-            font-weight: 700;
+            font-weight: 800;
         }
         
         .page-header p {
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             margin: 0;
             opacity: 0.95;
+            font-weight: 300;
         }
         
-        /* About Content Container */
-        .about-content {
-            padding: 80px 0;
-            width: 100%;
-        }
-        
-        /* Story Section with inner container */
-        .story-section {
-            width: 100%;
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
             padding: 0 20px;
-            margin-bottom: 80px;
+        }
+        
+        /* Section Spacing */
+        section {
+            padding: 80px 0;
+        }
+        
+        /* Story Section */
+        .story-section {
+            background: #f8f9fa;
         }
         
         .story-section .container {
             max-width: 900px;
-            margin: 0 auto;
-            text-align: center;
         }
         
         .story-section h2 {
-            font-size: 2.8rem;
-            margin: 0 0 2rem 0;
-            color: #333;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: #1a365d;
             font-weight: 700;
+            text-align: center;
         }
         
         .story-section p {
-            font-size: 1.15rem;
-            line-height: 1.9;
-            color: #666;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #4a5568;
             margin-bottom: 1.5rem;
-            text-align: left;
         }
         
-        /* About Stats - Full Page Width */
-        .about-stats {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 2.5rem;
-            margin: 60px 0;
-            padding: 0 40px;
-            width: 100%;
-        }
-        
-        .stat-item {
-            text-align: center;
+        /* Stats Section */
+        .stats-section {
             background: white;
-            padding: 2.5rem 2rem;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            border: 2px solid #f0f0f0;
-            transition: all 0.3s ease;
-            flex: 0 1 200px;
         }
         
-        .stat-item:hover {
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .stat-card {
+            text-align: center;
+            padding: 2rem;
+            background: #f8f9fa;
+            border-radius: 12px;
+            transition: transform 0.3s;
+        }
+        
+        .stat-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-            border-color: #F37021;
         }
         
-        .stat-item h3 {
+        .stat-card h3 {
             font-size: 3rem;
-            margin: 0 0 0.5rem 0;
-            background: linear-gradient(135deg, #F37021 0%, #FF8C42 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: #F37021;
+            margin-bottom: 0.5rem;
             font-weight: 800;
         }
         
-        .stat-item p {
-            margin: 0;
-            color: #666;
-            font-size: 0.95rem;
+        .stat-card p {
+            color: #4a5568;
+            font-size: 1rem;
             text-transform: uppercase;
             letter-spacing: 1px;
-            font-weight: 500;
         }
         
-        /* Mission & Vision Section - Full Page Width */
+        /* Mission Vision Section */
         .mission-vision-section {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 3rem;
-            margin: 60px 0;
-            padding: 0 40px;
-            width: 100%;
-        }
-        
-        .mission-box, .vision-box {
             background: #f8f9fa;
+        }
+        
+        .mv-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 3rem;
+            margin-top: 3rem;
+        }
+        
+        .mv-card {
+            background: white;
             padding: 3rem;
-            border-radius: 16px;
+            border-radius: 12px;
             border-left: 5px solid #F37021;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s ease;
-            flex: 1 1 450px;
-            max-width: 550px;
         }
         
-        .mission-box:hover, .vision-box:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        .mv-card h3 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: #1a365d;
         }
         
-        .mission-box h3, .vision-box h3 {
-            font-size: 1.8rem;
-            margin: 0 0 1.5rem 0;
-            color: #333;
-            font-weight: 700;
-        }
-        
-        .mission-box p, .vision-box p {
+        .mv-card p {
             font-size: 1.1rem;
             line-height: 1.8;
-            color: #666;
-            margin: 0;
+            color: #4a5568;
         }
         
-        /* Values Section - Full Page Width */
+        /* Values Section */
         .values-section {
-            margin: 80px 0;
-            padding: 0 40px;
-            text-align: center;
-            width: 100%;
+            background: white;
         }
         
         .values-section h2 {
-            font-size: 2.8rem;
-            margin: 0 0 3rem 0;
-            color: #333;
-            font-weight: 700;
-            position: relative;
-            padding-bottom: 1rem;
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            color: #1a365d;
         }
         
-        .values-section h2:after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 4px;
-            background: linear-gradient(135deg, #F37021 0%, #FF8C42 100%);
-            border-radius: 2px;
-        }
-        
-        /* Values Grid - Full Width */
         .values-grid {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 2rem;
-            margin-top: 2.5rem;
-            width: 100%;
         }
         
-        .value-item {
+        .value-card {
             background: #f8f9fa;
             padding: 2.5rem;
-            border-radius: 16px;
+            border-radius: 12px;
             text-align: center;
-            border: 1px solid #e9ecef;
-            transition: all 0.3s ease;
-            flex: 0 1 300px;
+            transition: transform 0.3s;
         }
         
-        .value-item:hover {
+        .value-card:hover {
             transform: translateY(-8px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
-            border-color: #F37021;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
         
         .value-icon {
@@ -265,85 +233,45 @@
             color: white;
         }
         
-        .value-icon svg {
-            width: 32px;
-            height: 32px;
+        .value-card h4 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #1a365d;
         }
         
-        .value-item h4 {
-            margin: 0 0 1rem 0;
-            color: #333;
-            font-size: 1.4rem;
-            font-weight: 600;
-        }
-        
-        .value-item p {
-            margin: 0;
-            color: #666;
+        .value-card p {
+            color: #4a5568;
             line-height: 1.7;
-            font-size: 1rem;
         }
         
-        /* Sections Styling - Full Page Width */
-        .divisions-section, .leadership-section, .achievements-section {
-            margin: 5rem 0;
-            padding: 4rem 40px 0;
-            border-top: 2px solid #e9ecef;
+        /* Divisions Section */
+        .divisions-section {
+            background: #f8f9fa;
+        }
+        
+        .divisions-section h2 {
+            font-size: 2.5rem;
             text-align: center;
-            width: 100%;
+            margin-bottom: 3rem;
+            color: #1a365d;
         }
         
-        .divisions-section h2, .leadership-section h2, .achievements-section h2 {
-            margin-bottom: 3.5rem;
-            color: #333;
-            font-size: 2.8rem;
-            font-weight: 700;
-            position: relative;
-            padding-bottom: 1rem;
-        }
-        
-        .divisions-section h2:after, .leadership-section h2:after, .achievements-section h2:after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 4px;
-            background: linear-gradient(135deg, #F37021 0%, #FF8C42 100%);
-            border-radius: 2px;
-        }
-        
-        /* Divisions Grid - Full Width */
         .divisions-grid {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 3rem;
-            margin-top: 3rem;
-            width: 100%;
         }
         
         .division-card {
             background: white;
             padding: 3rem;
-            border-radius: 20px;
-            box-shadow: 0 6px 30px rgba(0, 0, 0, 0.1);
-            border: 2px solid #f0f0f0;
-            transition: all 0.4s ease;
-            flex: 0 1 380px;
-            text-align: left;
-        }
-        
-        .division-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.18);
-            border-color: #F37021;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
         
         .division-icon {
-            width: 90px;
-            height: 90px;
+            width: 80px;
+            height: 80px;
             background: linear-gradient(135deg, #F37021 0%, #FF8C42 100%);
             border-radius: 50%;
             display: flex;
@@ -351,41 +279,30 @@
             justify-content: center;
             margin-bottom: 2rem;
             color: white;
-            box-shadow: 0 8px 20px rgba(243, 112, 33, 0.3);
-        }
-        
-        .division-icon svg {
-            width: 40px;
-            height: 40px;
         }
         
         .division-card h3 {
-            margin: 0 0 1.5rem 0;
-            color: #333;
             font-size: 1.8rem;
-            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: #1a365d;
         }
         
-        .division-card > p {
-            color: #666;
-            line-height: 1.8;
+        .division-card p {
+            color: #4a5568;
+            line-height: 1.7;
             margin-bottom: 2rem;
-            font-size: 1.05rem;
         }
         
         .division-features {
             list-style: none;
-            padding: 0;
-            margin: 0 0 2.5rem 0;
+            margin-bottom: 2rem;
         }
         
         .division-features li {
-            padding: 0.7rem 0;
-            color: #555;
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
             position: relative;
-            padding-left: 2rem;
-            font-size: 1rem;
-            line-height: 1.6;
+            color: #4a5568;
         }
         
         .division-features li:before {
@@ -394,252 +311,48 @@
             left: 0;
             color: #28a745;
             font-weight: bold;
-            font-size: 1.2rem;
         }
         
         .division-link {
             display: inline-block;
-            background: linear-gradient(135deg, #F37021 0%, #FF8C42 100%);
+            background: #F37021;
             color: white;
-            padding: 1rem 2rem;
-            border-radius: 10px;
+            padding: 0.8rem 2rem;
+            border-radius: 8px;
             text-decoration: none;
             font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(243, 112, 33, 0.3);
+            transition: background 0.3s;
         }
         
         .division-link:hover {
-            transform: translateX(8px);
+            background: #FF8C42;
             text-decoration: none;
-            color: white;
-            box-shadow: 0 6px 25px rgba(243, 112, 33, 0.5);
         }
         
-        /* Leadership Grid */
-        .leadership-section > p {
-            max-width: 800px;
-            margin: 0 auto 3rem;
-            font-size: 1.1rem;
-            line-height: 1.8;
-            color: #666;
-        }
-        
-        /* Leadership Grid - Full Width */
-        .leadership-grid {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 2.5rem;
-            margin-top: 2.5rem;
-            width: 100%;
-        }
-        
-        .leader-card {
-            background: #f8f9fa;
-            padding: 3rem;
-            border-radius: 16px;
-            text-align: center;
-            border: 2px solid #e9ecef;
-            transition: all 0.3s ease;
-            flex: 0 1 350px;
-        }
-        
-        .leader-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            border-color: #F37021;
-        }
-        
-        .leader-info h4 {
-            margin: 0 0 1rem 0;
-            color: #333;
-            font-size: 1.5rem;
-            font-weight: 600;
-        }
-        
-        .leader-info p {
-            margin: 0;
-            color: #666;
-            line-height: 1.7;
-            font-size: 1.05rem;
-        }
-        
-        /* Achievements Grid - Full Width */
-        .achievements-grid {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 2.5rem;
-            margin-top: 2.5rem;
-            width: 100%;
-        }
-        
-        .achievement-item {
-            background: white;
-            padding: 2.5rem;
-            border-radius: 16px;
-            text-align: center;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            border: 2px solid #f0f0f0;
-            transition: all 0.3s ease;
-            flex: 0 1 280px;
-        }
-        
-        .achievement-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-            border-color: #28a745;
-        }
-        
-        .achievement-icon {
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 1.5rem;
-            color: white;
-            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
-        }
-        
-        .achievement-icon svg {
-            width: 32px;
-            height: 32px;
-        }
-        
-        .achievement-item h4 {
-            margin: 0 0 1rem 0;
-            color: #333;
-            font-size: 1.3rem;
-            font-weight: 600;
-        }
-        
-        .achievement-item p {
-            margin: 0;
-            color: #666;
-            line-height: 1.7;
-            font-size: 1rem;
-        }
-        
-        /* Mobile Responsiveness */
+        /* Mobile Responsive */
         @media (max-width: 768px) {
-            .about-content .container {
-                padding: 0 20px;
-            }
-            
             .page-header {
                 padding: 100px 20px 60px;
-                margin-top: 70px;
             }
             
             .page-header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .story-section h2,
+            .values-section h2,
+            .divisions-section h2 {
                 font-size: 2rem;
             }
             
-            .page-header p {
-                font-size: 1.1rem;
-            }
-            
-            .story-section h2 {
-                font-size: 2rem;
-            }
-            
-            .story-section p {
-                font-size: 1rem;
-            }
-            
-            .mission-box, .vision-box {
-                padding: 2rem;
-                flex: 1 1 100%;
-            }
-            
-            .mission-box h3, .vision-box h3 {
-                font-size: 1.5rem;
-            }
-            
-            .values-section h2 {
-                font-size: 2rem;
-            }
-            
-            .value-item {
-                flex: 1 1 100%;
-                padding: 2rem;
-            }
-            
-            .division-card {
-                flex: 1 1 100%;
-                padding: 2rem;
-            }
-            
-            .leader-card {
-                flex: 1 1 100%;
-            }
-            
-            .achievement-item {
-                flex: 1 1 calc(50% - 1.25rem);
-            }
-            
-            .about-stats {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
                 gap: 1.5rem;
             }
             
-            .stat-item {
-                flex: 1 1 calc(50% - 0.75rem);
-                padding: 2rem 1rem;
-            }
-            
-            .divisions-section h2, .leadership-section h2, .achievements-section h2 {
-                font-size: 2rem;
-            }
-            
-            .stat-item h3 {
-                font-size: 2.5rem;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .page-header h1 {
-                font-size: 1.75rem;
-            }
-            
-            .page-header p {
-                font-size: 1rem;
-            }
-            
-            .story-section h2 {
-                font-size: 1.75rem;
-            }
-            
-            .mission-box, .vision-box {
-                padding: 1.5rem;
-            }
-            
-            .about-stats {
-                gap: 1rem;
-            }
-            
-            .stat-item {
-                flex: 1 1 100%;
-                padding: 1.5rem 1rem;
-            }
-            
-            .value-item {
-                padding: 1.5rem;
-            }
-            
-            .division-card {
-                padding: 1.5rem;
-            }
-            
-            .achievement-item {
-                flex: 1 1 100%;
-            }
-            
-            .divisions-section h2, .leadership-section h2, .achievements-section h2 {
-                font-size: 1.75rem;
+            .mv-grid,
+            .divisions-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -742,216 +455,149 @@
 
     <!-- Main Content -->
     <main>
+        <!-- Page Header -->
         <section class="page-header">
             <div class="container">
                 <h1>About Khavho Groups</h1>
-                <p>Building Excellence Across Industries</p>
+                <p>Building Excellence Across South Africa</p>
             </div>
         </section>
 
-        <section class="about-content">
-            <!-- Company Story Section -->
-            <div class="story-section">
-                <div class="container">
-                    <h2>Our Story</h2>
-                    <p>Khavho Groups is a leading diversified business conglomerate with over a decade of excellence in driving economic growth across Africa. Established in 2012, we have evolved from a single construction company into a multi-faceted organization with three core divisions: Khavho Capital, Khavho Holdings, and Khavho Inter-Africa.</p>
-                    
-                    <p>Our journey began with a simple vision: to build not just structures, but sustainable businesses that create lasting value for our communities. Today, we are proud to be recognized as one of Africa's most trusted business partners, with a portfolio spanning construction, investment management, financial services, and international trade.</p>
+        <!-- Story Section -->
+        <section class="story-section">
+            <div class="container">
+                <h2>Our Story</h2>
+                <p>Khavho Groups is a diversified business conglomerate specializing in construction, investment management, and financial services. Since our establishment, we have been committed to driving economic growth across South Africa through innovation, integrity, and excellence.</p>
+                <p>Our journey began with a vision to build sustainable businesses that create lasting value for our communities. Today, we operate through three core divisions: Khavho Capital, Khavho Holdings, and Khavho Inter-Africa, each bringing specialized expertise to serve our clients' diverse needs.</p>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="stats-section">
+            <div class="container">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>10+</h3>
+                        <p>Years Experience</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>3</h3>
+                        <p>Business Divisions</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>500+</h3>
+                        <p>Projects Completed</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>100+</h3>
+                        <p>Team Members</p>
+                    </div>
                 </div>
             </div>
+        </section>
 
-            <!-- Statistics Section -->
-            <div class="about-stats">
-                <div class="stat-item">
-                    <h3>12+</h3>
-                    <p>Years of Excellence</p>
-                </div>
-                <div class="stat-item">
-                    <h3>3</h3>
-                    <p>Business Divisions</p>
-                </div>
-                <div class="stat-item">
-                    <h3>500+</h3>
-                    <p>Successful Projects</p>
-                </div>
-                <div class="stat-item">
-                    <h3>150+</h3>
-                    <p>Expert Team Members</p>
-                </div>
-                <div class="stat-item">
-                    <h3>25+</h3>
-                    <p>Countries Served</p>
-                </div>
-                <div class="stat-item">
-                    <h3>$500M+</h3>
-                    <p>Assets Under Management</p>
+        <!-- Mission & Vision -->
+        <section class="mission-vision-section">
+            <div class="container">
+                <div class="mv-grid">
+                    <div class="mv-card">
+                        <h3>Our Mission</h3>
+                        <p>To provide exceptional services across multiple industries while maintaining the highest standards of integrity, innovation, and customer satisfaction. We are committed to building lasting partnerships that drive sustainable growth.</p>
+                    </div>
+                    <div class="mv-card">
+                        <h3>Our Vision</h3>
+                        <p>To be South Africa's premier business conglomerate, recognized for excellence, innovation, and sustainable growth across all our business sectors.</p>
+                    </div>
                 </div>
             </div>
+        </section>
 
-            <!-- Mission & Vision Section -->
-            <div class="mission-vision-section">
-                <div class="mission-box">
-                    <h3>Our Mission</h3>
-                    <p>To provide exceptional services across multiple industries while maintaining the highest standards of integrity, innovation, and customer satisfaction. We are committed to building lasting partnerships that drive sustainable growth and create positive impact across Africa.</p>
-                </div>
-                
-                <div class="vision-box">
-                    <h3>Our Vision</h3>
-                    <p>To be Africa's premier business conglomerate, recognized for excellence, innovation, and sustainable growth across all our business sectors. We envision a future where African businesses thrive through strategic partnerships, innovative solutions, and unwavering commitment to quality.</p>
-                </div>
-            </div>
-
-            <!-- Core Values Section -->
-            <div class="values-section">
+        <!-- Values -->
+        <section class="values-section">
+            <div class="container">
                 <h2>Our Core Values</h2>
                 <div class="values-grid">
-                    <div class="value-item">
+                    <div class="value-card">
                         <div class="value-icon">
                             <i data-lucide="award"></i>
                         </div>
                         <h4>Excellence</h4>
                         <p>We pursue the highest standards in everything we do, delivering quality that exceeds expectations.</p>
                     </div>
-                    <div class="value-item">
+                    <div class="value-card">
                         <div class="value-icon">
                             <i data-lucide="shield-check"></i>
                         </div>
                         <h4>Integrity</h4>
                         <p>We conduct business with honesty, transparency, and ethical practices in all our relationships.</p>
                     </div>
-                    <div class="value-item">
+                    <div class="value-card">
                         <div class="value-icon">
                             <i data-lucide="lightbulb"></i>
                         </div>
                         <h4>Innovation</h4>
                         <p>We embrace new technologies and creative solutions to solve complex business challenges.</p>
                     </div>
-                    <div class="value-item">
+                    <div class="value-card">
                         <div class="value-icon">
                             <i data-lucide="users"></i>
                         </div>
                         <h4>Partnership</h4>
-                        <p>We believe in building long-term relationships based on mutual trust and shared success.</p>
+                        <p>We build long-term relationships based on mutual trust and shared success.</p>
                     </div>
                 </div>
             </div>
+        </section>
 
-            <!-- Business Divisions Section -->
-            <section class="divisions-section">
+        <!-- Divisions -->
+        <section class="divisions-section">
+            <div class="container">
                 <h2>Our Business Divisions</h2>
                 <div class="divisions-grid">
-                        <div class="division-card">
-                            <div class="division-icon">
-                                <i data-lucide="building-2"></i>
-                            </div>
-                            <h3>Khavho Capital</h3>
-                            <p>Our investment and financial services division, providing comprehensive wealth management, investment advisory, and financial planning services to individuals and institutions across Africa.</p>
-                            <ul class="division-features">
-                                <li>Investment Portfolio Management</li>
-                                <li>Financial Advisory Services</li>
-                                <li>Retirement & Estate Planning</li>
-                                <li>Risk Management Solutions</li>
-                                <li>Corporate Finance</li>
-                            </ul>
-                            <a href="khavho-capital.html" class="division-link">Learn More →</a>
-                        </div>
-
-                        <div class="division-card">
-                            <div class="division-icon">
-                                <i data-lucide="briefcase"></i>
-                            </div>
-                            <h3>Khavho Holdings</h3>
-                            <p>Our diversified investment holding company, managing strategic investments across various sectors including technology, healthcare, agriculture, and renewable energy.</p>
-                            <ul class="division-features">
-                                <li>Strategic Investment Management</li>
-                                <li>Portfolio Company Support</li>
-                                <li>Sector-Focused Investments</li>
-                                <li>Growth Capital Provision</li>
-                                <li>Exit Strategy Execution</li>
-                            </ul>
-                            <a href="khavho-holdings.html" class="division-link">Learn More →</a>
-                        </div>
-
-                        <div class="division-card">
-                            <div class="division-icon">
-                                <i data-lucide="globe"></i>
-                            </div>
-                            <h3>Khavho Inter-Africa</h3>
-                            <p>Our international business development arm, facilitating cross-border trade, construction projects, and business partnerships throughout Africa and beyond.</p>
-                            <ul class="division-features">
-                                <li>Construction & Infrastructure</li>
-                                <li>International Trade Facilitation</li>
-                                <li>Cross-Border Partnerships</li>
-                                <li>Project Management</li>
-                                <li>Market Entry Strategies</li>
-                            </ul>
-                            <a href="khavho-inter-africa.html" class="division-link">Learn More →</a>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Leadership Section -->
-                <section class="leadership-section">
-                    <h2>Our Leadership Team</h2>
-                    <p>Khavho Groups is led by a team of experienced professionals with diverse backgrounds in finance, construction, business development, and strategic management. Our leadership brings together decades of combined experience and a shared commitment to excellence.</p>
-                    
-                    <div class="leadership-grid">
-                        <div class="leader-card">
-                            <div class="leader-info">
-                                <h4>Executive Leadership</h4>
-                                <p>Our executive team provides strategic direction and ensures operational excellence across all our business divisions.</p>
-                            </div>
-                        </div>
-                        <div class="leader-card">
-                            <div class="leader-info">
-                                <h4>Advisory Board</h4>
-                                <p>Industry experts and thought leaders who provide guidance on market trends, regulatory compliance, and strategic opportunities.</p>
-                            </div>
-                        </div>
-                        <div class="leader-card">
-                            <div class="leader-info">
-                                <h4>Division Heads</h4>
-                                <p>Specialist leaders managing our three core business divisions, each bringing deep sector expertise and proven track records.</p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Achievements Section -->
-            <!-- Achievements Section -->
-            <section class="achievements-section">
-                <h2>Our Achievements</h2>
-                <div class="achievements-grid">
-                    <div class="achievement-item">
-                        <div class="achievement-icon">
-                            <i data-lucide="trophy"></i>
-                        </div>
-                        <h4>Industry Recognition</h4>
-                        <p>Multiple awards for excellence in business development, construction quality, and financial services innovation.</p>
-                    </div>
-                    <div class="achievement-item">
-                        <div class="achievement-icon">
-                            <i data-lucide="target"></i>
-                        </div>
-                        <h4>Project Success Rate</h4>
-                        <p>98% project completion rate with 95% of projects delivered on time and within budget.</p>
-                    </div>
-                    <div class="achievement-item">
-                        <div class="achievement-icon">
+                    <div class="division-card">
+                        <div class="division-icon">
                             <i data-lucide="trending-up"></i>
                         </div>
-                        <h4>Financial Performance</h4>
-                        <p>Consistent year-over-year growth with strong returns for our investors and partners.</p>
+                        <h3>Khavho Capital</h3>
+                        <p>Investment and financial services division providing comprehensive wealth management and financial planning.</p>
+                        <ul class="division-features">
+                            <li>Investment Portfolio Management</li>
+                            <li>Financial Advisory Services</li>
+                            <li>Retirement Planning</li>
+                            <li>Risk Management</li>
+                        </ul>
+                        <a href="khavho-capital.html" class="division-link">Learn More →</a>
                     </div>
-                    <div class="achievement-item">
-                        <div class="achievement-icon">
-                            <i data-lucide="heart"></i>
+                    <div class="division-card">
+                        <div class="division-icon">
+                            <i data-lucide="building-2"></i>
                         </div>
-                        <h4>Community Impact</h4>
-                        <p>Creating jobs, supporting local businesses, and contributing to community development across Africa.</p>
+                        <h3>Khavho Holdings</h3>
+                        <p>Diversified investment holding company managing strategic investments across multiple sectors.</p>
+                        <ul class="division-features">
+                            <li>Strategic Investments</li>
+                            <li>Portfolio Management</li>
+                            <li>Growth Capital</li>
+                            <li>Business Development</li>
+                        </ul>
+                        <a href="khavho-holdings.html" class="division-link">Learn More →</a>
+                    </div>
+                    <div class="division-card">
+                        <div class="division-icon">
+                            <i data-lucide="globe"></i>
+                        </div>
+                        <h3>Khavho Inter-Africa</h3>
+                        <p>Construction and international business development facilitating projects across Africa.</p>
+                        <ul class="division-features">
+                            <li>Construction Management</li>
+                            <li>Project Development</li>
+                            <li>Cross-Border Trade</li>
+                            <li>Infrastructure Projects</li>
+                        </ul>
+                        <a href="khavho-inter-africa.html" class="division-link">Learn More →</a>
                     </div>
                 </div>
-            </section>
+            </div>
         </section>
     </main>
 
