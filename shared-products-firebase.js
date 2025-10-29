@@ -1529,19 +1529,10 @@ function displayAllProducts(products, container) {
 }
 
 function createProductCard(product) {
-    // Auto-generate image path if not set
+    // Auto-generate image path if not set - SIMPLE
     let imageUrl = product.imageUrl;
     if (!imageUrl && product.name) {
-        // Generate image path from product name
-        const imageName = product.name
-            .toLowerCase()
-            .replace(/[^a-z0-9\s-]/g, '')
-            .replace(/\s+/g, '-')
-            .replace(/-+/g, '-')
-            .trim();
-        imageUrl = `images/${imageName}.webp`;
-        console.log(`🖼️ Auto-generated image path for "${product.name}": ${imageUrl}`);
-        console.log(`🔍 Expected file location: ${window.location.origin}/${imageUrl}`);
+        imageUrl = `images/${product.name}.webp`;
     }
     
     console.log(`📦 Creating card for: ${product.name}, Image: ${imageUrl || 'NONE'}, Category: ${product.category || 'NONE'}`);
