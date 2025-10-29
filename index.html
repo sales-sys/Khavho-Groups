@@ -460,6 +460,25 @@
                     </div>
                 </div>
             </section>
+
+            <!-- Featured Products Section -->
+            <section class="featured-products-section">
+                <div class="container">
+                    <div class="section-header">
+                        <h2 class="section-title">Featured Products & Services</h2>
+                        <p class="section-description">Explore our comprehensive range of construction materials, electrical equipment, mechanical systems, and procurement services.</p>
+                    </div>
+                    <div id="productsContainer" class="products-container">
+                        <!-- Products will be loaded here by JavaScript -->
+                    </div>
+                    <div class="view-all-products">
+                        <a href="products.html" class="btn btn-primary">
+                            <i data-lucide="arrow-right"></i>
+                            View All Products
+                        </a>
+                    </div>
+                </div>
+            </section>
         </div>
 
         <!-- SERVICES PAGE -->
@@ -819,14 +838,20 @@
     <!-- Contact Integration Script -->
     <script src="contact-integration-clean.js"></script>
     
-    <!-- Initialize Lucide Icons -->
-
+    <!-- Initialize Featured Products and Lucide Icons -->
     <script>
-        // Initialize Lucide icons after all content is loaded
+        // Initialize Lucide icons and featured products after all content is loaded
         document.addEventListener('DOMContentLoaded', function() {
             if (typeof lucide !== 'undefined') {
                 lucide.createIcons();
             }
+            
+            // Display featured products (show limited number)
+            setTimeout(() => {
+                if (typeof displayFeaturedProducts === 'function') {
+                    displayFeaturedProducts();
+                }
+            }, 500);
         });
     </script>
 </body>

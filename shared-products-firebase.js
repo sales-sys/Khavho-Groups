@@ -606,10 +606,16 @@ function addToCart(productId) {
     
     console.log('🛒 Adding to cart:', product.name);
     
-    // Add button click animation
-    const button = event.target;
-    button.classList.add('btn-click');
-    setTimeout(() => button.classList.remove('btn-click'), 300);
+    // Add button click animation (safe for both direct calls and click events)
+    try {
+        const button = event && event.target ? event.target : document.querySelector(`button[onclick*="addToCart('${productId}')"]`);
+        if (button) {
+            button.classList.add('btn-click');
+            setTimeout(() => button.classList.remove('btn-click'), 300);
+        }
+    } catch (err) {
+        // Silent fail - animation is not critical
+    }
     
     // Get existing cart from localStorage
     let cart = JSON.parse(localStorage.getItem('khavho_cart') || '[]');
@@ -1703,8 +1709,50 @@ setTimeout(() => {
 
 console.log('Firebase Products System loaded successfully!');
 
+// Display featured products on home page (limited to first 6 products)
+function displayFeaturedProducts() {
+    const container = document.getElementById('productsContainer');
+    if (!container || !productsData || productsData.length === 0) {
+        return;
+    }
+    
+    // Take only first 6 products for featured display
+    const featuredProducts = productsData.slice(0, 6);
+    
+    // Group by category
+    const productsByCategory = {};
+    featuredProducts.forEach(product => {
+        const category = product.category || 'Other';
+        if (!productsByCategory[category]) {
+            productsByCategory[category] = [];
+        }
+        productsByCategory[category].push(product);
+    });
+    
+    // Build HTML
+    let html = '';
+    Object.keys(productsByCategory).forEach(category => {
+        const categoryProducts = productsByCategory[category];
+        html += `
+            <div class="category-section" data-category="${category}">
+                <div class="products-grid">
+                    ${categoryProducts.map(product => createProductCard(product)).join('')}
+                </div>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
+    
+    // Re-initialize Lucide icons
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+}
+
 // Global function exports for HTML onclick handlers
 window.addToCart = addToCart;
 window.contactAboutProduct = contactAboutProduct;
 window.closeCheckoutModal = closeCheckoutModal;
 window.toggleCart = toggleCart;
+window.displayFeaturedProducts = displayFeaturedProducts;
