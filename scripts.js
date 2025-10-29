@@ -400,9 +400,12 @@ function signIn(email, password) {
     
     return window.auth.signInWithEmailAndPassword(email, password)
         .then((userCredential) => {
-            console.log('User signed in successfully:', userCredential.user.email);
+            console.log('✅ User signed in successfully:', userCredential.user.email);
+            currentUser = userCredential.user;
             closeModal('loginModal');
             showSuccessMessage('Welcome back! You have been signed in successfully.');
+            // Force update auth UI immediately
+            updateAuthUI(true);
         })
         .catch((error) => {
             console.error('Sign in error:', error);
@@ -437,9 +440,12 @@ function signUp(name, email, password) {
                     lastLogin: window.firebase.firestore.FieldValue.serverTimestamp()
                 });
             }).then(() => {
-                console.log('User registered successfully:', userCredential.user.email);
+                console.log('✅ User registered successfully:', userCredential.user.email);
+                currentUser = userCredential.user;
                 closeModal('registerModal');
                 showSuccessMessage('Account created successfully! Welcome to Khavho Group.');
+                // Force update auth UI immediately
+                updateAuthUI(true);
             });
         })
         .catch((error) => {
