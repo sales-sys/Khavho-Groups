@@ -206,52 +206,52 @@ function loadDemoProducts() {
             price: 8500,
             description: '12,000 BTU air conditioning unit for efficient cooling.',
             available: true,
-            imageUrl: 'images/' + encodeURIComponent('Air Conditioner (12,000 BTU)') + '.webp'
+            imageUrl: 'images/Air%20Conditioner%20%2812%2C000%20BTU%29.webp'
         },
         {
             id: 'real-2',
-            name: 'Cement (50kg bag)',
+            name: 'PPC Surebuild Cement 42.5N',
             category: 'Building',
             price: 120,
-            description: 'High quality 50kg cement bag for construction.',
+            description: 'High quality PPC Surebuild Cement 42.5N for construction.',
             available: true,
-            imageUrl: 'images/' + encodeURIComponent('Cement (50kg bag)') + '.webp'
+            imageUrl: 'images/PPC%20Surebuild%20Cement%2042.5N.webp'
         },
         {
             id: 'real-3',
-            name: 'Computer, Desktop',
+            name: 'Business Desktop PC Set',
             category: 'Office',
             price: 12000,
-            description: 'Desktop computer for office use.',
+            description: 'Complete business desktop computer set for office use.',
             available: true,
-            imageUrl: 'images/' + encodeURIComponent('Computer, Desktop') + '.webp'
+            imageUrl: 'images/Business%20Desktop%20PC%20Set.webp'
         },
         {
             id: 'real-4',
-            name: 'Desk, Office',
+            name: 'Office Desk (1.6m)',
             category: 'Office',
             price: 2500,
-            description: 'Professional office desk.',
+            description: 'Professional 1.6m office desk.',
             available: true,
-            imageUrl: 'images/' + encodeURIComponent('Desk, Office') + '.webp'
+            imageUrl: 'images/Office%20Desk%20%281.6m%29.webp'
         },
         {
             id: 'real-5',
-            name: 'Electrical Cable (100m)',
+            name: 'Armoured Cable (4-core, 16mm²)',
             category: 'Electrical',
             price: 3500,
-            description: '100m electrical cable roll.',
+            description: '4-core armoured cable, 16mm² for electrical installations.',
             available: true,
-            imageUrl: 'images/' + encodeURIComponent('Electrical Cable (100m)') + '.webp'
+            imageUrl: 'images/Armoured%20Cable%20%284-core%2C%2016mm%C2%B2%29.webp'
         },
         {
             id: 'real-6',
-            name: 'Printer, Multi-function',
+            name: 'Multi-Function Laser Printer',
             category: 'Office',
             price: 4500,
-            description: 'Multi-function printer for office.',
+            description: 'Multi-function laser printer for office productivity.',
             available: true,
-            imageUrl: 'images/' + encodeURIComponent('Printer, Multi-function') + '.webp'
+            imageUrl: 'images/Multi-Function%20Laser%20Printer.webp'
         }
     ];
     
