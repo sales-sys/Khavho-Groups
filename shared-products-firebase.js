@@ -156,8 +156,14 @@ function automaticProductLoad() {
                 return productsData;
             };
             
-            // Display products automatically
-            displayProducts(productsData);
+            // Display products based on which page we're on
+            if (document.getElementById('productsGrid')) {
+                // Full products page
+                displayProducts(productsData);
+            } else if (document.getElementById('homepage-products-showcase')) {
+                // Homepage featured products
+                displayFeaturedProducts();
+            }
             
             // Notify other scripts
             window.dispatchEvent(new CustomEvent('productsUpdated', {
@@ -229,9 +235,15 @@ function loadDemoProducts() {
         return productsData;
     };
     
-    // Force display demo products NOW
+    // Force display demo products based on which page we're on
     console.log('🎨 Displaying demo products immediately...');
-    displayProducts(productsData);
+    if (document.getElementById('productsGrid')) {
+        // Full products page
+        displayProducts(productsData);
+    } else if (document.getElementById('homepage-products-showcase')) {
+        // Homepage featured products
+        displayFeaturedProducts();
+    }
     
     // Update scripts.js
     window.dispatchEvent(new CustomEvent('productsUpdated', {
@@ -1713,10 +1725,16 @@ console.log('Firebase Products System loaded successfully!');
 
 // Display featured products on home page (limited to first 6 products)
 function displayFeaturedProducts() {
-    const container = document.getElementById('productsContainer');
+    const container = document.getElementById('homepage-products-showcase');
     if (!container || !productsData || productsData.length === 0) {
+        console.log('⚠️ Cannot display featured products:', {
+            container: !!container,
+            productsData: productsData ? productsData.length : 0
+        });
         return;
     }
+    
+    console.log('🎨 Displaying featured products on homepage');
     
     // Take only first 6 products for featured display
     const featuredProducts = productsData.slice(0, 6);
