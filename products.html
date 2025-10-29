@@ -719,10 +719,17 @@
 
     <!-- External JavaScript -->
     <script src="shared-products-firebase.js"></script>
-    <script src="contact-integration-clean.js"></script>
     
-    <!-- Products Page Script -->
+    <!-- Initialize Lucide icons only -->
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        });
+    </script>
+</body>
+</html>
         let allProducts = [];
         let filteredProducts = [];
         let currentCategory = 'all';
