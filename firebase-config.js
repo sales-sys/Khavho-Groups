@@ -34,6 +34,15 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const auth = firebase.auth();
 
+// Set auth persistence to LOCAL (survives browser refresh and page navigation)
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+    .then(() => {
+        console.log('✅ Firebase auth persistence set to LOCAL');
+    })
+    .catch((error) => {
+        console.error('❌ Error setting auth persistence:', error);
+    });
+
 // Export for use in other files
 window.db = db;
 window.auth = auth;

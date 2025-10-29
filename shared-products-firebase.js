@@ -135,13 +135,11 @@ function automaticProductLoad() {
             snapshot.forEach((doc) => {
                 const product = { id: doc.id, ...doc.data() };
                 
-                // FORCE auto image generation for ALL products - USE EXACT PRODUCT NAME
+                // FORCE auto image generation - USE EXACT PRODUCT NAME WITH URL ENCODING
                 if (product.name) {
-                    // Don't lowercase - use exact product name to match actual files
-                    const imageName = product.name
-                        .replace(/[^a-zA-Z0-9\s-(),.]/g, '') // Keep letters, numbers, spaces, hyphens, parentheses, commas, periods
-                        .trim();
-                    product.imageUrl = `/images/${imageName}.webp`;
+                    // Use exact product name, URL encode for browser compatibility
+                    const imageName = encodeURIComponent(`${product.name}.webp`);
+                    product.imageUrl = `/images/${imageName}`;
                     console.log(`🔧 FORCED image path for "${product.name}": ${product.imageUrl}`);
                 }
                 
