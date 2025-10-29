@@ -117,40 +117,13 @@ function automaticProductLoad() {
     
     console.log('✅ Database ready, loading products...');
     
-    // Try BOTH 'products' and 'Products' collection names (case-sensitive!)
-    const tryLoadProducts = (collectionName) => {
-        return window.db.collection(collectionName).get()
-            .then((snapshot) => {
-                console.log(`✅ Firebase query for "${collectionName}" successful! Products found:`, snapshot.size);
-                console.log('📊 Firebase snapshot details:', {
-                    collection: collectionName,
-                    empty: snapshot.empty,
-                    size: snapshot.size,
-                    docs: snapshot.docs.length
-                });
-                
-                if (snapshot.size > 0) {
-                    console.log(`✅✅✅ FOUND ${snapshot.size} PRODUCTS IN FIREBASE COLLECTION: ${collectionName}`);
-                    return { snapshot, found: true };
-                }
-                return { snapshot, found: false };
-            });
-    };
-    
-    // Try 'products' first, then 'Products' if that fails
-    tryLoadProducts('products')
-        .then(result => {
-            if (result.found) {
-                return result;
-            }
-            console.log('⚠️ No products in "products" collection, trying "Products"...');
-            return tryLoadProducts('Products');
-        })
-        .then(({ snapshot, found }) => {
-            if (!found || snapshot.size === 0) {
-                console.error('⚠️⚠️⚠️ NO PRODUCTS IN FIREBASE! Tried both "products" and "Products" collections');
-                console.log('🔍 Checking Firebase connection...');
-                console.log('Database path:', window.db);
+    // Try to load products from Firebase (security rules allow read: if true)
+    window.db.collection('products').get()
+        .then((snapshot) => {
+            console.log('✅ Firebase query successful! Products found:', snapshot.size);
+            
+            if (snapshot.size === 0) {
+                console.log('⚠️ No products in Firebase, loading demos...');
                 if (productsData.length === 0) {
                     loadDemoProducts();
                 }
@@ -201,10 +174,7 @@ function automaticProductLoad() {
             
         })
         .catch((error) => {
-            console.error('❌❌❌ FIREBASE ERROR!', error);
-            console.error('Error code:', error.code);
-            console.error('Error message:', error.message);
-            console.error('Full error object:', JSON.stringify(error));
+            console.error('❌ Firebase error:', error.code, error.message);
             console.log('🆘 Loading demo products as fallback...');
             loadingInProgress = false; // Reset loading flag
             loadDemoProducts();
