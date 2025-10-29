@@ -35,6 +35,12 @@
             const toModal = document.getElementById(toModalId);
             if (toModal) { toModal.style.display = 'flex'; }
         }
+        
+        // Expose to window
+        window.openLoginModal = openLoginModal;
+        window.openRegisterModal = openRegisterModal;
+        window.closeModal = closeModal;
+        window.switchModal = switchModal;
     </script>
     
     <!-- Main Scripts - Load early -->
