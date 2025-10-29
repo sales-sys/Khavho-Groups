@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Services - Khavho Groups</title>
+    <link rel="icon" type="image/png" href="images/logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
+    <!-- Firebase Configuration -->
+    <script src="firebase-config.js"></script>
+    
+    <!-- CRITICAL: Define auth functions inline FIRST -->
+    <script>
+        function openLoginModal() {
+            const modal = document.getElementById('loginModal');
+            if (modal) { modal.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+        }
+        function openRegisterModal() {
+            const modal = document.getElementById('registerModal');
+            if (modal) { modal.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+        }
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) { modal.style.display = 'none'; document.body.style.overflow = 'auto'; }
+        }
+        function switchModal(fromModalId, toModalId) {
+            closeModal(fromModalId);
+            const toModal = document.getElementById(toModalId);
+            if (toModal) { toModal.style.display = 'flex'; }
+        }
+        // Expose to window
+        window.openLoginModal = openLoginModal;
+        window.openRegisterModal = openRegisterModal;
+        window.closeModal = closeModal;
+        window.switchModal = switchModal;
+    </script>
+    
+    <!-- Main Scripts - Load early -->
+    <script src="scripts.js"></script>
+    
+    <!-- External Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header" id="header">
+        <div class="header-top">
+            <div class="container">
+                <div class="header-top-content">
+                    <div>Khathu@khavhogroups.com | +27 766 927 310</div>
+                    <div>Johannesburg | Serving South Africa</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="header-main">
+            <div class="container">
+                <nav class="nav-container">
+                    <a href="index.html" class="logo">
+                        <div class="logo-icon">
+                            <img src="images/logo.png" alt="Khavho Groups Logo" onerror="this.parentElement.innerHTML='<i data-lucide=building-2></i>'">
+                        </div>
+                    </a>
+                    
+                    <div class="main-nav" id="mainNav">
+                        <ul class="nav-menu">
+                            <li class="nav-item">
+                                <a href="index.html" class="nav-link">
+                                    <i data-lucide="home"></i>
+                                    Home
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="about.html" class="nav-link">
+                                    <i data-lucide="users"></i>
+                                    About
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="services.html" class="nav-link active">
+                                    <i data-lucide="briefcase"></i>
+                                    Services
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="products.html" class="nav-link">
+                                    <i data-lucide="package"></i>
+                                    Products
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="contact.html" class="nav-link">
+                                    <i data-lucide="phone"></i>
+                                    Contact
+                                </a>
+                            </li>
+                        </ul>
+                        
+                        <div class="header-cta">
+                            <div class="auth-buttons">
+                                <button class="auth-btn login-btn" onclick="openLoginModal()">
+                                    <i data-lucide="log-in"></i>
+                                    Login
+                                </button>
+                                <button class="auth-btn register-btn" onclick="openRegisterModal()">
+                                    <i data-lucide="user-plus"></i>
+                                    Register
+                                </button>
+                            </div>
+                            
+                            <div class="user-section" style="display: none;">
+                                <div class="user-profile">
+                                    <div class="user-avatar">
+                                        <i data-lucide="user"></i>
+                                    </div>
+                                    <span class="user-name" id="userName">User</span>
+                                    <button onclick="logout()" class="logout-btn" title="Logout">
+                                        <i data-lucide="log-out"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button class="mobile-toggle" onclick="toggleMobileMenu()">
+                            <i data-lucide="menu"></i>
+                        </button>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <section class="services-hero">
+            <div class="container">
+                <h1 class="hero-title">Our Services</h1>
+                <p class="hero-subtitle">Comprehensive solutions designed to meet your business needs across multiple industries.</p>
+            </div>
+        </section>
+        
+        <section class="section-padding">
+            <div class="container">
+                <div class="services-grid">
+                    <div class="service-card">
+                        <div class="service-icon">
+                            <i data-lucide="hammer"></i>
+                        </div>
+                        <h3>Construction Management</h3>
+                        <p>Full-service construction management from planning to completion, ensuring projects are delivered on time and within budget.</p>
+                        <ul class="service-features">
+                            <li>Project Planning & Design</li>
+                            <li>Construction Supervision</li>
+                            <li>Quality Control</li>
+                            <li>Safety Management</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="service-card">
+                        <div class="service-icon">
+                            <i data-lucide="chart-line"></i>
+                        </div>
+                        <h3>Investment Advisory</h3>
+                        <p>Professional investment guidance to help you make informed decisions and maximize your financial returns.</p>
+                        <ul class="service-features">
+                            <li>Portfolio Analysis</li>
+                            <li>Risk Assessment</li>
+                            <li>Market Research</li>
+                            <li>Strategic Planning</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="service-card">
+                        <div class="service-icon">
+                            <i data-lucide="shield"></i>
+                        </div>
+                        <h3>Financial Planning</h3>
+                        <p>Comprehensive financial planning services to secure your financial future and achieve your goals.</p>
+                        <ul class="service-features">
+                            <li>Retirement Planning</li>
+                            <li>Tax Optimization</li>
+                            <li>Insurance Solutions</li>
+                            <li>Estate Planning</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Khavho Groups</h3>
+                    <p>Building excellence across South Africa through diversified business solutions.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="services.html">Services</a></li>
+                        <li><a href="products.html">Products</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p>Khathu@khavhogroups.com</p>
+                    <p>+27 766 927 310</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Khavho Groups. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Auth Modals -->
+    <div id="loginModal" class="auth-modal">
+        <div class="auth-modal-content">
+            <button class="modal-close" onclick="closeModal('loginModal')">&times;</button>
+            <h2>Login</h2>
+            <form id="loginForm" onsubmit="signIn(event)">
+                <input type="email" id="loginEmail" placeholder="Email" required>
+                <input type="password" id="loginPassword" placeholder="Password" required>
+                <button type="submit">Login</button>
+            </form>
+            <p>Don't have an account? <a href="#" onclick="switchModal('loginModal', 'registerModal')">Register</a></p>
+        </div>
+    </div>
+
+    <div id="registerModal" class="auth-modal">
+        <div class="auth-modal-content">
+            <button class="modal-close" onclick="closeModal('registerModal')">&times;</button>
+            <h2>Register</h2>
+            <form id="registerForm" onsubmit="signUp(event)">
+                <input type="text" id="registerName" placeholder="Full Name" required>
+                <input type="email" id="registerEmail" placeholder="Email" required>
+                <input type="password" id="registerPassword" placeholder="Password" required>
+                <button type="submit">Register</button>
+            </form>
+            <p>Already have an account? <a href="#" onclick="switchModal('registerModal', 'loginModal')">Login</a></p>
+        </div>
+    </div>
+
+    <script>
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    </script>
+</body>
+</html>

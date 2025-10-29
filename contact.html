@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Khavho Groups</title>
+    <link rel="icon" type="image/png" href="images/logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
+    <!-- Firebase Configuration -->
+    <script src="firebase-config.js"></script>
+    
+    <!-- CRITICAL: Define auth functions inline FIRST -->
+    <script>
+        function openLoginModal() {
+            const modal = document.getElementById('loginModal');
+            if (modal) { modal.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+        }
+        function openRegisterModal() {
+            const modal = document.getElementById('registerModal');
+            if (modal) { modal.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+        }
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) { modal.style.display = 'none'; document.body.style.overflow = 'auto'; }
+        }
+        function switchModal(fromModalId, toModalId) {
+            closeModal(fromModalId);
+            const toModal = document.getElementById(toModalId);
+            if (toModal) { toModal.style.display = 'flex'; }
+        }
+        // Expose to window
+        window.openLoginModal = openLoginModal;
+        window.openRegisterModal = openRegisterModal;
+        window.closeModal = closeModal;
+        window.switchModal = switchModal;
+    </script>
+    
+    <!-- Main Scripts - Load early -->
+    <script src="scripts.js"></script>
+    
+    <!-- Contact Integration Script -->
+    <script src="contact-integration-clean.js"></script>
+    
+    <!-- External Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header" id="header">
+        <div class="header-top">
+            <div class="container">
+                <div class="header-top-content">
+                    <div>Khathu@khavhogroups.com | +27 766 927 310</div>
+                    <div>Johannesburg | Serving South Africa</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="header-main">
+            <div class="container">
+                <nav class="nav-container">
+                    <a href="index.html" class="logo">
+                        <div class="logo-icon">
+                            <img src="images/logo.png" alt="Khavho Groups Logo" onerror="this.parentElement.innerHTML='<i data-lucide=building-2></i>'">
+                        </div>
+                    </a>
+                    
+                    <div class="main-nav" id="mainNav">
+                        <ul class="nav-menu">
+                            <li class="nav-item">
+                                <a href="index.html" class="nav-link">
+                                    <i data-lucide="home"></i>
+                                    Home
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="about.html" class="nav-link">
+                                    <i data-lucide="users"></i>
+                                    About
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="services.html" class="nav-link">
+                                    <i data-lucide="briefcase"></i>
+                                    Services
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="products.html" class="nav-link">
+                                    <i data-lucide="package"></i>
+                                    Products
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="contact.html" class="nav-link active">
+                                    <i data-lucide="phone"></i>
+                                    Contact
+                                </a>
+                            </li>
+                        </ul>
+                        
+                        <div class="header-cta">
+                            <div class="auth-buttons">
+                                <button class="auth-btn login-btn" onclick="openLoginModal()">
+                                    <i data-lucide="log-in"></i>
+                                    Login
+                                </button>
+                                <button class="auth-btn register-btn" onclick="openRegisterModal()">
+                                    <i data-lucide="user-plus"></i>
+                                    Register
+                                </button>
+                            </div>
+                            
+                            <div class="user-section" style="display: none;">
+                                <div class="user-profile">
+                                    <div class="user-avatar">
+                                        <i data-lucide="user"></i>
+                                    </div>
+                                    <span class="user-name" id="userName">User</span>
+                                    <button onclick="logout()" class="logout-btn" title="Logout">
+                                        <i data-lucide="log-out"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button class="mobile-toggle" onclick="toggleMobileMenu()">
+                            <i data-lucide="menu"></i>
+                        </button>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <section class="contact-section section-padding">
+            <div class="container">
+                <div class="contact-grid">
+                    <div class="contact-info">
+                        <h2>Get in Touch</h2>
+                        <p>Ready to start your next project or explore investment opportunities? Our team is here to help you achieve your goals.</p>
+                        
+                        <ul class="contact-details">
+                            <li>
+                                <div class="contact-icon">
+                                    <i data-lucide="map-pin"></i>
+                                </div>
+                                <div>
+                                    <strong>Head Office</strong>
+                                    <p>Johannesburg, South Africa</p>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="contact-icon">
+                                    <i data-lucide="phone"></i>
+                                </div>
+                                <div>
+                                    <strong>Phone</strong>
+                                    <p>+27 766 927 310</p>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="contact-icon">
+                                    <i data-lucide="mail"></i>
+                                </div>
+                                <div>
+                                    <strong>Email</strong>
+                                    <p>Khathu@khavhogroups.com</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <form class="contact-form" onsubmit="submitContactForm(event)">
+                        <div id="contactSuccessMessage" class="success-message">
+                            <i data-lucide="check-circle"></i>
+                            Thank you! Your message has been sent successfully.
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="firstName">First Name</label>
+                                <input type="text" id="firstName" name="firstName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="lastName">Last Name</label>
+                                <input type="text" id="lastName" name="lastName" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="email">Email Address</label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Phone Number</label>
+                                <input type="tel" id="phone" name="phone">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="company">Company</label>
+                            <input type="text" id="company" name="company">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="service">Service Interest</label>
+                            <select id="service" name="service" required>
+                                <option value="">Select a service</option>
+                                <option value="construction">Construction Services</option>
+                                <option value="financial">Financial Services</option>
+                                <option value="consulting">Business Consulting</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" name="message" placeholder="Tell us about your project or requirements..." required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="submit-btn">
+                            <i data-lucide="send"></i>
+                            Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Khavho Groups</h3>
+                    <p>Building excellence across South Africa through diversified business solutions.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="about.html">About</a></li>
+                        <li><a href="services.html">Services</a></li>
+                        <li><a href="products.html">Products</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p>Khathu@khavhogroups.com</p>
+                    <p>+27 766 927 310</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Khavho Groups. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Auth Modals -->
+    <div id="loginModal" class="auth-modal">
+        <div class="auth-modal-content">
+            <button class="modal-close" onclick="closeModal('loginModal')">&times;</button>
+            <h2>Login</h2>
+            <form id="loginForm" onsubmit="signIn(event)">
+                <input type="email" id="loginEmail" placeholder="Email" required>
+                <input type="password" id="loginPassword" placeholder="Password" required>
+                <button type="submit">Login</button>
+            </form>
+            <p>Don't have an account? <a href="#" onclick="switchModal('loginModal', 'registerModal')">Register</a></p>
+        </div>
+    </div>
+
+    <div id="registerModal" class="auth-modal">
+        <div class="auth-modal-content">
+            <button class="modal-close" onclick="closeModal('registerModal')">&times;</button>
+            <h2>Register</h2>
+            <form id="registerForm" onsubmit="signUp(event)">
+                <input type="text" id="registerName" placeholder="Full Name" required>
+                <input type="email" id="registerEmail" placeholder="Email" required>
+                <input type="password" id="registerPassword" placeholder="Password" required>
+                <button type="submit">Register</button>
+            </form>
+            <p>Already have an account? <a href="#" onclick="switchModal('registerModal', 'loginModal')">Login</a></p>
+        </div>
+    </div>
+
+    <script>
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    </script>
+</body>
+</html>
