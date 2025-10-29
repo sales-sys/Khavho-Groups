@@ -135,9 +135,10 @@ function automaticProductLoad() {
             snapshot.forEach((doc) => {
                 const product = { id: doc.id, ...doc.data() };
                 
-                // Simple: images/ProductName.webp - EXACTLY as the product name is
+                // URL-encode the product name for web compatibility
                 if (product.name) {
-                    product.imageUrl = `images/${product.name}.webp`;
+                    const encodedName = encodeURIComponent(product.name);
+                    product.imageUrl = `images/${encodedName}.webp`;
                 }
                 
                 console.log('📦 Product loaded:', product.name, '- Image:', product.imageUrl);
@@ -1535,10 +1536,11 @@ function displayAllProducts(products, container) {
 }
 
 function createProductCard(product) {
-    // Auto-generate image path if not set - SIMPLE
+    // URL-encode the product name for image path
     let imageUrl = product.imageUrl;
     if (!imageUrl && product.name) {
-        imageUrl = `images/${product.name}.webp`;
+        const encodedName = encodeURIComponent(product.name);
+        imageUrl = `images/${encodedName}.webp`;
     }
     
     console.log(`📦 Creating card for: ${product.name}, Image: ${imageUrl || 'NONE'}, Category: ${product.category || 'NONE'}`);
