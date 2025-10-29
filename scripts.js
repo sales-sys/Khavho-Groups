@@ -1820,6 +1820,15 @@ function debugProductCategories() {
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 Khavho Groups - Master Initialization Starting...');
     
+    // Check and clear old cart data (one-time cleanup for version update)
+    const cartVersion = localStorage.getItem('khavho_cart_version');
+    if (cartVersion !== '2.0') {
+        console.log('🧹 Clearing old cart data from previous version...');
+        localStorage.removeItem('khavho_cart');
+        localStorage.setItem('khavho_cart_version', '2.0');
+        console.log('✅ Cart data cleaned up!');
+    }
+    
     // Initialize Firebase Auth
     initializeFirebaseAuth();
     
