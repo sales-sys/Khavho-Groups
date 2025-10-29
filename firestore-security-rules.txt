@@ -5,7 +5,7 @@ service cloud.firestore {
     // Messages collection (for admin panel AND public contact forms)
     match /messages/{document} {
       // Anyone can create messages (contact form submissions)
-      allow create: if validateContactData(resource.data);
+      allow create: if validateContactData(request.resource.data);
       // Only authenticated admin users can read/update/delete
       allow read, update, delete: if isAdminUser();
     }
@@ -23,7 +23,7 @@ service cloud.firestore {
     // Orders collection (for e-commerce functionality)
     match /orders/{document} {
       // Authenticated users can create orders
-      allow create: if request.auth != null && validateOrderData(resource.data);
+      allow create: if request.auth != null && validateOrderData(request.resource.data);
       // Users can read their own orders
       allow read: if request.auth != null && 
                      request.auth.uid == resource.data.userId;
