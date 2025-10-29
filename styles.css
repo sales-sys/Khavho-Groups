@@ -1222,13 +1222,15 @@ h1, h2, h3, h4, h5, h6 {
 .services-hero {
     background: var(--light-gray);
     text-align: center;
-    padding: 80px 0;
+    padding: 160px 0 80px 0; /* Added top padding for fixed header */
+    margin-top: 0;
 }
 
 .services-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
     gap: 40px;
+    margin-top: 20px;
 }
 
 .service-card {
@@ -1346,6 +1348,7 @@ h1, h2, h3, h4, h5, h6 {
 /* ===== CONTACT FORM ===== */
 .contact-section {
     background: var(--light-gray);
+    padding-top: 160px !important; /* Account for fixed header */
 }
 
 .contact-grid {
@@ -3190,6 +3193,15 @@ h1, h2, h3, h4, h5, h6 {
         background: #000000;
     }
     
+    /* Services and Contact page mobile adjustments */
+    .services-hero {
+        padding: 120px 0 60px 0 !important;
+    }
+    
+    .contact-section {
+        padding-top: 120px !important;
+    }
+    
     /* Mobile navigation overlay - FIXED SCROLLABLE VERSION */
     .nav-menu {
         display: none;
@@ -3666,6 +3678,30 @@ h1, h2, h3, h4, h5, h6 {
         height: 2px;
     }
     
+    /* Smaller mobile adjustments for services and contact */
+    .services-hero {
+        padding: 100px 0 40px 0 !important;
+    }
+    
+    .services-hero .hero-title {
+        font-size: 28px;
+    }
+    
+    .contact-section {
+        padding-top: 100px !important;
+    }
+    
+    .contact-info h2 {
+        font-size: 28px;
+    }
+    
+    .service-card {
+        padding: 25px;
+    }
+    
+    .contact-form {
+        padding: 25px;
+    }
     .section-padding {
         padding: 60px 0;
     }
