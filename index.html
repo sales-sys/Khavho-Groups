@@ -13,56 +13,40 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     
-    <!-- Secure Firebase Configuration -->
+    <!-- Firebase Configuration -->
     <script src="firebase-config.js"></script>
     
-    <!-- Firebase Products System -->
-    <script src="shared-products-firebase.js"></script>
-    
-    <!-- CRITICAL: Define auth functions inline FIRST before any HTML -->
+    <!-- CRITICAL: Define auth functions inline FIRST -->
     <script>
-        // Auth modal functions - MUST be defined before any onclick handlers
         function openLoginModal() {
             const modal = document.getElementById('loginModal');
-            if (modal) {
-                modal.style.display = 'flex';
-                document.body.style.overflow = 'hidden';
-            }
+            if (modal) { modal.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
         }
-        
         function openRegisterModal() {
             const modal = document.getElementById('registerModal');
-            if (modal) {
-                modal.style.display = 'flex';
-                document.body.style.overflow = 'hidden';
-            }
+            if (modal) { modal.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
         }
-        
         function closeModal(modalId) {
             const modal = document.getElementById(modalId);
-            if (modal) {
-                modal.style.display = 'none';
-                document.body.style.overflow = 'auto';
-            }
+            if (modal) { modal.style.display = 'none'; document.body.style.overflow = 'auto'; }
         }
-        
         function switchModal(fromModalId, toModalId) {
             closeModal(fromModalId);
             const toModal = document.getElementById(toModalId);
-            if (toModal) {
-                toModal.style.display = 'flex';
-            }
+            if (toModal) { toModal.style.display = 'flex'; }
         }
-        
-        // Expose to window
+        // Expose to window so addToCart can find them
         window.openLoginModal = openLoginModal;
         window.openRegisterModal = openRegisterModal;
         window.closeModal = closeModal;
         window.switchModal = switchModal;
     </script>
     
-    <!-- Main Scripts - Load early so functions are available -->
+    <!-- Main Scripts - Load early -->
     <script src="scripts.js"></script>
+    
+    <!-- Firebase Products System - Load AFTER auth functions -->
+    <script src="shared-products-firebase.js"></script>
     
     <!-- External Stylesheet -->
     <link rel="stylesheet" href="styles.css">
