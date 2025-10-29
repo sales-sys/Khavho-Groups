@@ -91,6 +91,14 @@ window.addEventListener('load', function() {
             automaticProductLoad();
         }
     }, 1000);
+    
+    // FAILSAFE: If after 3 seconds still nothing loaded, force demo products
+    setTimeout(() => {
+        if (!productsLoaded) {
+            console.error('⚠️ FAILSAFE: Products still not loaded after 3s, forcing demo products...');
+            loadDemoProducts();
+        }
+    }, 3000);
 });
 
 // AUTOMATIC PRODUCT LOADING FUNCTION
@@ -111,7 +119,9 @@ function automaticProductLoad() {
     loadingInProgress = true;
     
     if (!window.db) {
-        console.log('⏳ Database not ready yet...');
+        console.error('⚠️ Firebase database not initialized! Loading demo products...');
+        loadingInProgress = false;
+        loadDemoProducts();
         return;
     }
     
@@ -185,6 +195,9 @@ function automaticProductLoad() {
 function loadDemoProducts() {
     console.log('🆘 Loading demo products as fallback...');
     
+    // FORCE RESET loading flags
+    loadingInProgress = false;
+    
     productsData = [
         {
             id: 'real-1',
@@ -243,6 +256,7 @@ function loadDemoProducts() {
     ];
     
     console.log('🎯 Demo products created:', productsData.length);
+    console.log('📦 Products:', productsData.map(p => p.name));
     
     // Mark as loaded
     productsLoaded = true;
