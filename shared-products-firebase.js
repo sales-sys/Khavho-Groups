@@ -121,9 +121,16 @@ function automaticProductLoad() {
     window.db.collection('products').get()
         .then((snapshot) => {
             console.log('✅ Firebase query successful! Products found:', snapshot.size);
+            console.log('📊 Firebase snapshot details:', {
+                empty: snapshot.empty,
+                size: snapshot.size,
+                docs: snapshot.docs.length
+            });
             
             if (snapshot.size === 0) {
-                console.log('⚠️ No products in Firebase, loading demos...');
+                console.error('⚠️⚠️⚠️ NO PRODUCTS IN FIREBASE! Loading demos as fallback...');
+                console.log('🔍 Checking Firebase connection...');
+                console.log('Database path:', window.db);
                 if (productsData.length === 0) {
                     loadDemoProducts();
                 }
@@ -131,6 +138,7 @@ function automaticProductLoad() {
             }
 
             // Load real products from Firebase
+            console.log('✅✅✅ FOUND PRODUCTS IN FIREBASE! Loading', snapshot.size, 'products...');
             productsData = [];
             snapshot.forEach((doc) => {
                 const product = { id: doc.id, ...doc.data() };
@@ -174,7 +182,10 @@ function automaticProductLoad() {
             
         })
         .catch((error) => {
-            console.error('❌ Firebase error:', error.code, error.message);
+            console.error('❌❌❌ FIREBASE ERROR!', error);
+            console.error('Error code:', error.code);
+            console.error('Error message:', error.message);
+            console.error('Full error object:', JSON.stringify(error));
             console.log('🆘 Loading demo products as fallback...');
             loadingInProgress = false; // Reset loading flag
             loadDemoProducts();
