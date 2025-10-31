@@ -3264,7 +3264,7 @@ h1, h2, h3, h4, h5, h6 {
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
         transition: all 0.3s ease;
-        z-index: 999;
+        z-index: 1001;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         padding: 20px;
         opacity: 0;
@@ -3442,52 +3442,9 @@ h1, h2, h3, h4, h5, h6 {
         line-height: 1.5;
     }
     
+    /* Main nav container stays visible on mobile, only .nav-menu toggles */
     .main-nav {
-        display: none;
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
-        background: var(--primary-orange);
-        flex-direction: column;
-        padding: 20px;
-        gap: 0;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        border-top: 3px solid var(--black);
-        z-index: 1001;
-        max-height: calc(100vh - 120px);
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: thin;
-        scrollbar-color: var(--black) transparent;
-    }
-    
-    .main-nav::-webkit-scrollbar {
-        width: 6px;
-    }
-    
-    .main-nav::-webkit-scrollbar-track {
-        background: transparent;
-    }
-    
-    .main-nav::-webkit-scrollbar-thumb {
-        background: var(--secondary-orange);
-        border-radius: 3px;
-    }
-    
-    .main-nav::-webkit-scrollbar-thumb:hover {
-        background: #ff6b35;
-    }
-    
-    .main-nav.active {
-        display: flex;
-    }
-    
-    .main-nav .nav-menu {
-        flex-direction: column;
-        gap: 0;
-        width: 100%;
-        margin-bottom: 20px;
+        display: block;
     }
     
     .main-nav .nav-item {
