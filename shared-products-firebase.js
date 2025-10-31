@@ -128,12 +128,23 @@ function automaticProductLoad() {
         return;
     }
     
-    console.log('✅ Database ready, loading products...');
+    console.log('✅ Database ready, loading products from Firebase...');
+    console.log('🔍 Firebase config:', {
+        projectId: window.firebase.app().options.projectId,
+        hasDb: !!window.db,
+        dbType: window.db ? window.db.constructor.name : 'N/A'
+    });
     
     // Try to load products from Firebase (security rules allow read: if true)
+    console.log('🔍 Querying collection: "products"...');
     window.db.collection('products').get()
         .then((snapshot) => {
-            console.log('✅ Firebase query successful! Products found:', snapshot.size);
+            console.log('✅✅✅ Firebase query SUCCESSFUL! Products found:', snapshot.size);
+            console.log('📊 Snapshot details:', {
+                empty: snapshot.empty,
+                size: snapshot.size,
+                docs: snapshot.docs.length
+            });
             
             if (snapshot.size === 0) {
                 console.error('❌❌❌ FIREBASE PRODUCTS COLLECTION IS EMPTY! ❌❌❌');
@@ -158,20 +169,32 @@ function automaticProductLoad() {
 
             // Load real products from Firebase
             productsData = [];
+            let productCount = 0;
             snapshot.forEach((doc) => {
+                productCount++;
                 const product = { id: doc.id, ...doc.data() };
+                
+                console.log(`📦 Product #${productCount}:`, {
+                    id: product.id,
+                    name: product.name,
+                    category: product.category,
+                    price: product.price,
+                    hasImageUrl: !!product.imageUrl,
+                    imageUrl: product.imageUrl
+                });
                 
                 // Only generate imageUrl if not already set in Firebase
                 if (!product.imageUrl && product.name) {
                     const encodedName = encodeURIComponent(product.name);
                     product.imageUrl = `images/${encodedName}.webp`;
+                    console.log(`  └─ Generated imageUrl: ${product.imageUrl}`);
                 }
                 
-                console.log('📦 Product loaded from Firebase:', product.name, '- Image:', product.imageUrl);
                 productsData.push(product);
             });
             
-            console.log('✅ Total products loaded from Firebase:', productsData.length);
+            console.log('✅✅✅ SUCCESS! Total products loaded from Firebase:', productsData.length);
+            console.log('📦 Products array:', productsData.map(p => p.name));
             
             // Mark as loaded
             productsLoaded = true;
