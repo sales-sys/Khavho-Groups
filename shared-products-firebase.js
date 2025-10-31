@@ -479,12 +479,16 @@ function createProductCard(product, index) {
                 
                 <div class="product-footer">
                     <div class="product-price">R${parseFloat(product.price || 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</div>
-                    <div class="product-actions">
-                        <button class="add-to-cart-btn" onclick="addToCart('${productId}')">
-                            <i data-lucide="shopping-cart"></i>
-                            Add to Cart
-                        </button>
-                    </div>
+                        <div class="product-actions">
+                            <button class="add-to-cart-btn" onclick="addToCart('${productId}')">
+                                <i data-lucide="shopping-cart"></i>
+                                Add to Cart
+                            </button>
+                            <button class="request-quote-btn" onclick="requestQuote('${product.name}', '${productId}')">
+                                <i data-lucide="file-text"></i>
+                                Request Quote
+                            </button>
+                        </div>
                 </div>
             </div>
         `;

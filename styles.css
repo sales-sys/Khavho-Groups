@@ -1096,9 +1096,45 @@ h1, h2, h3, h4, h5, h6 {
     align-items: center;
     justify-content: center;
     gap: 4px;
-    flex: 1;
+    min-width: 0;
     min-height: 32px;
     white-space: nowrap;
+}
+
+.add-to-cart-btn i {
+    width: 14px;
+    height: 14px;
+}
+
+.request-quote-btn {
+    background: var(--primary-blue, #007bff);
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 11px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    min-width: 0;
+    min-height: 32px;
+    white-space: nowrap;
+}
+
+.request-quote-btn i {
+    width: 14px;
+    height: 14px;
+}
+
+.product-actions {
+    display: flex;
+    gap: 6px;
+    flex-direction: row;
+}
 }
 
 .add-to-cart-btn i {
