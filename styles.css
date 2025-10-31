@@ -1079,25 +1079,31 @@ h1, h2, h3, h4, h5, h6 {
 
 .product-actions {
     display: flex;
-    gap: 8px;
+    gap: 6px;
 }
 
 .add-to-cart-btn {
     background: var(--primary-orange);
     color: white;
     border: none;
-    padding: 10px 16px;
-    border-radius: 6px;
+    padding: 6px 10px;
+    border-radius: 5px;
     cursor: pointer;
     font-weight: 600;
-    font-size: 12px;
+    font-size: 11px;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    gap: 4px;
     flex: 1;
-    min-height: 36px;
+    min-height: 32px;
+    white-space: nowrap;
+}
+
+.add-to-cart-btn i {
+    width: 14px;
+    height: 14px;
 }
 
 .add-to-cart-btn:hover {
