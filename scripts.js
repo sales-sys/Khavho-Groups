@@ -788,14 +788,22 @@ function toggleCart() {
 }
 
 function checkout() {
-    const cart = JSON.parse(localStorage.getItem('khavho_cart') || '[]');
+    // Check if cart exists and has items
+    const cart = JSON.parse(localStorage.getItem('cart') || localStorage.getItem('khavho_cart') || '[]');
     
     if (cart.length === 0) {
         alert('Your cart is empty!');
         return;
     }
     
-    // Calculate totals
+    // Save cart with consistent key
+    localStorage.setItem('cart', JSON.stringify(cart));
+    
+    // Redirect to checkout page
+    window.location.href = 'checkout.html';
+    return;
+    
+    // OLD CODE BELOW (keeping for reference)
     const subtotal = cart.reduce((sum, item) => sum + (parseFloat(item.price || 0) * item.quantity), 0);
     const vat = subtotal * 0.15;
     const total = subtotal + vat;
