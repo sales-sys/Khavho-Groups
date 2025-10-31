@@ -1209,7 +1209,7 @@ body {
 }
 
 .action-btn.edit:hover {
-    background: #2c5282;
+    background: #2d3748;
 }
 
 .action-btn.enable {
@@ -1442,7 +1442,7 @@ body {
 .upload-log-item.info {
     background: #ebf8ff;
     border-left-color: #3182ce;
-    color: #2c5282;
+    color: #2d3748;
 }
 
 .upload-log-item.warning {
