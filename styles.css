@@ -3299,24 +3299,24 @@ h1, h2, h3, h4, h5, h6 {
     }
     
     .nav-menu .nav-item {
-        margin: 12px 0;
+        margin: 8px 0;
         border-bottom: 1px solid rgba(243, 112, 33, 0.3);
-        padding-bottom: 12px;
+        padding-bottom: 8px;
     }
     
     .nav-menu .nav-item:last-child {
         border-bottom: none;
-        margin-bottom: 20px;
+        margin-bottom: 12px;
     }
     
     .nav-menu .nav-link {
         color: #ffffff;
-        font-size: 18px;
+        font-size: 16px;
         font-weight: 600;
         display: flex;
         align-items: center;
-        gap: 12px;
-        padding: 10px 8px;
+        gap: 10px;
+        padding: 8px 6px;
         border-radius: 6px;
         transition: all 0.3s ease;
     }
@@ -3518,32 +3518,37 @@ h1, h2, h3, h4, h5, h6 {
         display: flex !important;
         flex-direction: column;
         width: 100%;
-        gap: 15px;
-        padding-top: 20px;
+        gap: 10px;
+        padding: 15px 0 10px 0;
         border-top: 2px solid rgba(243, 112, 33, 0.3);
-        margin-top: 20px;
+        margin-top: 15px;
     }
     
     .mobile-auth .auth-buttons {
         display: flex;
         flex-direction: column;
         width: 100%;
-        gap: 12px;
+        gap: 8px;
     }
     
     .mobile-auth .auth-btn {
         width: 100%;
         justify-content: center;
-        padding: 14px 20px;
-        font-size: 16px;
-        font-weight: 700;
-        border-radius: 8px;
+        padding: 10px 16px;
+        font-size: 14px;
+        font-weight: 600;
+        border-radius: 6px;
         transition: all 0.3s ease;
         border: none;
         cursor: pointer;
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 8px;
+    }
+    
+    .mobile-auth .auth-btn i {
+        width: 16px;
+        height: 16px;
     }
     
     .mobile-auth .login-btn {
@@ -3574,42 +3579,48 @@ h1, h2, h3, h4, h5, h6 {
     .mobile-auth .user-menu {
         display: flex;
         flex-direction: column;
-        gap: 15px;
+        gap: 10px;
         width: 100%;
         align-items: stretch;
     }
     
     .mobile-auth .user-info {
         text-align: center;
-        padding: 12px;
+        padding: 8px 10px;
         background: rgba(243, 112, 33, 0.15);
-        border-radius: 8px;
-        border-left: 4px solid var(--primary-orange);
+        border-radius: 6px;
+        border-left: 3px solid var(--primary-orange);
     }
     
     .mobile-auth .user-email {
         color: #ffffff !important;
-        font-size: 16px;
+        font-size: 13px;
         font-weight: 600;
     }
     
     .mobile-auth .logout-btn {
         background: #dc2626 !important;
         color: white !important;
-        padding: 14px 20px;
-        border-radius: 8px;
-        font-weight: 700;
+        padding: 10px 16px;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 14px;
         width: 100%;
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 10px;
+        gap: 8px;
     }
     
     .mobile-auth .logout-btn:hover {
         background: #b91c1c !important;
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+    }
+    
+    .mobile-auth .logout-btn i {
+        width: 16px;
+        height: 16px;
     }
     
     .mobile-auth .admin-controls {
