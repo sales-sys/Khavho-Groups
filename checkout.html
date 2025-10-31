@@ -4,8 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout - Khavho Groups</title>
-    <link rel="stylesheet" href="styles.css?v=12">
+    <link rel="stylesheet" href="styles.css?v=13">
     <style>
+        /* Checkout-specific mobile header improvements */
+        @media (max-width: 768px) {
+            .header {
+                padding: 10px 0 !important;
+                min-height: 60px !important;
+            }
+            
+            .navbar {
+                padding: 0 15px !important;
+            }
+            
+            .logo-img {
+                height: 35px !important;
+                width: auto !important;
+            }
+            
+            /* Hide navigation text on checkout mobile, keep icons only */
+            .nav-menu .nav-link {
+                font-size: 0 !important;
+            }
+            
+            .nav-menu .nav-link i {
+                font-size: 20px !important;
+                margin: 0 !important;
+            }
+            
+            /* Make hamburger button more prominent */
+            .mobile-menu-toggle {
+                width: 40px !important;
+                height: 40px !important;
+            }
+        }
+        
         .checkout-container {
             max-width: 1200px;
             margin: 120px auto 60px;
@@ -679,7 +712,7 @@
     <script>lucide.createIcons();</script>
 
     <!-- Main Scripts -->
-    <script src="scripts.js"></script>
+    <script src="scripts.js?v=2"></script>
     
     <!-- Checkout JavaScript -->
     <script>
