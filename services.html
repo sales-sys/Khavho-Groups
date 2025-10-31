@@ -127,10 +127,24 @@
                             </div>
                         </div>
                         
-                        <button class="mobile-toggle" onclick="toggleMobileMenu()">
-                            <i data-lucide="menu"></i>
-                        </button>
+                        <!-- Mobile auth buttons -->
+                        <div class="mobile-auth auth-buttons">
+                            <button class="auth-btn login-btn" onclick="openLoginModal()">
+                                <i data-lucide="log-in"></i>
+                                Login
+                            </button>
+                            <button class="auth-btn register-btn" onclick="openRegisterModal()">
+                                <i data-lucide="user-plus"></i>
+                                Register
+                            </button>
+                        </div>
                     </div>
+                    
+                    <button class="mobile-menu-toggle" id="mobileMenuToggle" onclick="toggleMobileMenu()">
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                    </button>
                 </nav>
             </div>
         </div>
