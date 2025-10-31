@@ -92,13 +92,16 @@ window.addEventListener('load', function() {
         }
     }, 1000);
     
-    // FAILSAFE: If after 3 seconds still nothing loaded, force demo products
+    // FAILSAFE: If after 5 seconds still nothing loaded AND Firebase exists, retry once more
     setTimeout(() => {
-        if (!productsLoaded) {
-            console.error('⚠️ FAILSAFE: Products still not loaded after 3s, forcing demo products...');
+        if (!productsLoaded && window.db) {
+            console.error('⚠️ FAILSAFE: Products still not loaded after 5s, retrying Firebase query...');
+            automaticProductLoad();
+        } else if (!productsLoaded && !window.db) {
+            console.error('⚠️ FAILSAFE: Firebase not initialized, loading demo products...');
             loadDemoProducts();
         }
-    }, 3000);
+    }, 5000);
 });
 
 // AUTOMATIC PRODUCT LOADING FUNCTION
@@ -133,10 +136,23 @@ function automaticProductLoad() {
             console.log('✅ Firebase query successful! Products found:', snapshot.size);
             
             if (snapshot.size === 0) {
-                console.log('⚠️ No products in Firebase, loading demos...');
-                if (productsData.length === 0) {
-                    loadDemoProducts();
+                console.error('❌❌❌ FIREBASE PRODUCTS COLLECTION IS EMPTY! ❌❌❌');
+                console.error('Please add products to the "products" collection in Firebase Firestore!');
+                console.error('Database path: khavho-groups > Firestore > products collection');
+                
+                // Show error message on page
+                const productsGrid = document.getElementById('productsGrid');
+                if (productsGrid) {
+                    productsGrid.innerHTML = `
+                        <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px; background: #fee; border-radius: 12px; border: 2px solid #c00;">
+                            <h2 style="color: #c00; margin-bottom: 20px;">⚠️ No Products Found in Firebase</h2>
+                            <p style="color: #666; margin-bottom: 10px;">The Firebase "products" collection is empty.</p>
+                            <p style="color: #666;">Please add products to the database or check your Firebase configuration.</p>
+                        </div>
+                    `;
                 }
+                
+                loadingInProgress = false;
                 return;
             }
 
@@ -145,13 +161,13 @@ function automaticProductLoad() {
             snapshot.forEach((doc) => {
                 const product = { id: doc.id, ...doc.data() };
                 
-                // URL-encode the product name for web compatibility
-                if (product.name) {
+                // Only generate imageUrl if not already set in Firebase
+                if (!product.imageUrl && product.name) {
                     const encodedName = encodeURIComponent(product.name);
                     product.imageUrl = `images/${encodedName}.webp`;
                 }
                 
-                console.log('📦 Product loaded:', product.name, '- Image:', product.imageUrl);
+                console.log('📦 Product loaded from Firebase:', product.name, '- Image:', product.imageUrl);
                 productsData.push(product);
             });
             
