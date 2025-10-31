@@ -857,31 +857,25 @@ function showOutOfStockMessage() {
 let selectedPaymentMethod = 'card';
 
 function checkout() {
-    const cart = JSON.parse(localStorage.getItem('khavho_cart') || '[]');
+    console.log('🛒 Checkout function called from shared-products-firebase.js');
+    
+    const cart = JSON.parse(localStorage.getItem('cart') || localStorage.getItem('khavho_cart') || '[]');
+    
+    console.log('Cart contents:', cart);
     
     if (cart.length === 0) {
-        showNotification('Your cart is empty!', 'error');
+        showNotification('Your cart is empty! Add items before checking out.', 'error');
         return;
     }
     
-    // Reset checkout
-    currentCheckoutStep = 1;
-    selectedPaymentMethod = 'card';
+    // Save cart with both keys for compatibility
+    localStorage.setItem('cart', JSON.stringify(cart));
+    localStorage.setItem('khavho_cart', JSON.stringify(cart));
     
-    // Show modal
-    const modal = document.getElementById('checkoutModal');
-    modal.classList.add('show');
+    console.log('✅ Redirecting to checkout page...');
     
-    // Populate cart items
-    populateCheckoutItems(cart);
-    
-    // Update progress
-    updateCheckoutProgress();
-    
-    // Show first step
-    showCheckoutStep(1);
-    
-    showNotification('Starting checkout process...', 'info', 2000);
+    // Redirect to checkout page
+    window.location.href = 'checkout.html';
 }
 
 function closeCheckoutModal() {
