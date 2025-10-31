@@ -49,7 +49,7 @@
     <script src="shared-products-firebase.js"></script>
     
     <!-- External Stylesheet -->
-    <link rel="stylesheet" href="styles.css?v=12">
+    <link rel="stylesheet" href="styles.css?v=13">
 </head>
 <body>
     <!-- Direct Navigation - NO COMPONENT LOADING -->
@@ -547,6 +547,20 @@
             </div>
         </div>
     </footer>
+
+    <!-- Add to Cart Toast Notification -->
+    <div class="cart-toast" id="cartToast">
+        <div class="cart-toast-icon">
+            <i data-lucide="shopping-cart"></i>
+        </div>
+        <div class="cart-toast-content">
+            <div class="cart-toast-title">Added to Cart!</div>
+            <div class="cart-toast-message" id="cartToastMessage">+1 item added</div>
+        </div>
+        <button class="cart-toast-close" onclick="hideCartToast()">
+            <i data-lucide="x"></i>
+        </button>
+    </div>
 
     <!-- Cart Sidebar -->
     <div class="cart-overlay" id="cartOverlay"></div>

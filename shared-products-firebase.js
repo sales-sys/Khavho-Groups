@@ -682,6 +682,10 @@ function addToCart(productId) {
     if (existingItem) {
         existingItem.quantity += 1;
         showNotification(`Updated quantity for ${product.name}`, 'success');
+        // Show toast notification
+        if (typeof showCartToast === 'function') {
+            showCartToast(existingItem.quantity, cart.reduce((sum, item) => sum + item.quantity, 0));
+        }
     } else {
         cart.push({
             id: productId,
@@ -692,10 +696,15 @@ function addToCart(productId) {
             addedAt: new Date().toISOString()
         });
         showNotification(`${product.name} added to cart!`, 'success');
+        // Show toast notification
+        if (typeof showCartToast === 'function') {
+            showCartToast(1, cart.reduce((sum, item) => sum + item.quantity, 0));
+        }
     }
     
     // Save to localStorage
     localStorage.setItem('khavho_cart', JSON.stringify(cart));
+    localStorage.setItem('cart', JSON.stringify(cart)); // Also save with 'cart' key for consistency
     
     // Save to Firebase if user is logged in
     saveCartToFirebase(cart);

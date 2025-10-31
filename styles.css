@@ -2256,6 +2256,106 @@ h1, h2, h3, h4, h5, h6 {
     color: #a0aec0;
 }
 
+/* ===== ADD TO CART TOAST NOTIFICATION ===== */
+.cart-toast {
+    position: fixed;
+    top: 100px;
+    right: -400px;
+    background: linear-gradient(135deg, #000000 0%, #2d2d2d 100%);
+    color: white;
+    padding: 20px 25px;
+    border-radius: 12px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: right 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    min-width: 320px;
+    border-left: 4px solid #F37021;
+}
+
+.cart-toast.show {
+    right: 20px;
+}
+
+.cart-toast-icon {
+    width: 50px;
+    height: 50px;
+    background: #F37021;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+    animation: toastIconPulse 0.5s ease-out;
+}
+
+.cart-toast-content {
+    flex: 1;
+}
+
+.cart-toast-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 5px;
+    color: white;
+}
+
+.cart-toast-message {
+    font-size: 14px;
+    color: #e2e8f0;
+}
+
+.cart-toast-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.cart-toast-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+@keyframes toastIconPulse {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .cart-toast {
+        right: -100%;
+        left: auto;
+        min-width: calc(100% - 40px);
+        max-width: calc(100% - 40px);
+    }
+    
+    .cart-toast.show {
+        right: 20px;
+        left: 20px;
+    }
+}
+
 /* ===== CART SIDEBAR ===== */
 .cart-sidebar {
     position: fixed;
