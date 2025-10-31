@@ -442,6 +442,7 @@ function createProductCard(product, index) {
         }
         
         card.className = 'product-card';
+        card.setAttribute('data-category', (product.category || '').toLowerCase().replace(/\s+/g, '-'));
         card.style.animationDelay = `${index * 0.1}s`;
         
         // Determine availability
@@ -454,38 +455,36 @@ function createProductCard(product, index) {
         
         // Sanitize product name and ID for HTML
         const productName = String(product.name || '').replace(/'/g, '&#39;').replace(/"/g, '&quot;');
-        const productId = product.id || `product-${index}`;
+        const productId = product.id || product.productCode || `product-${index}`;
+        
+        // Generate image URL
+        let imageUrl = product.imageUrl;
+        if (!imageUrl && product.name) {
+            const encodedName = encodeURIComponent(product.name);
+            imageUrl = `images/${encodedName}.webp`;
+        }
         
         card.innerHTML = `
             <div class="product-image">
-                ${product.imageUrl ? 
-                    `<img src="${getImageUrl(product.imageUrl)}" alt="${productName}" 
-                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" 
-                         loading="lazy" />
-                    <div class="product-placeholder" style="display: none;">
-                        <i data-lucide="${getProductIcon(category)}"></i>
-                    </div>` :
-                    `<div class="product-placeholder">
-                        <i data-lucide="${getProductIcon(category)}"></i>
-                    </div>`
+                ${imageUrl ? 
+                    createOptimizedImage(imageUrl, product.name, 'product-img') :
+                    `<div class="product-placeholder"><i data-lucide="package"></i></div>`
                 }
-                ${!isAvailable ? '<div class="product-badge out-of-stock">Out of Stock</div>' : ''}
+                ${product.productCode ? `<div class="product-code">${product.productCode}</div>` : ''}
             </div>
+            
             <div class="product-content">
-                <h3 class="product-title">${productName}</h3>
-                <p class="product-description">${description || 'High-quality product for professional use.'}</p>
-                <div class="product-price">R${typeof price === 'number' ? price.toLocaleString() : price}</div>
-                <div class="product-actions">
-                    <button class="add-to-cart-btn ${isAvailable ? 'available' : 'unavailable'}" 
-                            onclick="${isAvailable ? `addToCart('${productId}')` : 'showOutOfStockMessage()'}"
-                            ${!isAvailable ? 'disabled' : ''}>
-                        <i data-lucide="${isAvailable ? 'shopping-cart' : 'x-circle'}"></i>
-                        ${isAvailable ? 'Add to Cart' : 'Out of Stock'}
-                    </button>
-                    <button class="contact-whatsapp-btn" onclick="contactViaWhatsApp('${productName}')">
-                        <i data-lucide="message-circle"></i>
-                        WhatsApp
-                    </button>
+                <h3 class="product-title">${product.name}</h3>
+                <p class="product-description">${product.description || 'High-quality product for professional use.'}</p>
+                
+                <div class="product-footer">
+                    <div class="product-price">R${parseFloat(product.price || 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</div>
+                    <div class="product-actions">
+                        <button class="add-to-cart-btn" onclick="addToCart('${productId}')">
+                            <i data-lucide="shopping-cart"></i>
+                            Add to Cart
+                        </button>
+                    </div>
                 </div>
             </div>
         `;
