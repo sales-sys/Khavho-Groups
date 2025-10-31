@@ -912,11 +912,11 @@ body {
     }
 
     .logout-btn {
-        display: none;
+        display: none !important;
     }
 
     .mobile-menu-toggle {
-        display: flex;
+        display: flex !important;
     }
     
     .mobile-logout {
