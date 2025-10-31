@@ -313,6 +313,13 @@ if (!window.getSharedProducts) {
 function displayProducts(products, retryCount = 0) {
     console.log('🎨 displayProducts called with', products.length, 'products, filter:', currentFilter, 'retry:', retryCount);
     
+    // Hide loading indicator
+    const loadingEl = document.getElementById('productsLoading');
+    if (loadingEl) {
+        loadingEl.style.display = 'none';
+        console.log('✅ Loading indicator hidden');
+    }
+    
     // Try multiple ways to find the products grid element
     let productsGrid = document.getElementById('productsGrid');
     if (!productsGrid) {

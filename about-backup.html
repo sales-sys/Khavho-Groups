@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - Khavho Groups</title>
+    <link rel="icon" type="image/png" href="images/logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
+    <!-- Firebase Configuration -->
+    <script src="firebase-config.js"></script>
+    
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- Additional About Page Styles -->
+    <style>
+        /* Page Header Styling */
+        .page-header {
+            background: linear-gradient(135deg, #F37021 0%, #FF8C42 100%);
+            padding: 80px 20px;
+            text-align: center;
+            color: white;
+            margin-bottom: 60px;
+            margin-top: 100px; /* Space for fixed header */
+        }
+        
+        .page-header h1 {
+            font-size: 3rem;
+            margin: 0 0 1rem 0;
+            font-weight: 700;
+        }
+        
+        .page-header p {
+            font-size: 1.3rem;
+            margin: 0;
+            opacity: 0.95;
+        }
+        
+        /* Container Styling */
+        .about-content {
+            padding: 60px 0;
+            margin-top: 80px; /* Push content below fixed header */
+        }
+
+        /* Override default container width and ensure proper centering */
+        .about-content .container {
+            max-width: 1200px !important;
+            margin: 0 auto !important;
+            padding: 0 40px !important;
+            display: block !important;
+            text-align: center;
+        }
+        
+        /* Reset text alignment for specific elements that need left alignment */
+        .about-content p,
+        .about-content li {
+            text-align: left;
+        }
+        
+        /* Keep headings centered */
+        .about-content h2,
+        .about-content h3,
+        .about-content h4 {
+            text-align: center;
+        }
+        
+        /* Story Section */
+        .story-section {
+            text-align: center;
+            max-width: 900px;
+            margin: 0 auto 60px auto;
+            padding: 0;
+        }
+        
+        .story-section h2 {
+            font-size: 2.8rem;
+            margin: 0 0 2rem 0;
+            color: #333;
+            font-weight: 700;
+        }
+        
+        .story-section p {
+            font-size: 1.15rem;
+            line-height: 1.9;
+            color: #666;
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+        
+        /* Mission & Vision Section */
+        .mission-vision-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 3rem;
+            margin: 60px auto;
+            max-width: 100%;
+            text-align: left;
+        }
+        
+        .mission-box, .vision-box {
+            background: #f8f9fa;
+            padding: 3rem;
+            border-radius: 16px;
+            border-left: 5px solid #F37021;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+        
+        .mission-box:hover, .vision-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .mission-box h3, .vision-box h3 {
+            font-size: 1.8rem;
+            margin: 0 0 1.5rem 0;
+            color: #333;
+            font-weight: 700;
+        }
+        
+        .mission-box p, .vision-box p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #666;
+            margin: 0;
+        }
+        
+        /* Values Section */
+        .values-section {
+            margin: 80px auto;
+            max-width: 100%;
+        }
+        
+        .values-section h2 {
+            text-align: center;
+            font-size: 2.8rem;
+            margin: 0 0 3rem 0;
+            color: #333;
+            font-weight: 700;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+        
+        .values-section h2:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(135deg, #F37021 0%, #FF8C42 100%);
+            border-radius: 2px;
+        }
+        
+        /* Values Grid */
+        .values-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 2.5rem;
+            max-width: 100%;
+            justify-items: center;
+        }
+        
+        .value-item {
+            background: #f8f9fa;
+            padding: 2.5rem;
+            border-radius: 16px;
+            text-align: center;
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+            width: 100%;
+            max-width: 350px;
+        }
+        
+        .value-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+            border-color: #F37021;
+        }
+        
+        .value-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #F37021 0%, #FF8C42 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            color: white;
+        }
+        
+        .value-icon svg {
+            width: 32px;
+            height: 32px;
+        }
+        
+        .value-item h4 {
+            margin: 0 0 1rem 0;
+            color: #333;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+        
+        .value-item p {
+            margin: 0;
+            color: #666;
+            line-height: 1.7;
+            font-size: 1rem;
+        }
+        
+        /* About Stats */
+        .about-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 2.5rem;
+            margin: 60px auto;
+            padding: 0;
+            max-width: 100%;
+            justify-items: center;
+        }
+        
+        .stat-item {
+            text-align: center;
+            background: white;
+            padding: 2.5rem 1.5rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 2px solid #f0f0f0;
+            transition: all 0.3s ease;
+            width: 100%;
+            max-width: 220px;
+        }
+        
+        .stat-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            border-color: #F37021;
+        }
+        
+        .stat-item h3 {
+            font-size: 3rem;
+            margin: 0 0 0.5rem 0;
+            background: linear-gradient(135deg, #F37021 0%, #FF8C42 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+        }
+        
+        .stat-item p {
+            margin: 0;
+            color: #666;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+        
+        /* Sections Styling */
+        .divisions-section, .leadership-section, .achievements-section {
+            margin-top: 5rem;
+            padding-top: 4rem;
+            border-top: 2px solid #e9ecef;
+            max-width: 100%;
+        }
+        
+        .divisions-section h2, .leadership-section h2, .achievements-section h2 {
+            text-align: center;
+            margin-bottom: 3.5rem;
+            color: #333;
+            font-size: 2.8rem;
+            font-weight: 700;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+        
+        .divisions-section h2:after, .leadership-section h2:after, .achievements-section h2:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(135deg, #F37021 0%, #FF8C42 100%);
+            border-radius: 2px;
+        }
+        
+        /* Divisions Grid */
+        .divisions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 3rem;
+            margin-top: 3rem;
+            max-width: 100%;
+            justify-items: center;
+        }
+        
+        .division-card {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 6px 30px rgba(0, 0, 0, 0.1);
+            border: 2px solid #f0f0f0;
+            transition: all 0.4s ease;
+            width: 100%;
+            max-width: 450px;
+            text-align: left;
+        }
+        
+        .division-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.18);
+            border-color: #F37021;
+        }
+        
+        .division-icon {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, #F37021 0%, #FF8C42 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2rem;
+            color: white;
+            box-shadow: 0 8px 20px rgba(243, 112, 33, 0.3);
+        }
+        
+        .division-icon svg {
+            width: 40px;
+            height: 40px;
+        }
+        
+        .division-card h3 {
+            margin: 0 0 1.5rem 0;
+            color: #333;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        
+        .division-card > p {
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+            font-size: 1.05rem;
+        }
+        
+        .division-features {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 2.5rem 0;
+        }
+        
+        .division-features li {
+            padding: 0.7rem 0;
+            color: #555;
+            position: relative;
+            padding-left: 2rem;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        
+        .division-features li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #28a745;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .division-link {
+            display: inline-block;
+            background: linear-gradient(135deg, #F37021 0%, #FF8C42 100%);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(243, 112, 33, 0.3);
+        }
+        
+        .division-link:hover {
+            transform: translateX(8px);
+            text-decoration: none;
+            color: white;
+            box-shadow: 0 6px 25px rgba(243, 112, 33, 0.5);
+        }
+        
+        /* Leadership Grid */
+        .leadership-section > p {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 3rem;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #666;
+        }
+        
+        .leadership-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2.5rem;
+            margin-top: 2.5rem;
+            max-width: 100%;
+            justify-items: center;
+        }
+        
+        .leader-card {
+            background: #f8f9fa;
+            padding: 3rem;
+            border-radius: 16px;
+            text-align: center;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .leader-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-color: #F37021;
+        }
+        
+        .leader-info h4 {
+            margin: 0 0 1rem 0;
+            color: #333;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .leader-info p {
+            margin: 0;
+            color: #666;
+            line-height: 1.7;
+            font-size: 1.05rem;
+        }
+        
+        /* Achievements Grid */
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 2.5rem;
+            margin-top: 2.5rem;
+            max-width: 100%;
+            justify-items: center;
+        }
+        
+        .achievement-item {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 2px solid #f0f0f0;
+            transition: all 0.3s ease;
+            width: 100%;
+            max-width: 320px;
+        }
+        
+        .achievement-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            border-color: #28a745;
+        }
+        
+        .achievement-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            color: white;
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
+        }
+        
+        .achievement-icon svg {
+            width: 32px;
+            height: 32px;
+        }
+        
+        .achievement-item h4 {
+            margin: 0 0 1rem 0;
+            color: #333;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .achievement-item p {
+            margin: 0;
+            color: #666;
+            line-height: 1.7;
+            font-size: 1rem;
+        }
+        
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .about-content .container {
+                padding: 0 20px !important;
+            }
+            
+            .page-header {
+                padding: 60px 20px;
+                margin-top: 80px;
+            }
+            
+            .page-header h1 {
+                font-size: 2rem;
+            }
+            
+            .page-header p {
+                font-size: 1.1rem;
+            }
+            
+            .story-section h2 {
+                font-size: 2rem;
+            }
+            
+            .story-section p {
+                font-size: 1rem;
+            }
+            
+            .mission-vision-section {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+                margin: 40px auto;
+            }
+            
+            .mission-box, .vision-box {
+                padding: 2rem;
+            }
+            
+            .mission-box h3, .vision-box h3 {
+                font-size: 1.5rem;
+            }
+            
+            .values-section h2 {
+                font-size: 2rem;
+            }
+            
+            .divisions-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .values-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .leadership-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .achievements-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .about-stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.5rem;
+            }
+            
+            .stat-item {
+                padding: 2rem 1rem;
+            }
+            
+            .value-item {
+                padding: 2rem;
+            }
+            
+            .division-card {
+                padding: 2rem;
+            }
+            
+            .divisions-section h2, .leadership-section h2, .achievements-section h2 {
+                font-size: 2rem;
+            }
+            
+            .stat-item h3 {
+                font-size: 2.5rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .page-header h1 {
+                font-size: 1.75rem;
+            }
+            
+            .page-header p {
+                font-size: 1rem;
+            }
+            
+            .story-section h2 {
+                font-size: 1.75rem;
+            }
+            
+            .mission-vision-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .mission-box, .vision-box {
+                padding: 1.5rem;
+            }
+            
+            .about-stats {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .stat-item {
+                padding: 1.5rem 1rem;
+            }
+            
+            .value-item {
+                padding: 1.5rem;
+            }
+            
+            .division-card {
+                padding: 1.5rem;
+            }
+            
+            .divisions-section h2, .leadership-section h2, .achievements-section h2 {
+                font-size: 1.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Direct Navigation - SAME AS INDEX.HTML -->
+    <header class="header" id="header">
+        <div class="header-top">
+            <div class="container">
+                <div class="header-top-content">
+                    <div>Khathu@khavhogroups.com | +27 766 927 310</div>
+                    <div>Johannesburg | Serving South Africa</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="header-main">
+            <div class="container">
+                <nav class="nav-container">
+                    <a href="index.html" class="logo">
+                        <div class="logo-icon">
+                            <img src="images/logo.png" alt="Khavho Groups Logo" onerror="this.parentElement.innerHTML='<i data-lucide=building-2></i>'">
+                        </div>
+                    </a>
+                    
+                    <div class="main-nav" id="mainNav">
+                        <ul class="nav-menu">
+                            <li class="nav-item">
+                                <a href="index.html" class="nav-link">
+                                    <i data-lucide="home"></i>
+                                    Home
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="about.html" class="nav-link">
+                                    <i data-lucide="users"></i>
+                                    About
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="index.html#services" class="nav-link">
+                                    <i data-lucide="briefcase"></i>
+                                    Services
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="products.html" class="nav-link">
+                                    <i data-lucide="package"></i>
+                                    Products
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="index.html#contact" class="nav-link">
+                                    <i data-lucide="phone"></i>
+                                    Contact
+                                </a>
+                            </li>
+                        </ul>
+                        
+                        <div class="header-cta">
+                            <div class="auth-buttons">
+                                <button class="auth-btn login-btn" onclick="openLoginModal()">
+                                    <i data-lucide="log-in"></i>
+                                    Login
+                                </button>
+                                <button class="auth-btn register-btn" onclick="openRegisterModal()">
+                                    <i data-lucide="user-plus"></i>
+                                    Register
+                                </button>
+                            </div>
+                            
+                            <div class="cart-icon" onclick="toggleCart()" style="position: relative; cursor: pointer; padding: 8px;">
+                                <i data-lucide="shopping-cart"></i>
+                                <span class="cart-count" id="cartCount" style="display: none;">0</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Mobile auth buttons -->
+                        <div class="mobile-auth auth-buttons">
+                            <button class="auth-btn login-btn" onclick="openLoginModal()">
+                                <i data-lucide="log-in"></i>
+                                Login
+                            </button>
+                            <button class="auth-btn register-btn" onclick="openRegisterModal()">
+                                <i data-lucide="user-plus"></i>
+                                Register
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <button class="mobile-menu-toggle" id="mobileMenuToggle" onclick="toggleMobileMenu()">
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <section class="page-header">
+            <div class="container">
+                <h1>About Khavho Groups</h1>
+                <p>Building Excellence Across Industries</p>
+            </div>
+        </section>
+
+        <section class="about-content">
+            <div class="container">
+                <!-- Company Story Section -->
+                <div class="story-section">
+                    <h2>Our Story</h2>
+                    <p>Khavho Groups is a leading diversified business conglomerate with over a decade of excellence in driving economic growth across Africa. Established in 2012, we have evolved from a single construction company into a multi-faceted organization with three core divisions: Khavho Capital, Khavho Holdings, and Khavho Inter-Africa.</p>
+                    
+                    <p>Our journey began with a simple vision: to build not just structures, but sustainable businesses that create lasting value for our communities. Today, we are proud to be recognized as one of Africa's most trusted business partners, with a portfolio spanning construction, investment management, financial services, and international trade.</p>
+                </div>
+
+                <!-- Statistics Section -->
+                <div class="about-stats">
+                    <div class="stat-item">
+                        <h3>12+</h3>
+                        <p>Years of Excellence</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>3</h3>
+                        <p>Business Divisions</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>500+</h3>
+                        <p>Successful Projects</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>150+</h3>
+                        <p>Expert Team Members</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>25+</h3>
+                        <p>Countries Served</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>$500M+</h3>
+                        <p>Assets Under Management</p>
+                    </div>
+                </div>
+
+                <!-- Mission & Vision Section -->
+                <div class="mission-vision-section">
+                    <div class="mission-box">
+                        <h3>Our Mission</h3>
+                        <p>To provide exceptional services across multiple industries while maintaining the highest standards of integrity, innovation, and customer satisfaction. We are committed to building lasting partnerships that drive sustainable growth and create positive impact across Africa.</p>
+                    </div>
+                    
+                    <div class="vision-box">
+                        <h3>Our Vision</h3>
+                        <p>To be Africa's premier business conglomerate, recognized for excellence, innovation, and sustainable growth across all our business sectors. We envision a future where African businesses thrive through strategic partnerships, innovative solutions, and unwavering commitment to quality.</p>
+                    </div>
+                </div>
+
+                <!-- Core Values Section -->
+                <div class="values-section">
+                    <h2>Our Core Values</h2>
+                    <div class="values-grid">
+                        <div class="value-item">
+                            <div class="value-icon">
+                                <i data-lucide="award"></i>
+                            </div>
+                            <h4>Excellence</h4>
+                            <p>We pursue the highest standards in everything we do, delivering quality that exceeds expectations.</p>
+                        </div>
+                        <div class="value-item">
+                            <div class="value-icon">
+                                <i data-lucide="shield-check"></i>
+                            </div>
+                            <h4>Integrity</h4>
+                            <p>We conduct business with honesty, transparency, and ethical practices in all our relationships.</p>
+                        </div>
+                        <div class="value-item">
+                            <div class="value-icon">
+                                <i data-lucide="lightbulb"></i>
+                            </div>
+                            <h4>Innovation</h4>
+                            <p>We embrace new technologies and creative solutions to solve complex business challenges.</p>
+                        </div>
+                        <div class="value-item">
+                            <div class="value-icon">
+                                <i data-lucide="users"></i>
+                            </div>
+                            <h4>Partnership</h4>
+                            <p>We believe in building long-term relationships based on mutual trust and shared success.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Business Divisions Section -->
+                <section class="divisions-section">
+                    <h2>Our Business Divisions</h2>
+                    <div class="divisions-grid">
+                        <div class="division-card">
+                            <div class="division-icon">
+                                <i data-lucide="building-2"></i>
+                            </div>
+                            <h3>Khavho Capital</h3>
+                            <p>Our investment and financial services division, providing comprehensive wealth management, investment advisory, and financial planning services to individuals and institutions across Africa.</p>
+                            <ul class="division-features">
+                                <li>Investment Portfolio Management</li>
+                                <li>Financial Advisory Services</li>
+                                <li>Retirement & Estate Planning</li>
+                                <li>Risk Management Solutions</li>
+                                <li>Corporate Finance</li>
+                            </ul>
+                            <a href="khavho-capital.html" class="division-link">Learn More →</a>
+                        </div>
+
+                        <div class="division-card">
+                            <div class="division-icon">
+                                <i data-lucide="briefcase"></i>
+                            </div>
+                            <h3>Khavho Holdings</h3>
+                            <p>Our diversified investment holding company, managing strategic investments across various sectors including technology, healthcare, agriculture, and renewable energy.</p>
+                            <ul class="division-features">
+                                <li>Strategic Investment Management</li>
+                                <li>Portfolio Company Support</li>
+                                <li>Sector-Focused Investments</li>
+                                <li>Growth Capital Provision</li>
+                                <li>Exit Strategy Execution</li>
+                            </ul>
+                            <a href="khavho-holdings.html" class="division-link">Learn More →</a>
+                        </div>
+
+                        <div class="division-card">
+                            <div class="division-icon">
+                                <i data-lucide="globe"></i>
+                            </div>
+                            <h3>Khavho Inter-Africa</h3>
+                            <p>Our international business development arm, facilitating cross-border trade, construction projects, and business partnerships throughout Africa and beyond.</p>
+                            <ul class="division-features">
+                                <li>Construction & Infrastructure</li>
+                                <li>International Trade Facilitation</li>
+                                <li>Cross-Border Partnerships</li>
+                                <li>Project Management</li>
+                                <li>Market Entry Strategies</li>
+                            </ul>
+                            <a href="khavho-inter-africa.html" class="division-link">Learn More →</a>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Leadership Section -->
+                <section class="leadership-section">
+                    <h2>Our Leadership Team</h2>
+                    <p>Khavho Groups is led by a team of experienced professionals with diverse backgrounds in finance, construction, business development, and strategic management. Our leadership brings together decades of combined experience and a shared commitment to excellence.</p>
+                    
+                    <div class="leadership-grid">
+                        <div class="leader-card">
+                            <div class="leader-info">
+                                <h4>Executive Leadership</h4>
+                                <p>Our executive team provides strategic direction and ensures operational excellence across all our business divisions.</p>
+                            </div>
+                        </div>
+                        <div class="leader-card">
+                            <div class="leader-info">
+                                <h4>Advisory Board</h4>
+                                <p>Industry experts and thought leaders who provide guidance on market trends, regulatory compliance, and strategic opportunities.</p>
+                            </div>
+                        </div>
+                        <div class="leader-card">
+                            <div class="leader-info">
+                                <h4>Division Heads</h4>
+                                <p>Specialist leaders managing our three core business divisions, each bringing deep sector expertise and proven track records.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Achievements Section -->
+                <section class="achievements-section">
+                    <h2>Our Achievements</h2>
+                    <div class="achievements-grid">
+                        <div class="achievement-item">
+                            <div class="achievement-icon">
+                                <i data-lucide="trophy"></i>
+                            </div>
+                            <h4>Industry Recognition</h4>
+                            <p>Multiple awards for excellence in business development, construction quality, and financial services innovation.</p>
+                        </div>
+                        <div class="achievement-item">
+                            <div class="achievement-icon">
+                                <i data-lucide="target"></i>
+                            </div>
+                            <h4>Project Success Rate</h4>
+                            <p>98% project completion rate with 95% of projects delivered on time and within budget.</p>
+                        </div>
+                        <div class="achievement-item">
+                            <div class="achievement-icon">
+                                <i data-lucide="trending-up"></i>
+                            </div>
+                            <h4>Financial Performance</h4>
+                            <p>Consistent year-over-year growth with strong returns for our investors and partners.</p>
+                        </div>
+                        <div class="achievement-item">
+                            <div class="achievement-icon">
+                                <i data-lucide="heart"></i>
+                            </div>
+                            <h4>Community Impact</h4>
+                            <p>Creating jobs, supporting local businesses, and contributing to community development across Africa.</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </section>
+    </main>
+
+    <!-- Authentication Modals -->
+    <div class="auth-modal" id="loginModal">
+        <div class="auth-modal-content">
+            <span class="modal-close" onclick="closeModal('loginModal')">&times;</span>
+            <div class="auth-header">
+                <h2>Login to Your Account</h2>
+                <p>Access your dashboard and manage your account</p>
+            </div>
+            <form id="loginForm" class="auth-form">
+                <div class="form-group">
+                    <label for="loginEmail">Email Address</label>
+                    <input type="email" id="loginEmail" autocomplete="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" autocomplete="current-password" required>
+                </div>
+                <button type="submit" class="auth-form-btn">
+                    <i data-lucide="log-in"></i>
+                    Login
+                </button>
+                <p class="auth-switch">
+                    Don't have an account? 
+                    <a href="#" onclick="switchModal('loginModal', 'registerModal')">Register here</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <div class="auth-modal" id="registerModal">
+        <div class="auth-modal-content">
+            <span class="modal-close" onclick="closeModal('registerModal')">&times;</span>
+            <div class="auth-header">
+                <h2>Create Your Account</h2>
+                <p>Join Khavho Groups today</p>
+            </div>
+            <form id="registerForm" class="auth-form">
+                <div class="form-group">
+                    <label for="registerName">Full Name</label>
+                    <input type="text" id="registerName" autocomplete="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerEmail">Email Address</label>
+                    <input type="email" id="registerEmail" autocomplete="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Password</label>
+                    <input type="password" id="registerPassword" autocomplete="new-password" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" autocomplete="new-password" required>
+                </div>
+                <button type="submit" class="auth-form-btn">
+                    <i data-lucide="user-plus"></i>
+                    Register
+                </button>
+                <p class="auth-switch">
+                    Already have an account? 
+                    <a href="#" onclick="switchModal('registerModal', 'loginModal')">Login here</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer Container -->
+    <div id="footer-container"></div>
+
+    <!-- Scripts -->
+    <script src="scripts.js"></script>
+    <script src="shared-products-firebase.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Lucide icons
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        });
+    </script>
+</body>
+</html>

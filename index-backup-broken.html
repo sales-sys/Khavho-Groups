@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khavho Groups - Leading Business Conglomerate | Construction, Investment & Financial Services</title>
+    <link rel="icon" type="image/png" href="images/logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
+    <!-- Secure Firebase Configuration -->
+    <script src="firebase-config.js"></script>
+    
+    <!-- Firebase Products System -->
+    <script src="shared-products-firebase.js"></script>
+    
+    <!-- CRITICAL: Define auth functions inline FIRST before any HTML -->
+    <script>
+        // Auth modal functions - MUST be defined before any onclick handlers
+        function openLoginModal() {
+            const modal = document.getElementById('loginModal');
+            if (modal) {
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+        }
+        
+        function openRegisterModal() {
+            const modal = document.getElementById('registerModal');
+            if (modal) {
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+        }
+        
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        }
+        
+        function switchModal(fromModalId, toModalId) {
+            closeModal(fromModalId);
+            const toModal = document.getElementById(toModalId);
+            if (toModal) {
+                toModal.style.display = 'flex';
+            }
+        }
+    </script>
+    
+    <!-- Main Scripts - Load early so functions are available -->
+    <script src="scripts.js"></script>
+    
+    <!-- External Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Direct Navigation - NO COMPONENT LOADING -->
+    <header class="header" id="header">
+        <div class="header-top">
+            <div class="container">
+                <div class="header-top-content">
+                    <div>Khathu@khavhogroups.com | +27 766 927 310</div>
+                    <div>Johannesburg | Serving South Africa</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="header-main">
+            <div class="container">
+                <nav class="nav-container">
+                    <a href="#" class="logo" onclick="showPage('home')">
+                        <div class="logo-icon">
+                            <img src="images/logo.png" alt="Khavho Groups Logo" onerror="this.parentElement.innerHTML='<i data-lucide=building-2></i>'">
+                        </div>
+                    </a>
+                    
+                    <div class="main-nav" id="mainNav">
+                        <ul class="nav-menu">
+                            <li class="nav-item">
+                                <a href="index.html" class="nav-link">
+                                    <i data-lucide="home"></i>
+                                    Home
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="about.html" class="nav-link">
+                                    <i data-lucide="users"></i>
+                                    About
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link" onclick="showPage('services'); return false;">
+                                    <i data-lucide="briefcase"></i>
+                                    Services
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="products.html" class="nav-link">
+                                    <i data-lucide="package"></i>
+                                    Products
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link" onclick="showPage('contact'); return false;">
+                                    <i data-lucide="phone"></i>
+                                    Contact
+                                </a>
+                            </li>
+                        </ul>
+                        
+                        <div class="header-cta">
+                            <div class="auth-buttons">
+                                <button class="auth-btn login-btn" onclick="openLoginModal()">
+                                    <i data-lucide="log-in"></i>
+                                    Login
+                                </button>
+                                <button class="auth-btn register-btn" onclick="openRegisterModal()">
+                                    <i data-lucide="user-plus"></i>
+                                    Register
+                                </button>
+                            </div>
+                            
+                            <div class="cart-icon" onclick="toggleCart()" style="position: relative; cursor: pointer; padding: 8px;">
+                                <i data-lucide="shopping-cart"></i>
+                                <span class="cart-count" id="cartCount" style="display: none;">0</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Mobile auth buttons -->
+                        <div class="mobile-auth auth-buttons">
+                            <button class="auth-btn login-btn" onclick="openLoginModal()">
+                                <i data-lucide="log-in"></i>
+                                Login
+                            </button>
+                            <button class="auth-btn register-btn" onclick="openRegisterModal()">
+                                <i data-lucide="user-plus"></i>
+                                Register
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <button class="mobile-menu-toggle" id="mobileMenuToggle" onclick="toggleMobileMenu()">
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- HOME PAGE -->
+        <div id="homePage" class="page-content active">
+            <!-- Hero Section -->
+            <section class="hero-section">
+                <div class="container">
+                    <div class="hero-content">
+                        <div class="hero-badge">
+                            <i data-lucide="star"></i>
+                            Leading Business Conglomerate in Africa
+                        </div>
+                        <h1 class="hero-title">Building Excellence Across Industries</h1>
+                        <p class="hero-subtitle">Khavho Group is a diversified conglomerate specializing in construction, investment management, and financial services, driving growth and innovation across Africa.</p>
+                        <div class="hero-buttons">
+                            <a href="#" class="btn btn-primary" onclick="showPage('about')">
+                                <i data-lucide="arrow-right"></i>
+                                Discover Our Story
+                            </a>
+                            <a href="#" class="btn btn-secondary" onclick="showPage('contact')">
+                                <i data-lucide="phone"></i>
+                                Get in Touch
+                            </a>
+                            <a href="#" class="btn btn-outline" onclick="showPage('contact')">
+                                <i data-lucide="file-text"></i>
+                                Get Quote
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="hero-stats">
+                    <div class="container">
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-number counter" data-target="500">0</div>
+                                <div class="stat-label">Projects Completed</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number counter" data-target="3000+">0</div>
+                                <div class="stat-label">Clients Served</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number counter" data-target="7">0</div>
+                                <div class="stat-label">Years of Excellence</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number counter" data-target="98">0</div>
+                                <div class="stat-label">Client Satisfaction</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Business Model Section -->
+            <section class="business-model-section section-padding">
+                <div class="container">
+                    <div class="section-header">
+                        <div class="section-badge">How We Work</div>
+                        <h2 class="section-title">Our Business Model</h2>
+                        <p class="section-description">Khavho Groups generates revenue through its subsidiary companies while serving as the central procurement hub for materials and products.</p>
+                    </div>
+                    
+                    <div class="business-model-content">
+                        <div class="model-overview">
+                            <div class="model-item">
+                                <div class="model-icon">
+                                    <i data-lucide="building-2"></i>
+                                </div>
+                                <div class="model-info">
+                                    <h3>Central Procurement Hub</h3>
+                                    <p>Our subsidiary companies procure all their materials and products through Khavho Groups, ensuring quality control and cost efficiency.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="model-item">
+                                <div class="model-icon">
+                                    <i data-lucide="users"></i>
+                                </div>
+                                <div class="model-info">
+                                    <h3>Open to External Clients</h3>
+                                    <p>Outside companies and individuals can also purchase materials and products directly from us, expanding our market reach.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="model-item">
+                                <div class="model-icon">
+                                    <i data-lucide="credit-card"></i>
+                                </div>
+                                <div class="model-info">
+                                    <h3>Integrated Financial Solutions</h3>
+                                    <p>Through Khavho Capital & Investment, we provide financing options to help clients acquire the products they need.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="process-example">
+                            <h3>How Our Process Works</h3>
+                            <div class="example-card">
+                                <div class="example-header">
+                                    <i data-lucide="monitor"></i>
+                                    <h4>Example: Computer Purchase Process</h4>
+                                </div>
+                                <div class="process-steps">
+                                    <div class="step">
+                                        <div class="step-number">1</div>
+                                        <div class="step-content">
+                                            <h5>Client Request</h5>
+                                            <p>A client wants to purchase two computers from our website</p>
+                                        </div>
+                                    </div>
+                                    <div class="step">
+                                        <div class="step-number">2</div>
+                                        <div class="step-content">
+                                            <h5>Quote Generation</h5>
+                                            <p>We prepare a comprehensive quote including product costs and delivery fees</p>
+                                        </div>
+                                    </div>
+                                    <div class="step">
+                                        <div class="step-number">3</div>
+                                        <div class="step-content">
+                                            <h5>Financing Option</h5>
+                                            <p>Client applies for a loan through Khavho Capital & Investment</p>
+                                        </div>
+                                    </div>
+                                    <div class="step">
+                                        <div class="step-number">4</div>
+                                        <div class="step-content">
+                                            <h5>Delivery & Service</h5>
+                                            <p>Once approved, we provide and deliver the computers to the client</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Products Showcase Section -->
+            <section class="products-showcase-section section-padding">
+                <div class="container">
+                    <div class="section-header">
+                        <div class="section-badge">Our Products</div>
+                        <h2 class="section-title">Quality Products & Materials</h2>
+                        <p class="section-description">Discover our comprehensive range of construction materials, electrical equipment, mechanical systems, and procurement services.</p>
+                    </div>
+                    
+                    <div id="homepage-products-showcase">
+                        <!-- Products will be loaded here by JavaScript -->
+                        <div class="loading-message">
+                            <div class="loading-spinner"></div>
+                            <p>Loading our product catalog...</p>
+                        </div>
+                    </div>
+                    
+                    <div class="section-cta">
+                        <a href="products.html" class="btn btn-primary">
+                            <i data-lucide="package"></i>
+                            View All Products
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Subsidiaries Section -->
+            <section class="subsidiaries-section section-padding">
+                <div class="container">
+                    <div class="section-header">
+                        <div class="section-badge">Our Subsidiaries</div>
+                        <h2 class="section-title">Diversified Excellence</h2>
+                        <p class="section-description">Three specialized companies working together to deliver comprehensive solutions across construction, investment, and financial services.</p>
+                    </div>
+                    
+                    <div class="subsidiaries-grid">
+                        <div class="subsidiary-card" onclick="showSubsidiary('holdings')">
+                            <div class="subsidiary-header">
+                                <div class="subsidiary-icon">
+                                    <i data-lucide="hard-hat"></i>
+                                </div>
+                                <div class="subsidiary-info">
+                                    <h3>Khavho Holdings</h3>
+                                    <span class="industry">Construction & Development</span>
+                                </div>
+                            </div>
+                            <p class="subsidiary-description">Leading construction company specializing in residential, commercial, and infrastructure projects across South Africa.</p>
+                            <ul class="subsidiary-features">
+                                <li>Residential Construction</li>
+                                <li>Commercial Buildings</li>
+                                <li>Infrastructure Development</li>
+                                <li>Project Management</li>
+                            </ul>
+                            <a href="#" class="subsidiary-button" onclick="showSubsidiary('holdings')">
+                                Explore Projects
+                                <i data-lucide="arrow-right"></i>
+                            </a>
+                        </div>
+                        
+                        <div class="subsidiary-card" onclick="showSubsidiary('capital')">
+                            <div class="subsidiary-header">
+                                <div class="subsidiary-icon">
+                                    <i data-lucide="trending-up"></i>
+                                </div>
+                                <div class="subsidiary-info">
+                                    <h3>Khavho Capital</h3>
+                                    <span class="industry">Investment & Asset Management</span>
+                                </div>
+                            </div>
+                            <p class="subsidiary-description">Professional investment management firm providing wealth management and asset allocation services to high-net-worth clients.</p>
+                            <ul class="subsidiary-features">
+                                <li>Portfolio Management</li>
+                                <li>Wealth Advisory</li>
+                                <li>Asset Allocation</li>
+                                <li>Investment Planning</li>
+                            </ul>
+                            <a href="#" class="subsidiary-button" onclick="showSubsidiary('capital')">
+                                Investment Solutions
+                                <i data-lucide="arrow-right"></i>
+                            </a>
+                        </div>
+                        
+                        <div class="subsidiary-card" onclick="showSubsidiary('inter-africa')">
+                            <div class="subsidiary-header">
+                                <div class="subsidiary-icon">
+                                    <i data-lucide="banknote"></i>
+                                </div>
+                                <div class="subsidiary-info">
+                                    <h3>Khavho Inter Africa</h3>
+                                    <span class="industry">Financial Services</span>
+                                </div>
+                            </div>
+                            <p class="subsidiary-description">Comprehensive financial services provider offering banking, insurance, and investment solutions across African markets.</p>
+                            <ul class="subsidiary-features">
+                                <li>Business Banking</li>
+                                <li>Insurance Products</li>
+                                <li>Trade Finance</li>
+                                <li>Quick Loans</li>
+                            </ul>
+                            <a href="#" class="subsidiary-button" onclick="showSubsidiary('inter-africa')">
+                                Financial Services
+                                <i data-lucide="arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- ABOUT PAGE -->
+        <div id="aboutPage" class="page-content">
+            <section class="about-hero">
+                <div class="container">
+                    <h1 class="hero-title">About Khavho Group</h1>
+                    <p class="hero-subtitle">Building excellence through innovation, integrity, and unwavering commitment to our clients and communities.</p>
+                </div>
+            </section>
+            
+            <section class="section-padding">
+                <div class="container">
+                    <div class="about-content">
+                        <div class="about-text">
+                            <h2>Our Story</h2>
+                            <p>Founded in 2009, Khavho Group has grown from a small construction company into one of South Africa's most respected business conglomerates. Our journey began with a simple vision: to build excellence in everything we do.</p>
+                            <p>Today, we operate through three specialized subsidiaries, each a leader in its respective field. Our integrated approach allows us to offer comprehensive solutions that span the entire business lifecycle, from construction and development to investment and financial services.</p>
+                            <p>With over 7 years of experience, we have successfully completed more than 500 projects and maintained a 98% client satisfaction rate. Our success is built on the foundation of our core values and the dedication of our exceptional team.</p>
+                        </div>
+                        <div class="about-image">
+                            <i data-lucide="building"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="section-header">
+                        <h2 class="section-title">Our Core Values</h2>
+                        <p class="section-description">The principles that guide every decision we make and every project we undertake.</p>
+                    </div>
+                    
+                    <div class="values-grid">
+                        <div class="value-card">
+                            <div class="value-icon">
+                                <i data-lucide="shield-check"></i>
+                            </div>
+                            <h3>Integrity</h3>
+                            <p>We conduct business with the highest ethical standards, ensuring transparency and honesty in all our dealings.</p>
+                        </div>
+                        
+                        <div class="value-card">
+                            <div class="value-icon">
+                                <i data-lucide="target"></i>
+                            </div>
+                            <h3>Excellence</h3>
+                            <p>We strive for perfection in every project, delivering quality that exceeds expectations and sets industry standards.</p>
+                        </div>
+                        
+                        <div class="value-card">
+                            <div class="value-icon">
+                                <i data-lucide="users"></i>
+                            </div>
+                            <h3>Innovation</h3>
+                            <p>We embrace cutting-edge technologies and creative solutions to solve complex challenges and drive progress.</p>
+                        </div>
+                        
+                        <div class="value-card">
+                            <div class="value-icon">
+                                <i data-lucide="heart"></i>
+                            </div>
+                            <h3>Community</h3>
+                            <p>We are committed to making a positive impact in the communities where we work and live.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- SERVICES PAGE -->
+        <div id="servicesPage" class="page-content">
+            <section class="services-hero">
+                <div class="container">
+                    <h1 class="hero-title">Our Services</h1>
+                    <p class="hero-subtitle">Comprehensive solutions designed to meet your business needs across multiple industries.</p>
+                </div>
+            </section>
+            
+            <section class="section-padding">
+                <div class="container">
+                    <div class="services-grid">
+                        <div class="service-card">
+                            <div class="service-icon">
+                                <i data-lucide="hammer"></i>
+                            </div>
+                            <h3>Construction Management</h3>
+                            <p>Full-service construction management from planning to completion, ensuring projects are delivered on time and within budget.</p>
+                            <ul class="service-features">
+                                <li>Project Planning & Design</li>
+                                <li>Construction Supervision</li>
+                                <li>Quality Control</li>
+                                <li>Safety Management</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="service-card">
+                            <div class="service-icon">
+                                <i data-lucide="chart-line"></i>
+                            </div>
+                            <h3>Investment Advisory</h3>
+                            <p>Professional investment guidance to help you make informed decisions and maximize your financial returns.</p>
+                            <ul class="service-features">
+                                <li>Portfolio Analysis</li>
+                                <li>Risk Assessment</li>
+                                <li>Market Research</li>
+                                <li>Strategic Planning</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="service-card">
+                            <div class="service-icon">
+                                <i data-lucide="shield"></i>
+                            </div>
+                            <h3>Financial Planning</h3>
+                            <p>Comprehensive financial planning services to secure your financial future and achieve your goals.</p>
+                            <ul class="service-features">
+                                <li>Retirement Planning</li>
+                                <li>Tax Optimization</li>
+                                <li>Insurance Solutions</li>
+                                <li>Estate Planning</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- SOLUTIONS PAGE -->
+        <div id="solutionsPage" class="page-content">
+            <section class="solutions-hero">
+                <div class="container">
+                    <h1 class="hero-title">Business Solutions</h1>
+                    <p class="hero-subtitle">Innovative solutions tailored to drive your business forward.</p>
+                </div>
+            </section>
+            
+            <section class="section-padding">
+                <div class="container">
+                    <div class="solutions-categories">
+                        <div class="solution-category">
+                            <div class="solution-icon">
+                                <i data-lucide="building-2"></i>
+                            </div>
+                            <h3>Infrastructure Development</h3>
+                            <p>Large-scale infrastructure projects that form the backbone of economic growth.</p>
+                        </div>
+                        
+                        <div class="solution-category">
+                            <div class="solution-icon">
+                                <i data-lucide="coins"></i>
+                            </div>
+                            <h3>Wealth Management</h3>
+                            <p>Sophisticated wealth management strategies for high-net-worth individuals and institutions.</p>
+                        </div>
+                        
+                        <div class="solution-category">
+                            <div class="solution-icon">
+                                <i data-lucide="globe"></i>
+                            </div>
+                            <h3>Cross-Border Finance</h3>
+                            <p>Financial solutions that facilitate international trade and investment across Africa.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- CONTACT PAGE -->
+        <div id="contactPage" class="page-content">
+            <section class="contact-section section-padding">
+                <div class="container">
+                    <div class="contact-grid">
+                        <div class="contact-info">
+                            <h2>Get in Touch</h2>
+                            <p>Ready to start your next project or explore investment opportunities? Our team is here to help you achieve your goals.</p>
+                            
+                            <ul class="contact-details">
+                                <li>
+                                    <div class="contact-icon">
+                                        <i data-lucide="map-pin"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Head Office</strong>
+                                        <p> Johannesburg, South Africa</p>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="contact-icon">
+                                        <i data-lucide="phone"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Phone</strong>
+                                        <p>+27 766 927 310</p>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="contact-icon">
+                                        <i data-lucide="mail"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Email</strong>
+                                        <p>Khathu@khavhogroups.com</p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <form class="contact-form" onsubmit="submitContactForm(event)">
+                            <div id="contactSuccessMessage" class="success-message">
+                                <i data-lucide="check-circle"></i>
+                                Thank you! Your message has been sent successfully.
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="firstName">First Name</label>
+                                    <input type="text" id="firstName" name="firstName" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="lastName">Last Name</label>
+                                    <input type="text" id="lastName" name="lastName" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="email">Email Address</label>
+                                    <input type="email" id="email" name="email" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="phone">Phone Number</label>
+                                    <input type="tel" id="phone" name="phone">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="company">Company</label>
+                                <input type="text" id="company" name="company">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="service">Service Interest</label>
+                                <select id="service" name="service" required>
+                                    <option value="">Select a service</option>
+                                    <option value="construction">Construction Services</option>
+                                    <option value="financial">Financial Services</option>
+                                    <option value="consulting">Business Consulting</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="message">Message</label>
+                                <textarea id="message" name="message" placeholder="Tell us about your project or requirements..." required></textarea>
+                            </div>
+                            
+                            <button type="submit" class="submit-btn">
+                                <i data-lucide="send"></i>
+                                Send Message
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Khavho Groups</h3>
+                    <p>Building excellence across South Africa through diversified business solutions in construction and financial services.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link">
+                            <i data-lucide="facebook"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i data-lucide="twitter"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i data-lucide="linkedin"></i>
+                        </a>
+                        <a href="#" class="social-link">
+                            <i data-lucide="instagram"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Services</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Construction Management</a></li>
+                        <li><a href="#">Financial Planning</a></li>
+                        <li><a href="#">Business Consulting</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Subsidiaries</h3>
+                    <ul class="footer-links">
+                        <li><a href="#" onclick="showSubsidiary('holdings')">Khavho Holdings</a></li>
+                        <li><a href="#" onclick="showSubsidiary('capital')">Khavho Capital</a></li>
+                        <li><a href="#" onclick="showSubsidiary('inter-africa')">Khavho Inter Africa</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Contact Info</h3>
+                    <ul class="footer-links">
+                        <li> Johannesburg, South Africa</li>
+                        <li> +27 766 927 310</li>
+                        <li> Khathu@khavhogroups.com</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2018 Khavho Groups. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Cart Sidebar -->
+    <div class="cart-overlay" id="cartOverlay"></div>
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h3>Shopping Cart</h3>
+            <button class="close-cart" onclick="toggleCart()">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        
+        <div class="cart-items" id="cartItems">
+            <!-- Cart items will be populated by JavaScript -->
+        </div>
+        
+        <div class="cart-total">
+            <div class="total-row">
+                <span>Subtotal:</span>
+                <span id="subtotal">R0</span>
+            </div>
+            <div class="total-row">
+                <span>VAT (15%):</span>
+                <span id="vat">R0</span>
+            </div>
+            <div class="total-row final">
+                <span>Total:</span>
+                <span id="total">R0</span>
+            </div>
+            <button class="checkout-btn" onclick="checkout()">
+                <i data-lucide="credit-card"></i>
+                Proceed to Checkout
+            </button>
+        </div>
+    </div>
+
+    <!-- Authentication Modals -->
+    <div class="auth-modal" id="loginModal">
+        <div class="auth-modal-content">
+            <span class="modal-close" onclick="closeModal('loginModal')">&times;</span>
+            <div class="auth-header">
+                <h2>Login to Your Account</h2>
+                <p>Access your dashboard and manage your account</p>
+            </div>
+            <form id="loginForm" class="auth-form">
+                <div class="form-group">
+                    <label for="loginEmail">Email Address</label>
+                    <input type="email" id="loginEmail" autocomplete="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" autocomplete="current-password" required>
+                </div>
+                <button type="submit" class="auth-form-btn">
+                    <i data-lucide="log-in"></i>
+                    Login
+                </button>
+                <p class="auth-switch">
+                    Don't have an account? 
+                    <a href="#" onclick="switchModal('loginModal', 'registerModal')">Register here</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <div class="auth-modal" id="registerModal">
+        <div class="auth-modal-content">
+            <span class="modal-close" onclick="closeModal('registerModal')">&times;</span>
+            <div class="auth-header">
+                <h2>Create Your Account</h2>
+                <p>Join Khavho Groups today</p>
+            </div>
+            <form id="registerForm" class="auth-form">
+                <div class="form-group">
+                    <label for="registerName">Full Name</label>
+                    <input type="text" id="registerName" autocomplete="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerEmail">Email Address</label>
+                    <input type="email" id="registerEmail" autocomplete="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Password</label>
+                    <input type="password" id="registerPassword" autocomplete="new-password" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" autocomplete="new-password" required>
+                </div>
+                <button type="submit" class="auth-form-btn">
+                    <i data-lucide="user-plus"></i>
+                    Register
+                </button>
+                <p class="auth-switch">
+                    Already have an account? 
+                    <a href="#" onclick="switchModal('registerModal', 'loginModal')">Login here</a>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Contact Integration Script -->
+    <script src="contact-integration-clean.js"></script>
+    
+    <!-- Initialize Lucide Icons -->
+
+    <script>
+        // Initialize Lucide icons after all content is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        });
+    </script>
+</body>
+</html>
