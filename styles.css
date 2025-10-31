@@ -384,6 +384,10 @@ h1, h2, h3, h4, h5, h6 {
     display: none;
 }
 
+.mobile-cart-item {
+    display: none;
+}
+
 /* User Menu Styles */
 .user-menu {
     display: flex;
@@ -3511,6 +3515,33 @@ h1, h2, h3, h4, h5, h6 {
     .main-nav .dropdown-item:hover {
         background: rgba(255, 255, 255, 0.2);
         color: var(--accent-gold);
+    }
+    
+    /* Mobile cart in hamburger menu */
+    .mobile-cart-item {
+        display: block !important;
+        border-top: 2px solid rgba(243, 112, 33, 0.3);
+        margin-top: 10px;
+        padding-top: 10px;
+    }
+    
+    .mobile-cart-item .nav-link {
+        position: relative;
+        font-weight: 600;
+    }
+    
+    .mobile-cart-count {
+        position: absolute;
+        top: -5px;
+        right: 10px;
+        background: #F37021;
+        color: white;
+        font-size: 11px;
+        padding: 2px 6px;
+        border-radius: 10px;
+        min-width: 18px;
+        text-align: center;
+        font-weight: 700;
     }
     
     /* Mobile auth section in hamburger menu */
