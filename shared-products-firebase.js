@@ -139,62 +139,24 @@ function automaticProductLoad() {
     console.log('🔍 Querying collection: "products"...');
     window.db.collection('products').get()
         .then((snapshot) => {
-            console.log('✅✅✅ Firebase query SUCCESSFUL! Products found:', snapshot.size);
-            console.log('📊 Snapshot details:', {
-                empty: snapshot.empty,
-                size: snapshot.size,
-                docs: snapshot.docs.length
-            });
+            console.log('✅ Firebase query successful! Products found:', snapshot.size);
             
-            if (snapshot.size === 0) {
-                console.error('❌❌❌ FIREBASE PRODUCTS COLLECTION IS EMPTY! ❌❌❌');
-                console.error('Please add products to the "products" collection in Firebase Firestore!');
-                console.error('Database path: khavho-groups > Firestore > products collection');
-                
-                // Show error message on page
-                const productsGrid = document.getElementById('productsGrid');
-                if (productsGrid) {
-                    productsGrid.innerHTML = `
-                        <div style="grid-column: 1/-1; text-align: center; padding: 60px 20px; background: #fee; border-radius: 12px; border: 2px solid #c00;">
-                            <h2 style="color: #c00; margin-bottom: 20px;">⚠️ No Products Found in Firebase</h2>
-                            <p style="color: #666; margin-bottom: 10px;">The Firebase "products" collection is empty.</p>
-                            <p style="color: #666;">Please add products to the database or check your Firebase configuration.</p>
-                        </div>
-                    `;
-                }
-                
-                loadingInProgress = false;
-                return;
-            }
-
-            // Load real products from Firebase
+            // Load real products from Firebase - ALWAYS process them even if size is 0
             productsData = [];
-            let productCount = 0;
             snapshot.forEach((doc) => {
-                productCount++;
                 const product = { id: doc.id, ...doc.data() };
                 
-                console.log(`📦 Product #${productCount}:`, {
-                    id: product.id,
-                    name: product.name,
-                    category: product.category,
-                    price: product.price,
-                    hasImageUrl: !!product.imageUrl,
-                    imageUrl: product.imageUrl
-                });
-                
-                // Only generate imageUrl if not already set in Firebase
+                // Use imageUrl from Firebase if it exists, otherwise generate from name
                 if (!product.imageUrl && product.name) {
                     const encodedName = encodeURIComponent(product.name);
                     product.imageUrl = `images/${encodedName}.webp`;
-                    console.log(`  └─ Generated imageUrl: ${product.imageUrl}`);
                 }
                 
+                console.log('📦 Product loaded:', product.name, '- Image:', product.imageUrl);
                 productsData.push(product);
             });
             
-            console.log('✅✅✅ SUCCESS! Total products loaded from Firebase:', productsData.length);
-            console.log('📦 Products array:', productsData.map(p => p.name));
+            console.log('✅ Total products loaded from Firebase:', productsData.length);
             
             // Mark as loaded
             productsLoaded = true;
