@@ -917,6 +917,15 @@ body {
 
     .mobile-menu-toggle {
         display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        position: relative !important;
+        z-index: 9999 !important;
+    }
+    
+    .header-right {
+        display: flex !important;
+        align-items: center !important;
     }
     
     .mobile-logout {
