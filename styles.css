@@ -3522,6 +3522,7 @@ h1, h2, h3, h4, h5, h6 {
         padding: 15px 0 10px 0;
         border-top: 2px solid rgba(243, 112, 33, 0.3);
         margin-top: 15px;
+        list-style: none;
     }
     
     .mobile-auth .auth-buttons {
