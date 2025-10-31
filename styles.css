@@ -1058,16 +1058,16 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .product-price {
-    font-size: 20px;
-    font-weight: 800;
+    font-size: 15px;
+    font-weight: 700;
     color: var(--primary-orange);
-    margin-bottom: 12px;
-    padding: 8px 12px;
-    background: rgba(243, 112, 33, 0.1);
-    border-radius: 6px;
-    border-left: 4px solid var(--primary-orange);
+    margin-bottom: 8px;
+    padding: 4px 8px;
+    background: rgba(243, 112, 33, 0.07);
+    border-radius: 5px;
+    border-left: 3px solid var(--primary-orange);
     display: inline-block;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px;
     transition: all 0.3s ease;
 }
 
@@ -1080,7 +1080,6 @@ h1, h2, h3, h4, h5, h6 {
 .product-actions {
     display: flex;
     gap: 6px;
-}
 
 .add-to-cart-btn {
     background: var(--primary-orange);
