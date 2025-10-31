@@ -966,10 +966,14 @@ body {
     }
     
     .admin-nav.mobile-open {
-        transform: translateY(0);
-        opacity: 1;
-        pointer-events: auto;
-    }    .nav-container {
+        transform: translateY(0) !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        display: block !important;
+        visibility: visible !important;
+    }
+    
+    .nav-container {
         flex-direction: column;
         gap: 0;
         padding: 20px 0;
