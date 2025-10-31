@@ -1234,6 +1234,21 @@ function toggleAdminMobileMenu() {
 // Expose function to window for onclick attribute
 window.toggleAdminMobileMenu = toggleAdminMobileMenu;
 
+// Also add event listener as backup when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    const toggleBtn = document.getElementById('adminMobileMenuToggle');
+    if (toggleBtn) {
+        console.log('✅ Admin mobile menu toggle button found, attaching listener');
+        toggleBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('🔘 Hamburger clicked via event listener');
+            toggleAdminMobileMenu();
+        });
+    } else {
+        console.error('❌ Admin mobile menu toggle button NOT found');
+    }
+});
+
 // Close mobile menu when clicking outside
 document.addEventListener('click', function(event) {
     const nav = document.getElementById('adminNav');
