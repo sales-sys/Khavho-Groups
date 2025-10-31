@@ -1215,12 +1215,24 @@ async function loadRealTimeAnalytics() {
 
 // Mobile Menu Functions
 function toggleAdminMobileMenu() {
+    console.log('Toggle admin mobile menu called');
     const nav = document.getElementById('adminNav');
     const toggle = document.getElementById('adminMobileMenuToggle');
     
-    nav.classList.toggle('mobile-open');
-    toggle.classList.toggle('active');
+    console.log('Nav element:', nav);
+    console.log('Toggle element:', toggle);
+    
+    if (nav && toggle) {
+        nav.classList.toggle('mobile-open');
+        toggle.classList.toggle('active');
+        console.log('Menu toggled. Is open:', nav.classList.contains('mobile-open'));
+    } else {
+        console.error('Nav or toggle element not found!');
+    }
 }
+
+// Expose function to window for onclick attribute
+window.toggleAdminMobileMenu = toggleAdminMobileMenu;
 
 // Close mobile menu when clicking outside
 document.addEventListener('click', function(event) {
