@@ -697,30 +697,37 @@ function updateCartDisplay() {
     // Get cart from localStorage 
     const cart = JSON.parse(localStorage.getItem('cart') || localStorage.getItem('khavho_cart') || '[]');
     
+    // Update cart count badge
     const cartCount = document.getElementById('cartCount');
-    const cartContent = document.getElementById('cartContent');
-    const cartTotal = document.getElementById('cartTotal');
-    
-    // Update cart count
+    const mobileCartCount = document.getElementById('mobileCartCount');
     const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-    if (cartCount) cartCount.textContent = totalItems;
     
-    // Update cart content
-    if (cartContent) {
+    if (cartCount) {
+        cartCount.textContent = totalItems;
+        cartCount.style.display = totalItems > 0 ? 'flex' : 'none';
+    }
+    if (mobileCartCount) {
+        mobileCartCount.textContent = totalItems;
+        mobileCartCount.style.display = totalItems > 0 ? 'inline-block' : 'none';
+    }
+    
+    // Update cart items (cartItems is the correct ID from index.html)
+    const cartItems = document.getElementById('cartItems');
+    if (cartItems) {
         if (cart.length === 0) {
-            cartContent.innerHTML = `
+            cartItems.innerHTML = `
                 <div class="empty-cart">
                     <i data-lucide="shopping-cart"></i>
                     <p>Your cart is empty</p>
                 </div>
             `;
         } else {
-            cartContent.innerHTML = cart.map(item => `
+            cartItems.innerHTML = cart.map(item => `
                 <div class="cart-item">
                     <div class="cart-item-info">
                         <h4>${item.name}</h4>
-                        <p class="cart-item-category">${item.category}</p>
-                        <p class="cart-item-price">R${parseFloat(item.price || 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</p>
+                        <p class="cart-item-category">${item.category || 'Product'}</p>
+                        <p class="cart-item-price">R${parseFloat(item.price || 0).toFixed(2)}</p>
                     </div>
                     <div class="cart-item-controls">
                         <div class="quantity-controls">
@@ -737,9 +744,19 @@ function updateCartDisplay() {
         }
     }
     
-    // Update total
-    const total = cart.reduce((sum, item) => sum + (parseFloat(item.price || 0) * item.quantity), 0);
-    if (cartTotal) cartTotal.textContent = total.toLocaleString('en-ZA', { minimumFractionDigits: 2 });
+    // Calculate totals
+    const subtotal = cart.reduce((sum, item) => sum + (parseFloat(item.price || 0) * item.quantity), 0);
+    const vat = subtotal * 0.15;
+    const total = subtotal + vat;
+    
+    // Update totals (using correct IDs from index.html)
+    const subtotalEl = document.getElementById('subtotal');
+    const vatEl = document.getElementById('vat');
+    const totalEl = document.getElementById('total');
+    
+    if (subtotalEl) subtotalEl.textContent = 'R' + subtotal.toFixed(2);
+    if (vatEl) vatEl.textContent = 'R' + vat.toFixed(2);
+    if (totalEl) totalEl.textContent = 'R' + total.toFixed(2);
     
     // Refresh icons
     if (typeof lucide !== 'undefined' && lucide.createIcons) {
@@ -790,16 +807,23 @@ function toggleCart() {
 }
 
 function checkout() {
+    console.log('🛒 Checkout button clicked');
+    
     // Check if cart exists and has items
     const cart = JSON.parse(localStorage.getItem('cart') || localStorage.getItem('khavho_cart') || '[]');
     
+    console.log('Cart contents:', cart);
+    console.log('Cart length:', cart.length);
+    
     if (cart.length === 0) {
-        alert('Your cart is empty!');
+        alert('Your cart is empty! Please add some items before checking out.');
         return;
     }
     
     // Save cart with consistent key
     localStorage.setItem('cart', JSON.stringify(cart));
+    
+    console.log('✅ Redirecting to checkout page...');
     
     // Redirect to checkout page
     window.location.href = 'checkout.html';
