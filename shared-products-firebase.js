@@ -590,7 +590,7 @@ function createOptimizedImage(imageUrl, altText, className = '') {
                 <source srcset="${imageUrl}.webp" type="image/webp">
                 <source srcset="${imageUrl}.jpg" type="image/jpeg">
                 <img src="${imageUrl}.jpg" alt="${altText}" 
-                     onerror="this.parentElement.innerHTML='<div class=&quot;product-placeholder&quot;><i data-lucide=&quot;package&quot;></i></div>'; lucide.createIcons();" 
+                     onerror="const pic=this.closest('picture')||this.parentElement; pic.outerHTML='<div class=&quot;product-placeholder&quot;><i data-lucide=&quot;package&quot;></i></div>'; if(window.lucide)lucide.createIcons();" 
                      loading="lazy">
             </picture>`;
         }
@@ -603,14 +603,14 @@ function createOptimizedImage(imageUrl, altText, className = '') {
             <source srcset="${imageUrl}" type="image/webp">
             <source srcset="${fallbackUrl}" type="image/jpeg">
             <img src="${fallbackUrl}" alt="${altText}" 
-                 onerror="this.parentElement.innerHTML='<div class=&quot;product-placeholder&quot;><i data-lucide=&quot;package&quot;></i></div>'; lucide.createIcons();" 
+                 onerror="const pic=this.closest('picture')||this.parentElement; pic.outerHTML='<div class=&quot;product-placeholder&quot;><i data-lucide=&quot;package&quot;></i></div>'; if(window.lucide)lucide.createIcons();" 
                  loading="lazy">
         </picture>`;
     }
     
     // Regular image with lazy loading
     return `<img src="${imageUrl}" alt="${altText}" class="${className}"
-             onerror="this.parentElement.innerHTML='<div class=&quot;product-placeholder&quot;><i data-lucide=&quot;package&quot;></i></div>'; lucide.createIcons();" 
+             onerror="const el=this.parentElement; if(el)el.innerHTML='<div class=&quot;product-placeholder&quot;><i data-lucide=&quot;package&quot;></i></div>'; if(window.lucide)lucide.createIcons();" 
              loading="lazy">`;
 }
 
