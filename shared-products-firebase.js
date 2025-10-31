@@ -1581,48 +1581,7 @@ Best regards`);
     window.location.href = `mailto:info@khavhogroups.com?subject=${subject}&body=${body}`;
 }
 
-function displayAllProducts(products, container) {
-    const productsHTML = products.map(product => createProductCard(product)).join('');
-    container.innerHTML = productsHTML;
-}
-
-function createProductCard(product) {
-    // URL-encode the product name for image path
-    let imageUrl = product.imageUrl;
-    if (!imageUrl && product.name) {
-        const encodedName = encodeURIComponent(product.name);
-        imageUrl = `images/${encodedName}.webp`;
-    }
-    
-    console.log(`📦 Creating card for: ${product.name}, Image: ${imageUrl || 'NONE'}, Category: ${product.category || 'NONE'}`);
-    
-    return `
-        <div class="product-card" data-category="${(product.category || '').toLowerCase().replace(/\s+/g, '-')}">
-            <div class="product-image">
-                ${imageUrl ? 
-                    createOptimizedImage(imageUrl, product.name, 'product-img') :
-                    `<div class="product-placeholder"><i data-lucide="package"></i></div>`
-                }
-                ${product.productCode ? `<div class="product-code">${product.productCode}</div>` : ''}
-            </div>
-            
-            <div class="product-content">
-                <h3 class="product-title">${product.name}</h3>
-                <p class="product-description">${product.description || 'High-quality product for professional use.'}</p>
-                
-                <div class="product-footer">
-                    <div class="product-price">R${parseFloat(product.price || 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</div>
-                    <div class="product-actions">
-                        <button class="add-to-cart-btn" onclick="addToCart('${product.id}')">
-                            <i data-lucide="shopping-cart"></i>
-                            Add to Cart
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-}
+// Removed duplicate createProductCard function - using the primary one at line 425-495
 
 // Get category display name
 function getCategoryDisplayName(category) {
