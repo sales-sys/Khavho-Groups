@@ -1079,61 +1079,58 @@ h1, h2, h3, h4, h5, h6 {
 
 .product-actions {
     display: flex;
-    gap: 6px;
+    gap: 4px;
+    flex-direction: row;
+}
 
 .add-to-cart-btn {
     background: var(--primary-orange);
     color: white;
     border: none;
-    padding: 6px 10px;
-    border-radius: 5px;
+    padding: 4px 6px;
+    border-radius: 4px;
     cursor: pointer;
     font-weight: 600;
-    font-size: 11px;
+    font-size: 9px;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 4px;
+    gap: 3px;
     min-width: 0;
-    min-height: 32px;
+    min-height: 26px;
     white-space: nowrap;
+    flex: 1;
 }
 
 .add-to-cart-btn i {
-    width: 14px;
-    height: 14px;
+    width: 11px;
+    height: 11px;
 }
 
 .request-quote-btn {
     background: var(--primary-blue, #007bff);
     color: white;
     border: none;
-    padding: 6px 10px;
-    border-radius: 5px;
+    padding: 4px 6px;
+    border-radius: 4px;
     cursor: pointer;
     font-weight: 600;
-    font-size: 11px;
+    font-size: 9px;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 4px;
+    gap: 3px;
     min-width: 0;
-    min-height: 32px;
+    min-height: 26px;
     white-space: nowrap;
+    flex: 1;
 }
 
 .request-quote-btn i {
-    width: 14px;
-    height: 14px;
-}
-
-.product-actions {
-    display: flex;
-    gap: 6px;
-    flex-direction: row;
-}
+    width: 11px;
+    height: 11px;
 }
 
 .add-to-cart-btn i {
